@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Human.ua Mini App - 11-А</title>
+    <title>Human.ua Mini App</title>
     <!-- Telegram WebApp SDK -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <!-- Lucide Icons -->
@@ -38,9 +38,6 @@
             padding-bottom: 90px;
             min-height: 100vh;
         }
-
-        .tab-section { display: none; }
-        .tab-section.active-tab { display: block; }
 
         .card {
             background: var(--card-bg);
@@ -190,12 +187,6 @@
             color: var(--accent-cyan);
         }
 
-        .room-badge.k-badge {
-            background: rgba(255, 0, 127, 0.15);
-            color: var(--accent-pink);
-            border: 1px solid rgba(255, 0, 127, 0.3);
-        }
-
         .profile-banner { display: flex; align-items: center; gap: 12px; }
 
         .avatar {
@@ -221,12 +212,49 @@
             color: #000;
         }
 
-        .empty-state {
-            text-align: center;
-            padding: 20px;
-            color: var(--text-muted);
-            font-size: 0.85rem;
+        .achievements-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
         }
+
+        .achievement-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--card-border);
+            border-radius: 14px;
+            padding: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .achievement-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .ach-unlocked {
+            background: rgba(0, 255, 135, 0.15);
+            color: var(--accent-green);
+            border: 1px solid rgba(0, 255, 135, 0.3);
+        }
+
+        .ach-details { overflow: hidden; }
+
+        .ach-title {
+            font-size: 0.8rem;
+            font-weight: 700;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .ach-sub { font-size: 0.65rem; color: var(--text-muted); }
 
         .nav-bar {
             position: fixed;
@@ -253,44 +281,11 @@
         }
 
         .nav-item.active { color: var(--accent-cyan); }
-
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(8px);
-            z-index: 200;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-
-        .modal-content {
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 20px;
-            padding: 20px;
-            width: 100%;
-            max-width: 360px;
-        }
-
-        .btn-close {
-            background: linear-gradient(135deg, var(--accent-pink), var(--accent-purple));
-            border: none;
-            color: #fff;
-            padding: 10px;
-            border-radius: 12px;
-            width: 100%;
-            margin-top: 14px;
-            font-weight: 700;
-            cursor: pointer;
-        }
     </style>
 </head>
 <body>
 
-    <!-- Header / User Banner -->
+    <!-- User Header -->
     <div class="card">
         <div class="profile-banner">
             <div class="avatar" id="user-avatar">В</div>
@@ -300,245 +295,211 @@
                     <span class="level-badge">11-А Клас</span>
                 </div>
                 <div style="display: flex; justify-content: space-between; font-size: 0.7rem; color: var(--text-muted); margin-top: 6px;">
-                    <span>XP: 100 / 500</span>
-                    <span class="neon-text-green">+100 XP запуск</span>
+                    <span>XP: 750 / 1000</span>
+                    <span class="neon-text-green">+50 XP за відвідуваність</span>
                 </div>
                 <div class="progress-bar-bg">
-                    <div class="progress-bar-fill" style="width: 20%;"></div>
+                    <div class="progress-bar-fill" style="width: 75%;"></div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Вкладка: ГОЛОВНА -->
-    <div id="tab-home" class="tab-section active-tab">
-        <!-- Live Bell & Lesson Timer -->
-        <div class="card">
-            <div class="card-header">
-                <div class="card-title neon-text-cyan">
-                    <i data-lucide="clock"></i> Розклад та Таймер
-                </div>
-                <div class="timer-badge">
-                    <div class="pulse-dot"></div>
-                    <span id="status-label">Завантаження...</span>
-                </div>
+    <!-- Live Timer Widget -->
+    <div class="card">
+        <div class="card-header">
+            <div class="card-title neon-text-cyan">
+                <i data-lucide="clock"></i> Розклад та Таймер
             </div>
-
-            <div style="text-align: center; font-size: 0.85rem; color: var(--text-muted);" id="current-lesson-name">
-                Перевірка часу...
-            </div>
-            <div class="time-display" id="countdown-timer">--:--</div>
-            
-            <div class="progress-bar-bg">
-                <div class="progress-bar-fill" id="lesson-progress-bar" style="width: 0%;"></div>
-            </div>
-
-            <div style="display: flex; justify-content: space-between; font-size: 0.7rem; color: var(--text-muted); margin-top: 6px;">
-                <span id="start-time">08:00</span>
-                <span id="end-time">14:15</span>
+            <div class="timer-badge">
+                <div class="pulse-dot"></div>
+                <span>Урок триває</span>
             </div>
         </div>
 
-        <!-- Daily Schedule Section -->
-        <div class="card">
-            <div class="card-header">
-                <div class="card-title">
-                    <i data-lucide="calendar"></i> Розклад 11-А
-                </div>
-                <span style="font-size: 0.75rem; color: var(--accent-cyan); cursor: pointer;" onclick="openBellsModal()">
-                    Дзвінки 🔔
-                </span>
-            </div>
-
-            <div class="day-tabs">
-                <div class="day-tab active" onclick="selectDay(this, 'Mon')">ПН</div>
-                <div class="day-tab" onclick="selectDay(this, 'Tue')">ВТ</div>
-                <div class="day-tab" onclick="selectDay(this, 'Wed')">СР</div>
-                <div class="day-tab" onclick="selectDay(this, 'Thu')">ЧТ</div>
-                <div class="day-tab" onclick="selectDay(this, 'Fri')">ПТ</div>
-            </div>
-
-            <div id="schedule-list"></div>
+        <div style="text-align: center; font-size: 0.85rem; color: var(--text-muted);">
+            Зараз: Українська мова (Школа)
+        </div>
+        <div class="time-display" id="countdown-timer">12:45</div>
+        
+        <div class="progress-bar-bg">
+            <div class="progress-bar-fill" id="lesson-progress-bar" style="width: 65%;"></div>
         </div>
 
-        <!-- Leaderboard Section -->
-        <div class="card">
-            <div class="card-header">
-                <div class="card-title neon-text-purple">
-                    <i data-lucide="crown"></i> Рейтинг Класу
+        <div style="display: flex; justify-content: space-between; font-size: 0.7rem; color: var(--text-muted); margin-top: 6px;">
+            <span>08:00</span>
+            <span>08:45</span>
+        </div>
+    </div>
+
+    <!-- Schedule Section -->
+    <div class="card">
+        <div class="card-header">
+            <div class="card-title">
+                <i data-lucide="calendar"></i> Розклад 11-А
+            </div>
+        </div>
+
+        <div class="day-tabs">
+            <div class="day-tab active" onclick="selectDay(this, 'Mon')">ПН</div>
+            <div class="day-tab" onclick="selectDay(this, 'Tue')">ВТ</div>
+            <div class="day-tab" onclick="selectDay(this, 'Wed')">СР</div>
+            <div class="day-tab" onclick="selectDay(this, 'Thu')">ЧТ</div>
+            <div class="day-tab" onclick="selectDay(this, 'Fri')">ПТ</div>
+        </div>
+
+        <div id="schedule-list"></div>
+    </div>
+
+    <!-- Achievements Section -->
+    <div class="card">
+        <div class="card-header">
+            <div class="card-title neon-text-yellow">
+                <i data-lucide="trophy"></i> Досягнення
+            </div>
+            <span style="font-size: 0.75rem; color: var(--text-muted);">3 / 8 здобуто</span>
+        </div>
+
+        <div class="achievements-grid">
+            <div class="achievement-card">
+                <div class="achievement-icon ach-unlocked">
+                    <i data-lucide="award"></i>
+                </div>
+                <div class="ach-details">
+                    <div class="ach-title">Відмінник</div>
+                    <div class="ach-sub">3 десятки поспіль</div>
                 </div>
             </div>
-            <div class="empty-state">
-                <i data-lucide="users" style="margin-bottom: 6px;"></i>
-                <p>Рейтинг порожній. Очікування підключення однокласників!</p>
+
+            <div class="achievement-card">
+                <div class="achievement-icon ach-unlocked">
+                    <i data-lucide="zap"></i>
+                </div>
+                <div class="ach-details">
+                    <div class="ach-title">Пунктуальний</div>
+                    <div class="ach-sub">Без запізнень</div>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- Вкладка: ОЦІНКИ -->
-    <div id="tab-grades" class="tab-section">
-        <div class="card">
-            <div class="card-title neon-text-green" style="margin-bottom: 12px;">
-                <i data-lucide="book-check"></i> Мої Оцінки
-            </div>
-            <div class="empty-state">
-                <p>Оцінки поки що відсутні. Вони з'являться після синхронізації з журналом.</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- Вкладка: ДЗ -->
-    <div id="tab-hw" class="tab-section">
-        <div class="card">
-            <div class="card-title neon-text-yellow" style="margin-bottom: 12px;">
-                <i data-lucide="check-square"></i> Домашнє Завдання
-            </div>
-            <div class="empty-state">
-                <p>Домашніх завдань немає! Відпочивай 🎉</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- Вкладка: ПРОФІЛЬ -->
-    <div id="tab-profile" class="tab-section">
-        <div class="card">
-            <div class="card-title neon-text-cyan" style="margin-bottom: 12px;">
-                <i data-lucide="user"></i> Профіль Учня
-            </div>
-            <div style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.6;">
-                <p>Ім'я: <strong id="profile-full-name" style="color: #fff;">Ваня</strong></p>
-                <p>Клас: <strong style="color: var(--accent-cyan);">11-А</strong></p>
-                <p>Школа: Human.ua</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- Navigation Bottom Bar -->
+    <!-- Bottom Navigation -->
     <div class="nav-bar">
-        <div class="nav-item active" onclick="switchTab('home', this)">
+        <div class="nav-item active">
             <i data-lucide="home"></i>
             <span>Головна</span>
         </div>
-        <div class="nav-item" onclick="switchTab('grades', this)">
+        <div class="nav-item">
             <i data-lucide="book-check"></i>
             <span>Оцінки</span>
         </div>
-        <div class="nav-item" onclick="switchTab('hw', this)">
+        <div class="nav-item">
             <i data-lucide="check-square"></i>
             <span>ДЗ</span>
         </div>
-        <div class="nav-item" onclick="switchTab('profile', this)">
+        <div class="nav-item">
             <i data-lucide="user"></i>
             <span>Профіль</span>
         </div>
     </div>
 
-    <!-- Modal: Bells Schedule -->
-    <div class="modal" id="bellsModal">
-        <div class="modal-content">
-            <h3 style="margin-bottom: 12px; font-size: 1.1rem;" class="neon-text-cyan">🔔 Розклад дзвінків (11-А)</h3>
-            <div style="display: flex; flex-direction: column; gap: 8px; font-size: 0.85rem;" id="bells-list"></div>
-            <button class="btn-close" onclick="closeBellsModal()">Закрити</button>
-        </div>
-    </div>
-
     <script>
-        const lessonTimes = [
-            { num: 1, start: "08:00", end: "08:45", sMin: 480, eMin: 525 },
-            { num: 2, start: "08:55", end: "09:40", sMin: 535, eMin: 580 },
-            { num: 3, start: "09:50", end: "10:35", sMin: 590, eMin: 635 },
-            { num: 4, start: "10:45", end: "11:30", sMin: 645, eMin: 690 },
-            { num: 5, start: "11:40", end: "12:25", sMin: 700, eMin: 745 },
-            { num: 6, start: "12:35", end: "13:20", sMin: 755, eMin: 800 },
-            { num: 7, start: "13:30", end: "14:15", sMin: 810, eMin: 855 }
-        ];
-
-        // Точний розклад з урахуванням Комбінату (К)
-        const schedules = {
-            'Mon': [
-                { num: 1, name: 'Українська мова', room: 'Школа' },
-                { num: 2, name: 'Мистецтво', room: 'Школа' },
-                { num: 3, name: 'Англійська мова', room: 'Школа' },
-                { num: 4, name: 'Зарубіжна літ.', room: 'Школа' },
-                { num: 5, name: 'Фізика', room: 'Школа' },
-                { num: 6, name: 'Математика', room: 'Школа' },
-                { num: 7, name: 'Фізична культура', room: 'Школа' }
-            ],
-            'Tue': [
-                { num: 1, name: 'Інформатика', room: 'Комбінат (К)', isK: true },
-                { num: 2, name: 'Хімія', room: 'Комбінат (К)', isK: true },
-                { num: 3, name: 'Біологія', room: 'Комбінат (К)', isK: true },
-                { num: 4, name: 'Математика', room: 'Школа' },
-                { num: 5, name: 'Англійська мова', room: 'Школа' },
-                { num: 6, name: 'Фізика', room: 'Школа' },
-                { num: 7, name: 'Українська літ.', room: 'Комбінат (К)', isK: true }
-            ],
-            'Wed': [
-                { num: 1, name: 'Математика', room: 'Комбінат (К)', isK: true },
-                { num: 2, name: 'Англійська мова', room: 'Комбінат (К)', isK: true },
-                { num: 3, name: 'Англійська мова', room: 'Комбінат (К)', isK: true },
-                { num: 4, name: 'Історія України', room: 'Комбінат (К)', isK: true },
-                { num: 5, name: 'Фізика', room: 'Школа' },
-                { num: 6, name: 'Фізична культура', room: 'Школа' }
-            ],
-            'Thu': [
-                { num: 1, name: 'Захист України', room: 'Школа' },
-                { num: 2, name: 'Захист України', room: 'Школа' },
-                { num: 3, name: 'Географія', room: 'Комбінат (К)', isK: true },
-                { num: 4, name: 'Українська мова', room: 'Школа' },
-                { num: 5, name: 'Фізична культура', room: 'Комбінат (К)', isK: true },
-                { num: 6, name: 'Українська літ.', room: 'Школа' }
-            ],
-            'Fri': [
-                { num: 1, name: 'Англійська мова', room: 'Комбінат (К)', isK: true },
-                { num: 2, name: 'Біологія', room: 'Школа' },
-                { num: 3, name: 'Фізика', room: 'Школа' },
-                { num: 4, name: 'Мистецтво', room: 'Школа' },
-                { num: 5, name: 'Всесвітня історія', room: 'Школа' },
-                { num: 6, name: 'Хімія', room: 'Школа' }
-            ]
-        };
-
-        const dayKeys = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-        let currentSelectedDay = 'Mon';
-
         if (window.Telegram && window.Telegram.WebApp) {
             window.Telegram.WebApp.ready();
             window.Telegram.WebApp.expand();
 
             const user = window.Telegram.WebApp.initDataUnsafe?.user;
             if (user) {
-                const name = user.first_name || 'Ваня';
-                document.getElementById('user-name').innerText = name;
-                document.getElementById('profile-full-name').innerText = `${name} ${user.last_name || ''}`;
-                document.getElementById('user-avatar').innerText = name[0];
+                document.getElementById('user-name').innerText = user.first_name || 'Ваня';
+                document.getElementById('user-avatar').innerText = user.first_name ? user.first_name[0] : 'В';
             }
         }
 
         lucide.createIcons();
 
-        function switchTab(tabId, el) {
-            document.querySelectorAll('.tab-section').forEach(tab => tab.classList.remove('active-tab'));
-            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
-            
-            document.getElementById(`tab-${tabId}`).classList.add('active-tab');
-            el.classList.add('active');
-        }
+        const schedules = {
+            'Mon': [
+                { num: 1, name: 'Українська мова', room: 'Школа', active: true },
+                { num: 2, name: 'Мистецтво', room: 'Школа', active: false },
+                { num: 3, name: 'Англійська мова', room: 'Школа', active: false },
+                { num: 4, name: 'Зарубіжна літ.', room: 'Школа', active: false },
+                { num: 5, name: 'Фізика', room: 'Школа', active: false },
+                { num: 6, name: 'Математика', room: 'Школа', active: false },
+                { num: 7, name: 'Фізична культура', room: 'Школа', active: false }
+            ],
+            'Tue': [
+                { num: 1, name: 'Інформатика', room: 'Комбінат', active: false },
+                { num: 2, name: 'Хімія', room: 'Комбінат', active: false },
+                { num: 3, name: 'Біологія', room: 'Комбінат', active: false },
+                { num: 4, name: 'Математика', room: 'Школа', active: false },
+                { num: 5, name: 'Англійська мова', room: 'Школа', active: false },
+                { num: 6, name: 'Фізика', room: 'Школа', active: false },
+                { num: 7, name: 'Українська літ.', room: 'Комбінат', active: false }
+            ],
+            'Wed': [
+                { num: 1, name: 'Математика', room: 'Комбінат', active: false },
+                { num: 2, name: 'Англійська мова', room: 'Комбінат', active: false },
+                { num: 3, name: 'Англійська мова', room: 'Комбінат', active: false },
+                { num: 4, name: 'Історія України', room: 'Комбінат', active: false },
+                { num: 5, name: 'Фізика', room: 'Школа', active: false },
+                { num: 6, name: 'Фізична культура', room: 'Школа', active: false }
+            ],
+            'Thu': [
+                { num: 1, name: 'Захист України', room: 'Школа', active: false },
+                { num: 2, name: 'Захист України', room: 'Школа', active: false },
+                { num: 3, name: 'Географія', room: 'Комбінат', active: false },
+                { num: 4, name: 'Українська мова', room: 'Школа', active: false },
+                { num: 5, name: 'Фізична культура', room: 'Комбінат', active: false },
+                { num: 6, name: 'Українська літ.', room: 'Школа', active: false }
+            ],
+            'Fri': [
+                { num: 1, name: 'Англійська мова', room: 'Комбінат', active: false },
+                { num: 2, name: 'Біологія', room: 'Школа', active: false },
+                { num: 3, name: 'Фізика', room: 'Школа', active: false },
+                { num: 4, name: 'Мистецтво', room: 'Школа', active: false },
+                { num: 5, name: 'Всесвітня історія', room: 'Школа', active: false },
+                { num: 6, name: 'Хімія', room: 'Школа', active: false }
+            ]
+        };
 
         function renderSchedule(day) {
-            currentSelectedDay = day;
             const list = document.getElementById('schedule-list');
             list.innerHTML = '';
             
             const items = schedules[day] || [];
-            if (items.length === 0) {
-                list.innerHTML = '<div class="empty-state"><p>На цей день розклад відсутній</p></div>';
-                return;
-            }
-
             items.forEach(item => {
-                const bell = lessonTimes.find(b => b.num === item.num) || { start: '--:--', end: '--:--' };
                 const div = document.createElement('div');
-                div.className = `schedule-item`;
-                div.id = `lesson-item-${item.num}`;
+                div.className = `schedule-item ${item.active ? 'active-lesson' : ''}`;
+                div.innerHTML = `
+                    <div class="lesson-num">${item.num}</div>
+                    <div class="lesson-info">
+                        <div class="lesson-title">${item.name}</div>
+                    </div>
+                    <div class="room-badge">${item.room}</div>
+                `;
+                list.appendChild(div);
+            });
+        }
+
+        function selectDay(element, day) {
+            document.querySelectorAll('.day-tab').forEach(tab => tab.classList.remove('active'));
+            element.classList.add('active');
+            renderSchedule(day);
+        }
+
+        renderSchedule('Mon');
+
+        // Simple Countdown Visual Simulation
+        let duration = 12 * 60 + 45;
+        setInterval(() => {
+            if (duration <= 0) duration = 45 * 60;
+            const m = Math.floor(duration / 60);
+            const s = duration % 60;
+            document.getElementById('countdown-timer').innerText = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+            duration--;
+        }, 1000);
+    </script>
+</body>
+</html>
+
  
