@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Human.ua Mini App</title>
+    <title>Human.ua Mini App - 11-А</title>
     <!-- Telegram WebApp SDK -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <!-- Lucide Icons -->
@@ -39,13 +39,8 @@
             min-height: 100vh;
         }
 
-        .tab-section {
-            display: none;
-        }
-
-        .tab-section.active-tab {
-            display: block;
-        }
+        .tab-section { display: none; }
+        .tab-section.active-tab { display: block; }
 
         .card {
             background: var(--card-bg);
@@ -195,6 +190,12 @@
             color: var(--accent-cyan);
         }
 
+        .room-badge.k-badge {
+            background: rgba(255, 0, 127, 0.15);
+            color: var(--accent-pink);
+            border: 1px solid rgba(255, 0, 127, 0.3);
+        }
+
         .profile-banner { display: flex; align-items: center; gap: 12px; }
 
         .avatar {
@@ -227,7 +228,6 @@
             font-size: 0.85rem;
         }
 
-        /* Nav Bar */
         .nav-bar {
             position: fixed;
             bottom: 0;
@@ -297,11 +297,11 @@
             <div style="flex-grow: 1;">
                 <div style="display: flex; align-items: center; gap: 8px;">
                     <span style="font-weight: 700;" id="user-name">Ваня</span>
-                    <span class="level-badge">1 Рівень</span>
+                    <span class="level-badge">11-А Клас</span>
                 </div>
                 <div style="display: flex; justify-content: space-between; font-size: 0.7rem; color: var(--text-muted); margin-top: 6px;">
                     <span>XP: 100 / 500</span>
-                    <span class="neon-text-green">+100 XP вітання</span>
+                    <span class="neon-text-green">+100 XP запуск</span>
                 </div>
                 <div class="progress-bar-bg">
                     <div class="progress-bar-fill" style="width: 20%;"></div>
@@ -320,12 +320,12 @@
                 </div>
                 <div class="timer-badge">
                     <div class="pulse-dot"></div>
-                    <span id="status-label">Уроки завершено</span>
+                    <span id="status-label">Завантаження...</span>
                 </div>
             </div>
 
             <div style="text-align: center; font-size: 0.85rem; color: var(--text-muted);" id="current-lesson-name">
-                Зараз немає уроків 🌙
+                Перевірка часу...
             </div>
             <div class="time-display" id="countdown-timer">--:--</div>
             
@@ -334,7 +334,7 @@
             </div>
 
             <div style="display: flex; justify-content: space-between; font-size: 0.7rem; color: var(--text-muted); margin-top: 6px;">
-                <span id="start-time">08:30</span>
+                <span id="start-time">08:00</span>
                 <span id="end-time">14:15</span>
             </div>
         </div>
@@ -343,7 +343,7 @@
         <div class="card">
             <div class="card-header">
                 <div class="card-title">
-                    <i data-lucide="calendar"></i> Розклад Уроків
+                    <i data-lucide="calendar"></i> Розклад 11-А
                 </div>
                 <span style="font-size: 0.75rem; color: var(--accent-cyan); cursor: pointer;" onclick="openBellsModal()">
                     Дзвінки 🔔
@@ -403,12 +403,12 @@
     <div id="tab-profile" class="tab-section">
         <div class="card">
             <div class="card-title neon-text-cyan" style="margin-bottom: 12px;">
-                <i data-lucide="user"></i> Налаштування Профілю
+                <i data-lucide="user"></i> Профіль Учня
             </div>
             <div style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.6;">
-                <p>Користувач: <strong id="profile-full-name" style="color: #fff;">Ваня</strong></p>
+                <p>Ім'я: <strong id="profile-full-name" style="color: #fff;">Ваня</strong></p>
+                <p>Клас: <strong style="color: var(--accent-cyan);">11-А</strong></p>
                 <p>Школа: Human.ua</p>
-                <p>Статус: Учень</p>
             </div>
         </div>
     </div>
@@ -436,39 +436,72 @@
     <!-- Modal: Bells Schedule -->
     <div class="modal" id="bellsModal">
         <div class="modal-content">
-            <h3 style="margin-bottom: 12px; font-size: 1.1rem;" class="neon-text-cyan">🔔 Розклад дзвінків</h3>
+            <h3 style="margin-bottom: 12px; font-size: 1.1rem;" class="neon-text-cyan">🔔 Розклад дзвінків (11-А)</h3>
             <div style="display: flex; flex-direction: column; gap: 8px; font-size: 0.85rem;" id="bells-list"></div>
             <button class="btn-close" onclick="closeBellsModal()">Закрити</button>
         </div>
     </div>
 
     <script>
-        // Дзвінки (початок і кінець уроків у хвилинах від початку доби)
         const lessonTimes = [
-            { num: 1, start: "08:30", end: "09:15", sMin: 510, eMin: 555 },
-            { num: 2, start: "09:25", end: "10:10", sMin: 565, eMin: 610 },
-            { num: 3, start: "10:25", end: "11:10", sMin: 625, eMin: 670 },
-            { num: 4, start: "11:30", end: "12:15", sMin: 690, eMin: 735 },
-            { num: 5, start: "12:35", end: "13:20", sMin: 755, eMin: 800 },
-            { num: 6, start: "13:30", end: "14:15", sMin: 810, eMin: 855 }
+            { num: 1, start: "08:00", end: "08:45", sMin: 480, eMin: 525 },
+            { num: 2, start: "08:55", end: "09:40", sMin: 535, eMin: 580 },
+            { num: 3, start: "09:50", end: "10:35", sMin: 590, eMin: 635 },
+            { num: 4, start: "10:45", end: "11:30", sMin: 645, eMin: 690 },
+            { num: 5, start: "11:40", end: "12:25", sMin: 700, eMin: 745 },
+            { num: 6, start: "12:35", end: "13:20", sMin: 755, eMin: 800 },
+            { num: 7, start: "13:30", end: "14:15", sMin: 810, eMin: 855 }
         ];
 
-        // Твій власний розклад уроків (Можеш змінювати назви та кабінети!)
+        // Точний розклад з урахуванням Комбінату (К)
         const schedules = {
             'Mon': [
-                { num: 1, name: 'Урок 1', room: 'Каб. ---' },
-                { num: 2, name: 'Урок 2', room: 'Каб. ---' },
-                { num: 3, name: 'Урок 3', room: 'Каб. ---' }
+                { num: 1, name: 'Українська мова', room: 'Школа' },
+                { num: 2, name: 'Мистецтво', room: 'Школа' },
+                { num: 3, name: 'Англійська мова', room: 'Школа' },
+                { num: 4, name: 'Зарубіжна літ.', room: 'Школа' },
+                { num: 5, name: 'Фізика', room: 'Школа' },
+                { num: 6, name: 'Математика', room: 'Школа' },
+                { num: 7, name: 'Фізична культура', room: 'Школа' }
             ],
-            'Tue': [],
-            'Wed': [],
-            'Thu': [],
-            'Fri': []
+            'Tue': [
+                { num: 1, name: 'Інформатика', room: 'Комбінат (К)', isK: true },
+                { num: 2, name: 'Хімія', room: 'Комбінат (К)', isK: true },
+                { num: 3, name: 'Біологія', room: 'Комбінат (К)', isK: true },
+                { num: 4, name: 'Математика', room: 'Школа' },
+                { num: 5, name: 'Англійська мова', room: 'Школа' },
+                { num: 6, name: 'Фізика', room: 'Школа' },
+                { num: 7, name: 'Українська літ.', room: 'Комбінат (К)', isK: true }
+            ],
+            'Wed': [
+                { num: 1, name: 'Математика', room: 'Комбінат (К)', isK: true },
+                { num: 2, name: 'Англійська мова', room: 'Комбінат (К)', isK: true },
+                { num: 3, name: 'Англійська мова', room: 'Комбінат (К)', isK: true },
+                { num: 4, name: 'Історія України', room: 'Комбінат (К)', isK: true },
+                { num: 5, name: 'Фізика', room: 'Школа' },
+                { num: 6, name: 'Фізична культура', room: 'Школа' }
+            ],
+            'Thu': [
+                { num: 1, name: 'Захист України', room: 'Школа' },
+                { num: 2, name: 'Захист України', room: 'Школа' },
+                { num: 3, name: 'Географія', room: 'Комбінат (К)', isK: true },
+                { num: 4, name: 'Українська мова', room: 'Школа' },
+                { num: 5, name: 'Фізична культура', room: 'Комбінат (К)', isK: true },
+                { num: 6, name: 'Українська літ.', room: 'Школа' }
+            ],
+            'Fri': [
+                { num: 1, name: 'Англійська мова', room: 'Комбінат (К)', isK: true },
+                { num: 2, name: 'Біологія', room: 'Школа' },
+                { num: 3, name: 'Фізика', room: 'Школа' },
+                { num: 4, name: 'Мистецтво', room: 'Школа' },
+                { num: 5, name: 'Всесвітня історія', room: 'Школа' },
+                { num: 6, name: 'Хімія', room: 'Школа' }
+            ]
         };
 
+        const dayKeys = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
         let currentSelectedDay = 'Mon';
 
-        // Init Telegram WebApp
         if (window.Telegram && window.Telegram.WebApp) {
             window.Telegram.WebApp.ready();
             window.Telegram.WebApp.expand();
@@ -484,7 +517,6 @@
 
         lucide.createIcons();
 
-        // Switch Tabs
         function switchTab(tabId, el) {
             document.querySelectorAll('.tab-section').forEach(tab => tab.classList.remove('active-tab'));
             document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
@@ -500,7 +532,7 @@
             
             const items = schedules[day] || [];
             if (items.length === 0) {
-                list.innerHTML = '<div class="empty-state"><p>На цей день розклад ще не додано</p></div>';
+                list.innerHTML = '<div class="empty-state"><p>На цей день розклад відсутній</p></div>';
                 return;
             }
 
@@ -508,77 +540,5 @@
                 const bell = lessonTimes.find(b => b.num === item.num) || { start: '--:--', end: '--:--' };
                 const div = document.createElement('div');
                 div.className = `schedule-item`;
-                div.innerHTML = `
-                    <div class="lesson-num">${item.num}</div>
-                    <div class="lesson-info">
-                        <div class="lesson-title">${item.name}</div>
-                        <div class="lesson-time">${bell.start} - ${bell.end}</div>
-                    </div>
-                    <div class="room-badge">${item.room}</div>
-                `;
-                list.appendChild(div);
-            });
-        }
-
-        function selectDay(element, day) {
-            document.querySelectorAll('.day-tab').forEach(tab => tab.classList.remove('active'));
-            element.classList.add('active');
-            renderSchedule(day);
-        }
-
-        // Live Real-Time Timer
-        function updateRealTimer() {
-            const now = new Date();
-            const currentMin = now.getHours() * 60 + now.getMinutes();
-            const currentSec = now.getSeconds();
-
-            const statusLabel = document.getElementById('status-label');
-            const lessonName = document.getElementById('current-lesson-name');
-            const countdown = document.getElementById('countdown-timer');
-            const progressBar = document.getElementById('lesson-progress-bar');
-
-            // Знаходимо поточний урок
-            const activeLesson = lessonTimes.find(l => currentMin >= l.sMin && currentMin < l.eMin);
-
-            if (activeLesson) {
-                statusLabel.innerText = "Урок триває";
-                const dayLessons = schedules[currentSelectedDay] || [];
-                const currentSubj = dayLessons.find(s => s.num === activeLesson.num);
-                
-                lessonName.innerText = `Зараз ${activeLesson.num}-й урок: ${currentSubj ? currentSubj.name : 'Урок'}`;
-                
-                const totalSec = (activeLesson.eMin - activeLesson.sMin) * 60;
-                const passedSec = (currentMin - activeLesson.sMin) * 60 + currentSec;
-                const remainSec = totalSec - passedSec;
-
-                const m = Math.floor(remainSec / 60);
-                const s = remainSec % 60;
-                countdown.innerText = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
-                progressBar.style.width = `${(passedSec / totalSec) * 100}%`;
-            } else {
-                statusLabel.innerText = "Перерва / Відпочинок";
-                lessonName.innerText = "Зараз немає уроків 🌙";
-                countdown.innerText = "--:--";
-                progressBar.style.width = "0%";
-            }
-        }
-
-        function openBellsModal() {
-            const bellsList = document.getElementById('bells-list');
-            bellsList.innerHTML = '';
-            lessonTimes.forEach(b => {
-                bellsList.innerHTML += `<div class="schedule-item"><span>${b.num} урок</span><span>${b.start} - ${b.end}</span></div>`;
-            });
-            document.getElementById('bellsModal').style.display = 'flex';
-        }
-
-        function closeBellsModal() {
-            document.getElementById('bellsModal').style.display = 'none';
-        }
-
-        renderSchedule('Mon');
-        setInterval(updateRealTimer, 1000);
-        updateRealTimer();
-    </script>
-</body>
-</html>
+                div.id = `lesson-item-${item.num}`;
+ 
