@@ -39,7 +39,14 @@
             min-height: 100vh;
         }
 
-        /* Glassmorphic Cards */
+        .tab-section {
+            display: none;
+        }
+
+        .tab-section.active-tab {
+            display: block;
+        }
+
         .card {
             background: var(--card-bg);
             border: 1px solid var(--card-border);
@@ -47,7 +54,6 @@
             padding: 16px;
             margin-bottom: 16px;
             box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-            backdrop-filter: blur(8px);
         }
 
         .card-header {
@@ -65,27 +71,11 @@
             gap: 8px;
         }
 
-        .neon-text-cyan {
-            color: var(--accent-cyan);
-            text-shadow: 0 0 10px rgba(0, 242, 254, 0.4);
-        }
+        .neon-text-cyan { color: var(--accent-cyan); text-shadow: 0 0 10px rgba(0, 242, 254, 0.4); }
+        .neon-text-purple { color: var(--accent-purple); text-shadow: 0 0 10px rgba(127, 0, 255, 0.4); }
+        .neon-text-green { color: var(--accent-green); text-shadow: 0 0 10px rgba(0, 255, 135, 0.4); }
+        .neon-text-yellow { color: var(--accent-yellow); text-shadow: 0 0 10px rgba(255, 183, 3, 0.4); }
 
-        .neon-text-purple {
-            color: var(--accent-purple);
-            text-shadow: 0 0 10px rgba(127, 0, 255, 0.4);
-        }
-
-        .neon-text-green {
-            color: var(--accent-green);
-            text-shadow: 0 0 10px rgba(0, 255, 135, 0.4);
-        }
-
-        .neon-text-yellow {
-            color: var(--accent-yellow);
-            text-shadow: 0 0 10px rgba(255, 183, 3, 0.4);
-        }
-
-        /* Live Timer Widget */
         .timer-badge {
             background: rgba(0, 242, 254, 0.1);
             border: 1px solid rgba(0, 242, 254, 0.3);
@@ -142,7 +132,6 @@
             transition: width 0.5s ease;
         }
 
-        /* Day Selector Tabs */
         .day-tabs {
             display: flex;
             gap: 6px;
@@ -150,10 +139,6 @@
             padding-bottom: 6px;
             margin-bottom: 12px;
             scrollbar-width: none;
-        }
-
-        .day-tabs::-webkit-scrollbar {
-            display: none;
         }
 
         .day-tab {
@@ -175,7 +160,6 @@
             box-shadow: 0 0 12px rgba(79, 172, 254, 0.4);
         }
 
-        /* Schedule Item */
         .schedule-item {
             display: flex;
             align-items: center;
@@ -199,20 +183,9 @@
             width: 24px;
         }
 
-        .lesson-info {
-            flex-grow: 1;
-            padding: 0 10px;
-        }
-
-        .lesson-title {
-            font-weight: 600;
-            font-size: 0.9rem;
-        }
-
-        .lesson-time {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-        }
+        .lesson-info { flex-grow: 1; padding: 0 10px; }
+        .lesson-title { font-weight: 600; font-size: 0.9rem; }
+        .lesson-time { font-size: 0.75rem; color: var(--text-muted); }
 
         .room-badge {
             font-size: 0.7rem;
@@ -222,12 +195,7 @@
             color: var(--accent-cyan);
         }
 
-        /* Profile & XP Header */
-        .profile-banner {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
+        .profile-banner { display: flex; align-items: center; gap: 12px; }
 
         .avatar {
             width: 48px;
@@ -243,10 +211,6 @@
             box-shadow: 0 0 10px rgba(0, 242, 254, 0.5);
         }
 
-        .user-meta {
-            flex-grow: 1;
-        }
-
         .level-badge {
             background: linear-gradient(90deg, var(--accent-yellow), #f72585);
             padding: 2px 8px;
@@ -256,95 +220,20 @@
             color: #000;
         }
 
-        /* Achievements Grid */
-        .achievements-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-        }
-
-        .achievement-card {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid var(--card-border);
-            border-radius: 14px;
-            padding: 12px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .achievement-icon {
-            width: 36px;
-            height: 36px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-        }
-
-        .ach-unlocked {
-            background: rgba(0, 255, 135, 0.15);
-            color: var(--accent-green);
-            border: 1px solid rgba(0, 255, 135, 0.3);
-        }
-
-        .ach-locked {
-            background: rgba(255, 255, 255, 0.05);
+        .empty-state {
+            text-align: center;
+            padding: 20px;
             color: var(--text-muted);
-            opacity: 0.5;
-        }
-
-        .ach-details {
-            overflow: hidden;
-        }
-
-        .ach-title {
-            font-size: 0.8rem;
-            font-weight: 700;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .ach-sub {
-            font-size: 0.65rem;
-            color: var(--text-muted);
-        }
-
-        /* Leaderboard */
-        .leaderboard-list {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .leaderboard-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 8px 12px;
-            background: rgba(255, 255, 255, 0.03);
-            border-radius: 12px;
-        }
-
-        .rank {
-            font-weight: 800;
-            width: 20px;
             font-size: 0.85rem;
         }
 
-        .rank-1 { color: #ffd700; }
-        .rank-2 { color: #c0c0c0; }
-        .rank-3 { color: #cd7f32; }
-
-        /* Navigation Bar */
+        /* Nav Bar */
         .nav-bar {
             position: fixed;
             bottom: 0;
             left: 0;
             right: 0;
-            background: rgba(11, 15, 25, 0.9);
+            background: rgba(11, 15, 25, 0.95);
             backdrop-filter: blur(12px);
             border-top: 1px solid var(--card-border);
             display: flex;
@@ -361,14 +250,10 @@
             color: var(--text-muted);
             font-size: 0.7rem;
             cursor: pointer;
-            text-decoration: none;
         }
 
-        .nav-item.active {
-            color: var(--accent-cyan);
-        }
+        .nav-item.active { color: var(--accent-cyan); }
 
-        /* Modal popup */
         .modal {
             display: none;
             position: fixed;
@@ -405,180 +290,144 @@
 </head>
 <body>
 
-    <!-- Header / User XP Banner -->
+    <!-- Header / User Banner -->
     <div class="card">
         <div class="profile-banner">
-            <div class="avatar" id="user-avatar">У</div>
-            <div class="user-meta">
+            <div class="avatar" id="user-avatar">В</div>
+            <div style="flex-grow: 1;">
                 <div style="display: flex; align-items: center; gap: 8px;">
-                    <span style="font-weight: 700;" id="user-name">Учень Human</span>
-                    <span class="level-badge">Рівень 4</span>
+                    <span style="font-weight: 700;" id="user-name">Ваня</span>
+                    <span class="level-badge">1 Рівень</span>
                 </div>
                 <div style="display: flex; justify-content: space-between; font-size: 0.7rem; color: var(--text-muted); margin-top: 6px;">
-                    <span>XP: 750 / 1000</span>
-                    <span class="neon-text-green">+50 XP за відвідуваність</span>
+                    <span>XP: 100 / 500</span>
+                    <span class="neon-text-green">+100 XP вітання</span>
                 </div>
                 <div class="progress-bar-bg">
-                    <div class="progress-bar-fill" style="width: 75%;"></div>
+                    <div class="progress-bar-fill" style="width: 20%;"></div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Live Bell & Lesson Timer -->
-    <div class="card">
-        <div class="card-header">
-            <div class="card-title neon-text-cyan">
-                <i data-lucide="clock"></i> Розклад та Таймер
-            </div>
-            <div class="timer-badge">
-                <div class="pulse-dot"></div>
-                <span id="status-label">Урок триває</span>
-            </div>
-        </div>
-
-        <div style="text-align: center; font-size: 0.85rem; color: var(--text-muted);" id="current-lesson-name">
-            Зараз: Математика (Каб. 302)
-        </div>
-        <div class="time-display" id="countdown-timer">12:45</div>
-        
-        <div class="progress-bar-bg">
-            <div class="progress-bar-fill" id="lesson-progress-bar" style="width: 65%;"></div>
-        </div>
-
-        <div style="display: flex; justify-content: space-between; font-size: 0.7rem; color: var(--text-muted); margin-top: 6px;">
-            <span id="start-time">08:30</span>
-            <span id="end-time">09:15</span>
-        </div>
-    </div>
-
-    <!-- Daily Schedule Section -->
-    <div class="card">
-        <div class="card-header">
-            <div class="card-title">
-                <i data-lucide="calendar"></i> Розклад Уроків
-            </div>
-            <span style="font-size: 0.75rem; color: var(--accent-cyan); cursor: pointer;" onclick="openBellsModal()">
-                Дзвінки 🔔
-            </span>
-        </div>
-
-        <div class="day-tabs">
-            <div class="day-tab active" onclick="selectDay(this, 'Mon')">ПН</div>
-            <div class="day-tab" onclick="selectDay(this, 'Tue')">ВТ</div>
-            <div class="day-tab" onclick="selectDay(this, 'Wed')">СР</div>
-            <div class="day-tab" onclick="selectDay(this, 'Thu')">ЧТ</div>
-            <div class="day-tab" onclick="selectDay(this, 'Fri')">ПТ</div>
-        </div>
-
-        <div id="schedule-list">
-            <!-- Dynamic Schedule Loading -->
-        </div>
-    </div>
-
-    <!-- Gamification & Achievements Section -->
-    <div class="card">
-        <div class="card-header">
-            <div class="card-title neon-text-yellow">
-                <i data-lucide="trophy"></i> Досягнення
-            </div>
-            <span style="font-size: 0.75rem; color: var(--text-muted);">3 / 8 здобуто</span>
-        </div>
-
-        <div class="achievements-grid">
-            <div class="achievement-card">
-                <div class="achievement-icon ach-unlocked">
-                    <i data-lucide="award"></i>
+    <!-- Вкладка: ГОЛОВНА -->
+    <div id="tab-home" class="tab-section active-tab">
+        <!-- Live Bell & Lesson Timer -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title neon-text-cyan">
+                    <i data-lucide="clock"></i> Розклад та Таймер
                 </div>
-                <div class="ach-details">
-                    <div class="ach-title">Відмінник</div>
-                    <div class="ach-sub">3 десятки поспіль</div>
+                <div class="timer-badge">
+                    <div class="pulse-dot"></div>
+                    <span id="status-label">Уроки завершено</span>
                 </div>
             </div>
 
-            <div class="achievement-card">
-                <div class="achievement-icon ach-unlocked">
-                    <i data-lucide="zap"></i>
-                </div>
-                <div class="ach-details">
-                    <div class="ach-title">Пунктуальний</div>
-                    <div class="ach-sub">Без запізнень</div>
-                </div>
+            <div style="text-align: center; font-size: 0.85rem; color: var(--text-muted);" id="current-lesson-name">
+                Зараз немає уроків 🌙
+            </div>
+            <div class="time-display" id="countdown-timer">--:--</div>
+            
+            <div class="progress-bar-bg">
+                <div class="progress-bar-fill" id="lesson-progress-bar" style="width: 0%;"></div>
             </div>
 
-            <div class="achievement-card">
-                <div class="achievement-icon ach-unlocked">
-                    <i data-lucide="book-open"></i>
+            <div style="display: flex; justify-content: space-between; font-size: 0.7rem; color: var(--text-muted); margin-top: 6px;">
+                <span id="start-time">08:30</span>
+                <span id="end-time">14:15</span>
+            </div>
+        </div>
+
+        <!-- Daily Schedule Section -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">
+                    <i data-lucide="calendar"></i> Розклад Уроків
                 </div>
-                <div class="ach-details">
-                    <div class="ach-title">Книжковий хробак</div>
-                    <div class="ach-sub">Виконано 10 ДЗ</div>
-                </div>
+                <span style="font-size: 0.75rem; color: var(--accent-cyan); cursor: pointer;" onclick="openBellsModal()">
+                    Дзвінки 🔔
+                </span>
             </div>
 
-            <div class="achievement-card">
-                <div class="achievement-icon ach-locked">
-                    <i data-lucide="target"></i>
+            <div class="day-tabs">
+                <div class="day-tab active" onclick="selectDay(this, 'Mon')">ПН</div>
+                <div class="day-tab" onclick="selectDay(this, 'Tue')">ВТ</div>
+                <div class="day-tab" onclick="selectDay(this, 'Wed')">СР</div>
+                <div class="day-tab" onclick="selectDay(this, 'Thu')">ЧТ</div>
+                <div class="day-tab" onclick="selectDay(this, 'Fri')">ПТ</div>
+            </div>
+
+            <div id="schedule-list"></div>
+        </div>
+
+        <!-- Leaderboard Section -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title neon-text-purple">
+                    <i data-lucide="crown"></i> Рейтинг Класу
                 </div>
-                <div class="ach-details">
-                    <div class="ach-title">Майстер НУШ</div>
-                    <div class="ach-sub">Середній бал 11+</div>
-                </div>
+            </div>
+            <div class="empty-state">
+                <i data-lucide="users" style="margin-bottom: 6px;"></i>
+                <p>Рейтинг порожній. Очікування підключення однокласників!</p>
             </div>
         </div>
     </div>
 
-    <!-- Leaderboard Section -->
-    <div class="card">
-        <div class="card-header">
-            <div class="card-title neon-text-purple">
-                <i data-lucide="crown"></i> Рейтинг Класу
+    <!-- Вкладка: ОЦІНКИ -->
+    <div id="tab-grades" class="tab-section">
+        <div class="card">
+            <div class="card-title neon-text-green" style="margin-bottom: 12px;">
+                <i data-lucide="book-check"></i> Мої Оцінки
             </div>
-            <span style="font-size: 0.75rem; color: var(--accent-purple);">10-А клас</span>
+            <div class="empty-state">
+                <p>Оцінки поки що відсутні. Вони з'являться після синхронізації з журналом.</p>
+            </div>
         </div>
+    </div>
 
-        <div class="leaderboard-list">
-            <div class="leaderboard-item">
-                <div style="display: flex; align-items: center; gap: 10px;">
-                    <span class="rank rank-1">1</span>
-                    <span style="font-size: 0.85rem; font-weight: 600;">Софія М.</span>
-                </div>
-                <span class="neon-text-green" style="font-weight: 700; font-size: 0.85rem;">11.4</span>
+    <!-- Вкладка: ДЗ -->
+    <div id="tab-hw" class="tab-section">
+        <div class="card">
+            <div class="card-title neon-text-yellow" style="margin-bottom: 12px;">
+                <i data-lucide="check-square"></i> Домашнє Завдання
             </div>
-
-            <div class="leaderboard-item">
-                <div style="display: flex; align-items: center; gap: 10px;">
-                    <span class="rank rank-2">2</span>
-                    <span style="font-size: 0.85rem; font-weight: 600;">Максим К.</span>
-                </div>
-                <span class="neon-text-green" style="font-weight: 700; font-size: 0.85rem;">10.9</span>
+            <div class="empty-state">
+                <p>Домашніх завдань немає! Відпочивай 🎉</p>
             </div>
+        </div>
+    </div>
 
-            <div class="leaderboard-item">
-                <div style="display: flex; align-items: center; gap: 10px;">
-                    <span class="rank rank-3">3</span>
-                    <span style="font-size: 0.85rem; font-weight: 600;">Ти (Олександр)</span>
-                </div>
-                <span class="neon-text-green" style="font-weight: 700; font-size: 0.85rem;">10.2</span>
+    <!-- Вкладка: ПРОФІЛЬ -->
+    <div id="tab-profile" class="tab-section">
+        <div class="card">
+            <div class="card-title neon-text-cyan" style="margin-bottom: 12px;">
+                <i data-lucide="user"></i> Налаштування Профілю
+            </div>
+            <div style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.6;">
+                <p>Користувач: <strong id="profile-full-name" style="color: #fff;">Ваня</strong></p>
+                <p>Школа: Human.ua</p>
+                <p>Статус: Учень</p>
             </div>
         </div>
     </div>
 
     <!-- Navigation Bottom Bar -->
     <div class="nav-bar">
-        <div class="nav-item active">
+        <div class="nav-item active" onclick="switchTab('home', this)">
             <i data-lucide="home"></i>
             <span>Головна</span>
         </div>
-        <div class="nav-item">
+        <div class="nav-item" onclick="switchTab('grades', this)">
             <i data-lucide="book-check"></i>
             <span>Оцінки</span>
         </div>
-        <div class="nav-item">
+        <div class="nav-item" onclick="switchTab('hw', this)">
             <i data-lucide="check-square"></i>
             <span>ДЗ</span>
         </div>
-        <div class="nav-item">
+        <div class="nav-item" onclick="switchTab('profile', this)">
             <i data-lucide="user"></i>
             <span>Профіль</span>
         </div>
@@ -588,78 +437,82 @@
     <div class="modal" id="bellsModal">
         <div class="modal-content">
             <h3 style="margin-bottom: 12px; font-size: 1.1rem;" class="neon-text-cyan">🔔 Розклад дзвінків</h3>
-            <div style="display: flex; flex-direction: column; gap: 8px; font-size: 0.85rem;">
-                <div class="schedule-item"><span>1 урок</span><span>08:30 - 09:15</span></div>
-                <div class="schedule-item"><span>2 урок</span><span>09:25 - 10:10</span></div>
-                <div class="schedule-item"><span>3 урок</span><span>10:25 - 11:10</span></div>
-                <div class="schedule-item"><span>4 урок</span><span>11:30 - 12:15</span></div>
-                <div class="schedule-item"><span>5 урок</span><span>12:35 - 13:20</span></div>
-                <div class="schedule-item"><span>6 урок</span><span>13:30 - 14:15</span></div>
-            </div>
+            <div style="display: flex; flex-direction: column; gap: 8px; font-size: 0.85rem;" id="bells-list"></div>
             <button class="btn-close" onclick="closeBellsModal()">Закрити</button>
         </div>
     </div>
 
     <script>
-        // Init Telegram WebApp SDK
+        // Дзвінки (початок і кінець уроків у хвилинах від початку доби)
+        const lessonTimes = [
+            { num: 1, start: "08:30", end: "09:15", sMin: 510, eMin: 555 },
+            { num: 2, start: "09:25", end: "10:10", sMin: 565, eMin: 610 },
+            { num: 3, start: "10:25", end: "11:10", sMin: 625, eMin: 670 },
+            { num: 4, start: "11:30", end: "12:15", sMin: 690, eMin: 735 },
+            { num: 5, start: "12:35", end: "13:20", sMin: 755, eMin: 800 },
+            { num: 6, start: "13:30", end: "14:15", sMin: 810, eMin: 855 }
+        ];
+
+        // Твій власний розклад уроків (Можеш змінювати назви та кабінети!)
+        const schedules = {
+            'Mon': [
+                { num: 1, name: 'Урок 1', room: 'Каб. ---' },
+                { num: 2, name: 'Урок 2', room: 'Каб. ---' },
+                { num: 3, name: 'Урок 3', room: 'Каб. ---' }
+            ],
+            'Tue': [],
+            'Wed': [],
+            'Thu': [],
+            'Fri': []
+        };
+
+        let currentSelectedDay = 'Mon';
+
+        // Init Telegram WebApp
         if (window.Telegram && window.Telegram.WebApp) {
             window.Telegram.WebApp.ready();
             window.Telegram.WebApp.expand();
 
             const user = window.Telegram.WebApp.initDataUnsafe?.user;
             if (user) {
-                document.getElementById('user-name').innerText = `${user.first_name} ${user.last_name || ''}`;
-                document.getElementById('user-avatar').innerText = user.first_name ? user.first_name[0] : 'У';
+                const name = user.first_name || 'Ваня';
+                document.getElementById('user-name').innerText = name;
+                document.getElementById('profile-full-name').innerText = `${name} ${user.last_name || ''}`;
+                document.getElementById('user-avatar').innerText = name[0];
             }
         }
 
-        // Initialize Lucide Icons
         lucide.createIcons();
 
-        // Sample Schedules Data
-        const schedules = {
-            'Mon': [
-                { num: 1, name: 'Математика', time: '08:30 - 09:15', room: 'Каб. 302', active: true },
-                { num: 2, name: 'Українська мова', time: '09:25 - 10:10', room: 'Каб. 204', active: false },
-                { num: 3, name: 'Фізика', time: '10:25 - 11:10', room: 'Каб. 108', active: false },
-                { num: 4, name: 'Англійська мова', time: '11:30 - 12:15', room: 'Каб. 401', active: false },
-                { num: 5, name: 'Історія України', time: '12:35 - 13:20', room: 'Каб. 210', active: false }
-            ],
-            'Tue': [
-                { num: 1, name: 'Біологія', time: '08:30 - 09:15', room: 'Каб. 105', active: false },
-                { num: 2, name: 'Інформатика', time: '09:25 - 10:10', room: 'Каб. 312', active: false },
-                { num: 3, name: 'Математика', time: '10:25 - 11:10', room: 'Каб. 302', active: false },
-                { num: 4, name: 'Хімія', time: '11:30 - 12:15', room: 'Каб. 201', active: false }
-            ],
-            'Wed': [
-                { num: 1, name: 'Географія', time: '08:30 - 09:15', room: 'Каб. 208', active: false },
-                { num: 2, name: 'Англійська мова', time: '09:25 - 10:10', room: 'Каб. 401', active: false },
-                { num: 3, name: 'Фізика', time: '10:25 - 11:10', room: 'Каб. 108', active: false }
-            ],
-            'Thu': [
-                { num: 1, name: 'Математика', time: '08:30 - 09:15', room: 'Каб. 302', active: false },
-                { num: 2, name: 'Зарубіжна літ.', time: '09:25 - 10:10', room: 'Каб. 203', active: false },
-                { num: 3, name: 'Физкультура', time: '10:25 - 11:10', room: 'Спортзал', active: false }
-            ],
-            'Fri': [
-                { num: 1, name: 'Українська літ.', time: '08:30 - 09:15', room: 'Каб. 204', active: false },
-                { num: 2, name: 'Історія України', time: '09:25 - 10:10', room: 'Каб. 210', active: false }
-            ]
-        };
+        // Switch Tabs
+        function switchTab(tabId, el) {
+            document.querySelectorAll('.tab-section').forEach(tab => tab.classList.remove('active-tab'));
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            
+            document.getElementById(`tab-${tabId}`).classList.add('active-tab');
+            el.classList.add('active');
+        }
 
         function renderSchedule(day) {
+            currentSelectedDay = day;
             const list = document.getElementById('schedule-list');
             list.innerHTML = '';
             
             const items = schedules[day] || [];
+            if (items.length === 0) {
+                list.innerHTML = '<div class="empty-state"><p>На цей день розклад ще не додано</p></div>';
+                return;
+            }
+
             items.forEach(item => {
+                const bell = lessonTimes.find(b => b.num === item.num) || { start: '--:--', end: '--:--' };
                 const div = document.createElement('div');
-                div.className = `schedule-item ${item.active ? 'active-lesson' : ''}`;
+                div.className = `schedule-item`;
                 div.innerHTML = `
                     <div class="lesson-num">${item.num}</div>
                     <div class="lesson-info">
                         <div class="lesson-title">${item.name}</div>
-                        <div class="lesson-time">${item.time}</div>
+                        <div class="lesson-time">${bell.start} - ${bell.end}</div>
                     </div>
                     <div class="room-badge">${item.room}</div>
                 `;
@@ -673,8 +526,49 @@
             renderSchedule(day);
         }
 
-        // Modal triggers
+        // Live Real-Time Timer
+        function updateRealTimer() {
+            const now = new Date();
+            const currentMin = now.getHours() * 60 + now.getMinutes();
+            const currentSec = now.getSeconds();
+
+            const statusLabel = document.getElementById('status-label');
+            const lessonName = document.getElementById('current-lesson-name');
+            const countdown = document.getElementById('countdown-timer');
+            const progressBar = document.getElementById('lesson-progress-bar');
+
+            // Знаходимо поточний урок
+            const activeLesson = lessonTimes.find(l => currentMin >= l.sMin && currentMin < l.eMin);
+
+            if (activeLesson) {
+                statusLabel.innerText = "Урок триває";
+                const dayLessons = schedules[currentSelectedDay] || [];
+                const currentSubj = dayLessons.find(s => s.num === activeLesson.num);
+                
+                lessonName.innerText = `Зараз ${activeLesson.num}-й урок: ${currentSubj ? currentSubj.name : 'Урок'}`;
+                
+                const totalSec = (activeLesson.eMin - activeLesson.sMin) * 60;
+                const passedSec = (currentMin - activeLesson.sMin) * 60 + currentSec;
+                const remainSec = totalSec - passedSec;
+
+                const m = Math.floor(remainSec / 60);
+                const s = remainSec % 60;
+                countdown.innerText = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+                progressBar.style.width = `${(passedSec / totalSec) * 100}%`;
+            } else {
+                statusLabel.innerText = "Перерва / Відпочинок";
+                lessonName.innerText = "Зараз немає уроків 🌙";
+                countdown.innerText = "--:--";
+                progressBar.style.width = "0%";
+            }
+        }
+
         function openBellsModal() {
+            const bellsList = document.getElementById('bells-list');
+            bellsList.innerHTML = '';
+            lessonTimes.forEach(b => {
+                bellsList.innerHTML += `<div class="schedule-item"><span>${b.num} урок</span><span>${b.start} - ${b.end}</span></div>`;
+            });
             document.getElementById('bellsModal').style.display = 'flex';
         }
 
@@ -682,31 +576,9 @@
             document.getElementById('bellsModal').style.display = 'none';
         }
 
-        // Simulated Countdown Timer Logic
-        let duration = 12 * 60 + 45; // 12 min 45 sec
-        function startTimer() {
-            const display = document.getElementById('countdown-timer');
-            const progressBar = document.getElementById('lesson-progress-bar');
-            
-            setInterval(() => {
-                if (duration <= 0) {
-                    duration = 45 * 60; // reset for simulation
-                }
-                const minutes = Math.floor(duration / 60);
-                const seconds = duration % 60;
-                display.innerText = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-                
-                // Simulated progress
-                const progress = ((2700 - duration) / 2700) * 100;
-                progressBar.style.width = `${Math.min(100, Math.max(0, progress))}%`;
-
-                duration--;
-            }, 1000);
-        }
-
-        // Initial Load
         renderSchedule('Mon');
-        startTimer();
+        setInterval(updateRealTimer, 1000);
+        updateRealTimer();
     </script>
 </body>
 </html>
