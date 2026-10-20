@@ -1,355 +1,239 @@
-
 <!DOCTYPE html>
-<html lang="uk" class="dark">
+<html lang="uk">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Human.ua Student Dashboard</title>
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        neon: {
-                            cyan: '#00f3ff',
-                            blue: '#0066ff',
-                            purple: '#9d00ff',
-                            pink: '#ff007f',
-                            green: '#00ff66'
-                        },
-                        dark: {
-                            base: '#0a0d14',
-                            surface: '#121824',
-                            border: '#1f293d',
-                            glass: 'rgba(18, 24, 36, 0.75)'
-                        }
-                    },
-                    fontFamily: {
-                        sans: ['Inter', 'system-ui', 'sans-serif']
-                    }
-                }
-            }
-        }
-    </script>
-    <!-- Font Awesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Human.ua 11-А</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #0a0d14;
-            color: #f3f4f6;
-            overflow-x: hidden;
+        :root {
+            --bg-color: #0b0f19;
+            --card-bg: #151c2c;
+            --card-border: rgba(255, 255, 255, 0.08);
+            --accent-cyan: #00f2fe;
+            --accent-purple: #7f00ff;
+            --accent-green: #00ff87;
+            --accent-pink: #ff007f;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 4px;
-            height: 4px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #0a0d14;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #1f293d;
-            border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #00f3ff;
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            padding: 16px;
+            padding-bottom: 80px;
         }
 
-        /* Neon Glow Effects */
-        .neon-glow-cyan {
-            box-shadow: 0 0 15px rgba(0, 243, 255, 0.25);
-        }
-        .neon-glow-purple {
-            box-shadow: 0 0 15px rgba(157, 0, 255, 0.25);
-        }
-        .neon-text-cyan {
-            text-shadow: 0 0 8px rgba(0, 243, 255, 0.6);
-        }
-        .neon-text-purple {
-            text-shadow: 0 0 8px rgba(157, 0, 255, 0.6);
-        }
-        .glass-panel {
-            background: rgba(18, 24, 36, 0.75);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-        }
-        .glass-panel-active {
-            background: rgba(26, 35, 54, 0.85);
-            border-color: rgba(0, 243, 255, 0.3);
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 18px;
+            padding: 16px;
+            margin-bottom: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
         }
 
-        /* Pulse Animations */
-        @keyframes pulse-glow {
-            0%, 100% { opacity: 0.8; filter: drop-shadow(0 0 8px rgba(0, 243, 255, 0.8)); }
-            50% { opacity: 0.4; filter: drop-shadow(0 0 2px rgba(0, 243, 255, 0.2)); }
+        .profile-banner {
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
-        .animate-pulse-glow {
-            animation: pulse-glow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+
+        .avatar {
+            width: 46px;
+            height: 46px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent-pink), var(--accent-purple));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 1.2rem;
+            border: 2px solid var(--accent-cyan);
         }
+
+        .badge {
+            background: rgba(0, 242, 254, 0.15);
+            color: var(--accent-cyan);
+            border: 1px solid rgba(0, 242, 254, 0.3);
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        .day-tabs {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 14px;
+        }
+
+        .day-tab {
+            flex: 1;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--card-border);
+            padding: 8px 0;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            cursor: pointer;
+        }
+
+        .day-tab.active {
+            background: linear-gradient(135deg, #4facfe, var(--accent-purple));
+            color: #fff;
+            border-color: transparent;
+        }
+
+        .schedule-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 12px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.03);
+            margin-bottom: 8px;
+        }
+
+        .lesson-num {
+            font-size: 0.85rem;
+            font-weight: 800;
+            color: var(--accent-cyan);
+            width: 24px;
+        }
+
+        .lesson-info { flex-grow: 1; padding: 0 8px; }
+        .lesson-title { font-weight: 600; font-size: 0.9rem; }
+        .lesson-time { font-size: 0.75rem; color: var(--text-muted); }
+
+        .room-badge {
+            font-size: 0.7rem;
+            background: rgba(255, 255, 255, 0.08);
+            padding: 3px 8px;
+            border-radius: 6px;
+            color: var(--text-main);
+        }
+
+        .room-k {
+            background: rgba(255, 0, 127, 0.2);
+            color: var(--accent-pink);
+            border: 1px solid rgba(255, 0, 127, 0.3);
+        }
+
+        .day-schedule { display: none; }
+        .day-schedule.active { display: block; }
     </style>
 </head>
-<body class="min-h-screen flex flex-col justify-between pb-20 select-none">
+<body>
 
-    <!-- Top App Bar Header -->
-    <header class="sticky top-0 z-40 glass-panel border-b border-gray-800/60 px-4 py-3 flex items-center justify-between">
-        <div class="flex items-center space-x-3">
-            <div class="relative">
-                <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-neon-purple to-neon-cyan p-[2px]">
-                    <div class="w-full h-full bg-dark-base rounded-full flex items-center justify-center overflow-hidden">
-                        <img src="https://api.dicebear.com/7.x/bottts/svg?seed=Alex" alt="Avatar" class="w-8 h-8">
-                    </div>
-                </div>
-                <div class="absolute -bottom-1 -right-1 bg-neon-green text-dark-base text-[9px] font-extrabold px-1.5 py-0.2 rounded-full border border-dark-base">
-                    LVL 5
-                </div>
-            </div>
+    <!-- Шапка з профілем -->
+    <div class="card">
+        <div class="profile-banner">
+            <div class="avatar" id="u-avatar">В</div>
             <div>
-                <h1 class="text-sm font-bold text-white flex items-center gap-1.5">
-                    Олександр Шевченко
-                    <i class="fa-solid fa-circle-check text-neon-cyan text-xs"></i>
-                </h1>
-                <p class="text-[11px] text-gray-400">10-А Клас • Human.ua</p>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span style="font-weight: 700; font-size: 1.05rem;" id="u-name">Ваня</span>
+                    <span class="badge">11-А Клас</span>
+                </div>
+                <div style="font-size: 0.75rem; color: var(--accent-green); margin-top: 4px;">Human.ua Active</div>
             </div>
         </div>
+    </div>
 
-        <div class="flex items-center space-x-2">
-            <button onclick="switchTab('achievements')" class="relative p-2 rounded-xl glass-panel hover:border-neon-cyan transition-all text-xs text-neon-cyan flex items-center gap-1.5">
-                <i class="fa-solid fa-bolt text-neon-cyan animate-pulse"></i>
-                <span class="font-extrabold">1,420 XP</span>
-            </button>
+    <!-- Вкладки днів -->
+    <div class="card">
+        <div style="font-weight: 700; margin-bottom: 12px; color: var(--accent-cyan);">📅 Розклад Уроків (11-А)</div>
+        <div class="day-tabs">
+            <div class="day-tab active" onclick="showDay('mon', this)">ПН</div>
+            <div class="day-tab" onclick="showDay('tue', this)">ВТ</div>
+            <div class="day-tab" onclick="showDay('wed', this)">СР</div>
+            <div class="day-tab" onclick="showDay('thu', this)">ЧТ</div>
+            <div class="day-tab" onclick="showDay('fri', this)">ПТ</div>
         </div>
-    </header>
 
-    <!-- Main Container Content Dynamic Views -->
-    <main class="flex-1 p-4 max-w-lg mx-auto w-full space-y-5">
+        <!-- ПОНЕДІЛОК -->
+        <div id="mon" class="day-schedule active">
+            <div class="schedule-item"><div class="lesson-num">1</div><div class="lesson-info"><div class="lesson-title">Українська мова</div><div class="lesson-time">08:00 - 08:45</div></div><div class="room-badge">Школа</div></div>
+            <div class="schedule-item"><div class="lesson-num">2</div><div class="lesson-info"><div class="lesson-title">Мистецтво</div><div class="lesson-time">08:55 - 09:40</div></div><div class="room-badge">Школа</div></div>
+            <div class="schedule-item"><div class="lesson-num">3</div><div class="lesson-info"><div class="lesson-title">Англійська мова</div><div class="lesson-time">09:50 - 10:35</div></div><div class="room-badge">Школа</div></div>
+            <div class="schedule-item"><div class="lesson-num">4</div><div class="lesson-info"><div class="lesson-title">Зарубіжна літ.</div><div class="lesson-time">10:45 - 11:30</div></div><div class="room-badge">Школа</div></div>
+            <div class="schedule-item"><div class="lesson-num">5</div><div class="lesson-info"><div class="lesson-title">Фізика</div><div class="lesson-time">11:40 - 12:25</div></div><div class="room-badge">Школа</div></div>
+            <div class="schedule-item"><div class="lesson-num">6</div><div class="lesson-info"><div class="lesson-title">Математика</div><div class="lesson-time">12:35 - 13:20</div></div><div class="room-badge">Школа</div></div>
+            <div class="schedule-item"><div class="lesson-num">7</div><div class="lesson-info"><div class="lesson-title">Фізична культура</div><div class="lesson-time">13:30 - 14:15</div></div><div class="room-badge">Школа</div></div>
+        </div>
 
-        <!-- VIEW 1: MAIN DASHBOARD & SCHEDULE -->
-        <section id="tab-schedule" class="tab-content space-y-5">
-            
-            <!-- Real-Time Lesson Timer Card -->
-            <div class="glass-panel rounded-2xl p-4 border border-neon-cyan/20 relative overflow-hidden neon-glow-cyan">
-                <div class="absolute -right-8 -top-8 w-32 h-32 bg-neon-cyan/10 rounded-full blur-2xl"></div>
-                
-                <div class="flex items-center justify-between mb-3">
-                    <span id="lesson-status-badge" class="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-neon-cyan/10 text-neon-cyan border border-neon-cyan/30 flex items-center gap-1.5">
-                        <span class="w-2 h-2 rounded-full bg-neon-cyan animate-ping"></span>
-                        <span id="lesson-status-text">Зараз триває урок</span>
-                    </span>
-                    <span class="text-xs text-gray-400 font-medium" id="current-date-text">Вівторок, 20 Жов</span>
-                </div>
+        <!-- ВІВТОРОК -->
+        <div id="tue" class="day-schedule">
+            <div class="schedule-item"><div class="lesson-num">1</div><div class="lesson-info"><div class="lesson-title">Інформатика</div><div class="lesson-time">08:00 - 08:45</div></div><div class="room-badge room-k">Комбінат</div></div>
+            <div class="schedule-item"><div class="lesson-num">2</div><div class="lesson-info"><div class="lesson-title">Хімія</div><div class="lesson-time">08:55 - 09:40</div></div><div class="room-badge room-k">Комбінат</div></div>
+            <div class="schedule-item"><div class="lesson-num">3</div><div class="lesson-info"><div class="lesson-title">Біологія</div><div class="lesson-time">09:50 - 10:35</div></div><div class="room-badge room-k">Комбінат</div></div>
+            <div class="schedule-item"><div class="lesson-num">4</div><div class="lesson-info"><div class="lesson-title">Математика</div><div class="lesson-time">10:45 - 11:30</div></div><div class="room-badge">Школа</div></div>
+            <div class="schedule-item"><div class="lesson-num">5</div><div class="lesson-info"><div class="lesson-title">Англійська мова</div><div class="lesson-time">11:40 - 12:25</div></div><div class="room-badge">Школа</div></div>
+            <div class="schedule-item"><div class="lesson-num">6</div><div class="lesson-info"><div class="lesson-title">Фізика</div><div class="lesson-time">12:35 - 13:20</div></div><div class="room-badge">Школа</div></div>
+            <div class="schedule-item"><div class="lesson-num">7</div><div class="lesson-info"><div class="lesson-title">Українська літ.</div><div class="lesson-time">13:30 - 14:15</div></div><div class="room-badge room-k">Комбінат</div></div>
+        </div>
 
-                <div class="text-center py-2">
-                    <h2 class="text-xs text-gray-400 uppercase tracking-widest font-semibold" id="timer-title">До кінця уроку залишилось</h2>
-                    <div class="text-4xl font-extrabold tracking-tight text-white my-1 font-mono neon-text-cyan" id="countdown-timer">
-                        --:--
-                    </div>
-                    <p class="text-sm font-semibold text-gray-200" id="current-lesson-name">Завантаження розкладу...</p>
-                    <p class="text-xs text-gray-400" id="current-lesson-details">Кабінет -- • Вчитель: --</p>
-                </div>
+        <!-- СЕРЕДА -->
+        <div id="wed" class="day-schedule">
+            <div class="schedule-item"><div class="lesson-num">1</div><div class="lesson-info"><div class="lesson-title">Математика</div><div class="lesson-time">08:00 - 08:45</div></div><div class="room-badge room-k">Комбінат</div></div>
+            <div class="schedule-item"><div class="lesson-num">2</div><div class="lesson-info"><div class="lesson-title">Англійська мова</div><div class="lesson-time">08:55 - 09:40</div></div><div class="room-badge room-k">Комбінат</div></div>
+            <div class="schedule-item"><div class="lesson-num">3</div><div class="lesson-info"><div class="lesson-title">Англійська мова</div><div class="lesson-time">09:50 - 10:35</div></div><div class="room-badge room-k">Комбінат</div></div>
+            <div class="schedule-item"><div class="lesson-num">4</div><div class="lesson-info"><div class="lesson-title">Історія України</div><div class="lesson-time">10:45 - 11:30</div></div><div class="room-badge room-k">Комбінат</div></div>
+            <div class="schedule-item"><div class="lesson-num">5</div><div class="lesson-info"><div class="lesson-title">Фізика</div><div class="lesson-time">11:40 - 12:25</div></div><div class="room-badge">Школа</div></div>
+            <div class="schedule-item"><div class="lesson-num">6</div><div class="lesson-info"><div class="lesson-title">Фізична культура</div><div class="lesson-time">12:35 - 13:20</div></div><div class="room-badge">Школа</div></div>
+        </div>
 
-                <!-- Progress Bar -->
-                <div class="mt-3 bg-gray-800/80 rounded-full h-2 w-full overflow-hidden p-0.5 border border-gray-700/50">
-                    <div id="lesson-progress-bar" class="bg-gradient-to-r from-neon-blue via-neon-cyan to-neon-green h-full rounded-full transition-all duration-500 w-0"></div>
-                </div>
-            </div>
+        <!-- ЧЕТВЕР -->
+        <div id="thu" class="day-schedule">
+            <div class="schedule-item"><div class="lesson-num">1</div><div class="lesson-info"><div class="lesson-title">Захист України</div><div class="lesson-time">08:00 - 08:45</div></div><div class="room-badge">Школа</div></div>
+            <div class="schedule-item"><div class="lesson-num">2</div><div class="lesson-info"><div class="lesson-title">Захист України</div><div class="lesson-time">08:55 - 09:40</div></div><div class="room-badge">Школа</div></div>
+            <div class="schedule-item"><div class="lesson-num">3</div><div class="lesson-info"><div class="lesson-title">Географія</div><div class="lesson-time">09:50 - 10:35</div></div><div class="room-badge room-k">Комбінат</div></div>
+            <div class="schedule-item"><div class="lesson-num">4</div><div class="lesson-info"><div class="lesson-title">Українська мова</div><div class="lesson-time">10:45 - 11:30</div></div><div class="room-badge">Школа</div></div>
+            <div class="schedule-item"><div class="lesson-num">5</div><div class="lesson-info"><div class="lesson-title">Фізична культура</div><div class="lesson-time">11:40 - 12:25</div></div><div class="room-badge room-k">Комбінат</div></div>
+            <div class="schedule-item"><div class="lesson-num">6</div><div class="lesson-info"><div class="lesson-title">Українська літ.</div><div class="lesson-time">12:35 - 13:20</div></div><div class="room-badge">Школа</div></div>
+        </div>
 
-            <!-- Day Selector Toggle -->
-            <div class="flex items-center justify-between glass-panel p-1.5 rounded-xl border border-gray-800">
-                <button onclick="changeScheduleDay('mon')" id="day-mon" class="day-btn flex-1 py-1.5 text-xs font-semibold rounded-lg text-gray-400 hover:text-white transition-all">ПН</button>
-                <button onclick="changeScheduleDay('tue')" id="day-tue" class="day-btn flex-1 py-1.5 text-xs font-semibold rounded-lg bg-neon-cyan/20 text-neon-cyan border border-neon-cyan/30">ВТ</button>
-                <button onclick="changeScheduleDay('wed')" id="day-wed" class="day-btn flex-1 py-1.5 text-xs font-semibold rounded-lg text-gray-400 hover:text-white transition-all">СР</button>
-                <button onclick="changeScheduleDay('thu')" id="day-thu" class="day-btn flex-1 py-1.5 text-xs font-semibold rounded-lg text-gray-400 hover:text-white transition-all">ЧТ</button>
-                <button onclick="changeScheduleDay('fri')" id="day-fri" class="day-btn flex-1 py-1.5 text-xs font-semibold rounded-lg text-gray-400 hover:text-white transition-all">ПТ</button>
-            </div>
+        <!-- П'ЯТНИЦЯ -->
+        <div id="fri" class="day-schedule">
+            <div class="schedule-item"><div class="lesson-num">1</div><div class="lesson-info"><div class="lesson-title">Англійська мова</div><div class="lesson-time">08:00 - 08:45</div></div><div class="room-badge room-k">Комбінат</div></div>
+            <div class="schedule-item"><div class="lesson-num">2</div><div class="lesson-info"><div class="lesson-title">Біологія</div><div class="lesson-time">08:55 - 09:40</div></div><div class="room-badge">Школа</div></div>
+            <div class="schedule-item"><div class="lesson-num">3</div><div class="lesson-info"><div class="lesson-title">Фізика</div><div class="lesson-time">09:50 - 10:35</div></div><div class="room-badge">Школа</div></div>
+            <div class="schedule-item"><div class="lesson-num">4</div><div class="lesson-info"><div class="lesson-title">Мистецтво</div><div class="lesson-time">10:45 - 11:30</div></div><div class="room-badge">Школа</div></div>
+            <div class="schedule-item"><div class="lesson-num">5</div><div class="lesson-info"><div class="lesson-title">Всесвітня історія</div><div class="lesson-time">11:40 - 12:25</div></div><div class="room-badge">Школа</div></div>
+            <div class="schedule-item"><div class="lesson-num">6</div><div class="lesson-info"><div class="lesson-title">Хімія</div><div class="lesson-time">12:35 - 13:20</div></div><div class="room-badge">Школа</div></div>
+        </div>
+    </div>
 
-            <!-- Bell Schedule Modal Trigger Button -->
-            <div class="flex justify-between items-center px-1">
-                <h3 class="text-sm font-bold text-gray-200 uppercase tracking-wider text-[12px] flex items-center gap-2">
-                    <i class="fa-solid fa-calendar-day text-neon-cyan"></i> Розклад Уроків
-                </h3>
-                <button onclick="toggleBellModal(true)" class="text-xs text-neon-cyan hover:underline flex items-center gap-1 font-medium">
-                    <i class="fa-solid fa-bell"></i> Розклад дзвінків
-                </button>
-            </div>
+    <script>
+        if (window.Telegram && window.Telegram.WebApp) {
+            window.Telegram.WebApp.ready();
+            window.Telegram.WebApp.expand();
+            const user = window.Telegram.WebApp.initDataUnsafe?.user;
+            if (user && user.first_name) {
+                document.getElementById('u-name').innerText = user.first_name;
+                document.getElementById('u-avatar').innerText = user.first_name[0];
+            }
+        }
 
-            <!-- Schedule Items Container -->
-            <div id="schedule-list" class="space-y-2.5">
-                <!-- Dynamically Rendered Lessons -->
-            </div>
-
-        </section>
-
-        <!-- VIEW 2: GAMIFICATION & ACHIEVEMENTS -->
-        <section id="tab-achievements" class="tab-content hidden space-y-5">
-            
-            <!-- XP & Level Banner -->
-            <div class="glass-panel rounded-2xl p-5 border border-neon-purple/30 relative overflow-hidden neon-glow-purple">
-                <div class="absolute -left-10 -bottom-10 w-36 h-36 bg-neon-purple/20 rounded-full blur-3xl"></div>
-
-                <div class="flex items-center justify-between mb-2">
-                    <div class="flex items-center gap-3">
-                        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-neon-purple to-neon-pink p-0.5 flex items-center justify-center">
-                            <div class="w-full h-full bg-dark-base rounded-[10px] flex items-center justify-center text-neon-purple font-black text-xl">
-                                5
-                            </div>
-                        </div>
-                        <div>
-                            <h3 class="font-extrabold text-white text-base">Рівень 5: Знавець</h3>
-                            <p class="text-xs text-gray-400">До рівня 6 залишилось <span class="text-neon-cyan font-semibold">80 XP</span></p>
-                        </div>
-                    </div>
-                    <span class="text-xs bg-neon-purple/20 text-neon-purple font-bold px-2.5 py-1 rounded-full border border-neon-purple/40">
-                        1,420 XP
-                    </span>
-                </div>
-
-                <!-- Level XP Progress Bar -->
-                <div class="mt-4">
-                    <div class="flex justify-between text-[11px] text-gray-400 mb-1">
-                        <span>Прогрес рівня</span>
-                        <span>1420 / 1500 XP (94%)</span>
-                    </div>
-                    <div class="bg-gray-800 rounded-full h-2.5 w-full overflow-hidden p-0.5 border border-gray-700">
-                        <div class="bg-gradient-to-r from-neon-purple to-neon-pink h-full rounded-full w-[94%] shadow-[0_0_10px_#9d00ff]"></div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Sub Navigation: Achievements vs Leaderboard -->
-            <div class="flex bg-dark-surface p-1 rounded-xl border border-gray-800">
-                <button onclick="toggleGamificationView('achievements')" id="subtab-achievements" class="flex-1 py-2 text-xs font-bold rounded-lg bg-neon-purple/20 text-neon-purple border border-neon-purple/30 transition-all">
-                    <i class="fa-solid fa-trophy mr-1"></i> Досягнення
-                </button>
-                <button onclick="toggleGamificationView('leaderboard')" id="subtab-leaderboard" class="flex-1 py-2 text-xs font-bold rounded-lg text-gray-400 hover:text-white transition-all">
-                    <i class="fa-solid fa-ranking-star mr-1"></i> Рейтинг Класу
-                </button>
-            </div>
-
-            <!-- SUB VIEW A: Achievements List -->
-            <div id="subview-achievements" class="space-y-3">
-                
-                <!-- Achievement Card 1 -->
-                <div class="glass-panel p-3.5 rounded-xl border border-gray-800 flex items-center gap-3.5">
-                    <div class="w-11 h-11 rounded-xl bg-neon-cyan/10 border border-neon-cyan/40 flex items-center justify-center text-neon-cyan text-lg flex-shrink-0 shadow-[0_0_10px_rgba(0,243,255,0.2)]">
-                        <i class="fa-solid fa-calculator"></i>
-                    </div>
-                    <div class="flex-1">
-                        <div class="flex justify-between items-start">
-                            <h4 class="text-xs font-bold text-white">Майстер Математики</h4>
-                            <span class="text-[10px] text-neon-green font-bold bg-neon-green/10 px-2 py-0.5 rounded-full border border-neon-green/30">+100 XP</span>
-                        </div>
-                        <p class="text-[11px] text-gray-400 mt-0.5">Отримай 3 десятки поспіль з алгебри чи геометрії</p>
-                        <div class="mt-2 flex items-center gap-2">
-                            <div class="flex-1 bg-gray-800 h-1.5 rounded-full overflow-hidden">
-                                <div class="bg-neon-cyan h-full w-[100%]"></div>
-                            </div>
-                            <span class="text-[10px] font-bold text-neon-cyan">3/3 (Виконано)</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Achievement Card 2 -->
-                <div class="glass-panel p-3.5 rounded-xl border border-gray-800 flex items-center gap-3.5">
-                    <div class="w-11 h-11 rounded-xl bg-neon-purple/10 border border-neon-purple/40 flex items-center justify-center text-neon-purple text-lg flex-shrink-0 shadow-[0_0_10px_rgba(157,0,255,0.2)]">
-                        <i class="fa-solid fa-user-check"></i>
-                    </div>
-                    <div class="flex-1">
-                        <div class="flex justify-between items-start">
-                            <h4 class="text-xs font-bold text-white">Без пропусків</h4>
-                            <span class="text-[10px] text-neon-purple font-bold bg-neon-purple/10 px-2 py-0.5 rounded-full border border-neon-purple/30">+150 XP</span>
-                        </div>
-                        <p class="text-[11px] text-gray-400 mt-0.5">Відвідай всі уроки протягом навчального тижня</p>
-                        <div class="mt-2 flex items-center gap-2">
-                            <div class="flex-1 bg-gray-800 h-1.5 rounded-full overflow-hidden">
-                                <div class="bg-neon-purple h-full w-[80%]"></div>
-                            </div>
-                            <span class="text-[10px] font-bold text-neon-purple">4/5 Днів</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Achievement Card 3 -->
-                <div class="glass-panel p-3.5 rounded-xl border border-gray-800 flex items-center gap-3.5 opacity-75">
-                    <div class="w-11 h-11 rounded-xl bg-gray-800 border border-gray-700 flex items-center justify-center text-gray-500 text-lg flex-shrink-0">
-                        <i class="fa-solid fa-moon"></i>
-                    </div>
-                    <div class="flex-1">
-                        <div class="flex justify-between items-start">
-                            <h4 class="text-xs font-bold text-gray-300">Нічний ботанік</h4>
-                            <span class="text-[10px] text-gray-400 font-bold bg-gray-800 px-2 py-0.5 rounded-full">+200 XP</span>
-                        </div>
-                        <p class="text-[11px] text-gray-400 mt-0.5">Здай домашнє завдання після 22:00</p>
-                        <div class="mt-2 flex items-center gap-2">
-                            <div class="flex-1 bg-gray-800 h-1.5 rounded-full overflow-hidden">
-                                <div class="bg-gray-600 h-full w-[0%]"></div>
-                            </div>
-                            <span class="text-[10px] font-bold text-gray-500">0/1</span>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-
-            <!-- SUB VIEW B: Leaderboard -->
-            <div id="subview-leaderboard" class="space-y-2.5 hidden">
-                <!-- Leaderboard Item 1 -->
-                <div class="glass-panel p-3 rounded-xl border border-yellow-500/30 flex items-center justify-between">
-                    <div class="flex items-center gap-3">
-                        <span class="text-base font-extrabold text-yellow-400 w-5 text-center">🥇</span>
-                        <img src="https://api.dicebear.com/7.x/bottts/svg?seed=Sofia" class="w-9 h-9 rounded-full bg-dark-base border border-yellow-500/50">
-                        <div>
-                            <h4 class="text-xs font-bold text-white flex items-center gap-1">
-                                Софія Мельник 
-                                <span class="text-[9px] bg-yellow-500/20 text-yellow-300 px-1.5 rounded">ТОП 1</span>
-                            </h4>
-                            <p class="text-[10px] text-gray-400">Ср. бал: <span class="text-neon-green font-bold">11.4</span></p>
-                        </div>
-                    </div>
-                    <span class="text-xs font-extrabold text-neon-cyan">1,890 XP</span>
-                </div>
-
-                <!-- Leaderboard Item 2 -->
-                <div class="glass-panel p-3 rounded-xl border border-gray-400/30 flex items-center justify-between">
-                    <div class="flex items-center gap-3">
-                        <span class="text-base font-extrabold text-gray-300 w-5 text-center">🥈</span>
-                        <img src="https://api.dicebear.com/7.x/bottts/svg?seed=Maksym" class="w-9 h-9 rounded-full bg-dark-base border border-gray-400/50">
-                        <div>
-                            <h4 class="text-xs font-bold text-white">Максим Коваленко</h4>
-                            <p class="text-[10px] text-gray-400">Ср. бал: <span class="text-neon-green font-bold">10.8</span></p>
-                        </div>
-                    </div>
-                    <span class="text-xs font-extrabold text-neon-cyan">1,650 XP</span>
-                </div>
-
-                <!-- Leaderboard Item 3 (Current User Highlight) -->
-                <div class="glass-panel p-3 rounded-xl border border-neon-cyan/50 bg-neon-cyan/5 flex items-center justify-between neon-glow-cyan">
-                    <div class="flex items-center gap-3">
-                        <span class="text-xs font-extrabold text-neon-cyan w-5 text-center">3</span>
-                        <img src="https://api.dicebear.com/7.x/bottts/svg?seed=Alex" class="w-9 h-9 rounded-full bg-dark-base border border-neon-cyan">
-                        <div>
-                            <h4 class="text-xs font-bold text-neon-cyan flex items-center gap-1">
-                                Олександр (Ви)
-                                <i class="fa-solid fa-user-check text-[10px]"></i>
-                            </h4>
-                            <p class="text-[10px] text-gray-400">Ср. бал: <span class="text-neon-green font-bold">10.5</span></p>
-                        </div>
-                    </div>
-                    <span class="text-xs font-extrabold text-neon-cyan">1,420 XP</span>
-                </div>
-
-                <!-- Leaderboard Item 4 -->
-                <div class="glass-panel p-3 rounded-xl border border-gray-800 flex items-center justify-between">
-                    <div class="flex items-center gap-3">
-                        <span class="text-xs font-extrabold text-gray-500 w-5 text-center">4</span>
-                        <img src="https://ap
+        function showDay(dayId, btn) {
+            document.querySelectorAll('.day-schedule').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.day-tab').forEach(el => el.classList.remove('active'));
+            document.getElementById(dayId).classList.add('active');
+            btn.classList.add('active');
+        }
+    </script>
+</body>
+</html>
 
  
