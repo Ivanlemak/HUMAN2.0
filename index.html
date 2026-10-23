@@ -3,19 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Human.ua 11-A Mini App</title>
+    <title>Human.ua 11-A • Halloween Edition</title>
     <style>
         :root {
-            --bg-dark: #0a0c10;
-            --card-bg: #161b22;
-            --card-border: rgba(255, 255, 255, 0.1);
-            --accent-purple: #8b5cf6;
-            --accent-cyan: #06b6d4;
-            --accent-blue: #3b82f6;
-            --accent-green: #10b981;
-            --accent-red: #ef4444;
-            --text-main: #f3f4f6;
-            --text-muted: #9ca3af;
+            --bg-dark: #0a0512;
+            --card-bg: #160c26;
+            --card-border: rgba(255, 117, 24, 0.25);
+            --accent-orange: #ff7518;
+            --accent-purple: #9d4edd;
+            --accent-green: #38b000;
+            --accent-red: #d90429;
+            --text-main: #f8f9fa;
+            --text-muted: #b1a7a6;
         }
 
         * {
@@ -33,17 +32,103 @@
             padding-bottom: 90px;
             overflow-x: hidden;
             background-image: 
-                radial-gradient(circle at 10% 20%, rgba(139, 92, 246, 0.15) 0%, transparent 40%),
-                radial-gradient(circle at 90% 80%, rgba(6, 182, 212, 0.15) 0%, transparent 40%);
+                radial-gradient(circle at 20% 15%, rgba(255, 117, 24, 0.12) 0%, transparent 45%),
+                radial-gradient(circle at 80% 85%, rgba(157, 78, 221, 0.15) 0%, transparent 45%);
             background-attachment: fixed;
         }
 
+        /* --- SPLASH SCREEN ANIMATION --- */
+        #splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #05020a;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease, visibility 0.5s;
+        }
+
+        .pumpkin-wrapper {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .pumpkin {
+            font-size: 90px;
+            cursor: pointer;
+            animation: swayPumpkin 1.5s ease-in-out infinite alternate;
+            filter: drop-shadow(0 0 25px rgba(255, 117, 24, 0.9));
+            user-select: none;
+        }
+
+        @keyframes swayPumpkin {
+            0% {
+                transform: rotate(-12deg) scale(1);
+                filter: drop-shadow(0 0 15px rgba(255, 117, 24, 0.7));
+            }
+            100% {
+                transform: rotate(12deg) scale(1.08);
+                filter: drop-shadow(0 0 35px rgba(255, 117, 24, 1));
+            }
+        }
+
+        .pumpkin-explode {
+            animation: explodePumpkin 0.6s forwards ease-out !important;
+        }
+
+        @keyframes explodePumpkin {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+                filter: drop-shadow(0 0 30px rgba(255, 117, 24, 1));
+            }
+            50% {
+                transform: scale(2.2);
+                opacity: 0.9;
+                filter: drop-shadow(0 0 80px rgba(255, 255, 255, 1));
+            }
+            100% {
+                transform: scale(3.5);
+                opacity: 0;
+                filter: drop-shadow(0 0 120px rgba(255, 117, 24, 0));
+            }
+        }
+
+        .particle {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: var(--accent-orange);
+            border-radius: 50%;
+            pointer-events: none;
+            opacity: 0;
+            box-shadow: 0 0 10px var(--accent-orange);
+        }
+
+        .splash-text {
+            margin-top: 25px;
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--accent-orange);
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            text-shadow: 0 0 10px rgba(255, 117, 24, 0.6);
+        }
+
+        /* --- APP HEADER & UI --- */
         header {
             padding: 16px 20px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            background: rgba(10, 12, 16, 0.85);
+            background: rgba(10, 5, 18, 0.9);
             backdrop-filter: blur(12px);
             position: sticky;
             top: 0;
@@ -61,14 +146,14 @@
             width: 44px;
             height: 44px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #a855f7, #6366f1);
+            background: linear-gradient(135deg, var(--accent-orange), var(--accent-purple));
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: bold;
             font-size: 18px;
             color: white;
-            box-shadow: 0 0 12px rgba(168, 85, 247, 0.4);
+            box-shadow: 0 0 15px rgba(255, 117, 24, 0.5);
         }
 
         .user-details h1 {
@@ -94,12 +179,80 @@
 
         .tab-content.active {
             display: block;
-            animation: fadeIn 0.3s ease;
+            animation: fadeIn 0.4s ease;
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(6px); }
+            from { opacity: 0; transform: translateY(8px); }
             to { opacity: 1; transform: translateY(0); }
+        }
+
+        .timer-box {
+            background: linear-gradient(135deg, rgba(255, 117, 24, 0.18), rgba(157, 78, 221, 0.2));
+            border: 1px solid rgba(255, 117, 24, 0.4);
+            border-radius: 18px;
+            padding: 16px;
+            margin-bottom: 16px;
+            text-align: center;
+            box-shadow: 0 0 20px rgba(255, 117, 24, 0.15);
+        }
+
+        .timer-title {
+            font-size: 13px;
+            color: var(--accent-orange);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-bottom: 4px;
+        }
+
+        .timer-time {
+            font-size: 30px;
+            font-weight: 800;
+            color: #ffffff;
+            margin: 4px 0;
+            font-variant-numeric: tabular-nums;
+            text-shadow: 0 0 10px rgba(255, 117, 24, 0.4);
+        }
+
+        .timer-sub {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .day-picker {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding-bottom: 8px;
+            margin-bottom: 16px;
+            scrollbar-width: none;
+        }
+
+        .day-picker::-webkit-scrollbar {
+            display: none;
+        }
+
+        .day-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--card-border);
+            color: var(--text-muted);
+            padding: 10px 16px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s;
+            flex: 1;
+            text-align: center;
+        }
+
+        .day-btn.active {
+            background: linear-gradient(135deg, var(--accent-orange), #e65c00);
+            color: #ffffff;
+            border-color: var(--accent-orange);
+            box-shadow: 0 0 12px rgba(255, 117, 24, 0.4);
         }
 
         .card {
@@ -108,7 +261,7 @@
             border-radius: 20px;
             padding: 18px;
             margin-bottom: 16px;
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
         }
 
         .card-header {
@@ -122,76 +275,8 @@
             font-size: 14px;
             text-transform: uppercase;
             letter-spacing: 0.8px;
-            color: var(--text-muted);
-            font-weight: 600;
-        }
-
-        .timer-box {
-            background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(6, 182, 212, 0.15));
-            border: 1px solid rgba(139, 92, 246, 0.4);
-            border-radius: 16px;
-            padding: 16px;
-            margin-bottom: 16px;
-            text-align: center;
-        }
-
-        .timer-title {
-            font-size: 13px;
-            color: var(--accent-cyan);
+            color: var(--accent-orange);
             font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 4px;
-        }
-
-        .timer-time {
-            font-size: 28px;
-            font-weight: 800;
-            color: #ffffff;
-            margin: 4px 0;
-            font-variant-numeric: tabular-nums;
-        }
-
-        .timer-sub {
-            font-size: 12px;
-            color: var(--text-muted);
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin-bottom: 16px;
-        }
-
-        .stat-card {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid var(--card-border);
-            border-radius: 16px;
-            padding: 16px;
-            text-align: center;
-        }
-
-        .stat-value {
-            font-size: 32px;
-            font-weight: 800;
-            background: linear-gradient(135deg, #06b6d4, #8b5cf6);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin: 4px 0;
-        }
-
-        .stat-label {
-            font-size: 12px;
-            color: var(--text-muted);
-        }
-
-        .day-title {
-            font-size: 16px;
-            font-weight: 700;
-            color: var(--accent-cyan);
-            margin-bottom: 12px;
-            margin-top: 14px;
         }
 
         .lesson-item {
@@ -209,16 +294,17 @@
         }
 
         .lesson-num {
-            width: 24px;
-            height: 24px;
-            border-radius: 6px;
-            background: rgba(255, 255, 255, 0.08);
+            width: 26px;
+            height: 26px;
+            border-radius: 8px;
+            background: rgba(255, 117, 24, 0.15);
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 12px;
             font-weight: bold;
-            color: var(--accent-purple);
+            color: var(--accent-orange);
+            border: 1px solid rgba(255, 117, 24, 0.3);
         }
 
         .lesson-name {
@@ -229,9 +315,9 @@
         }
 
         .cabinet-badge {
-            background: rgba(139, 92, 246, 0.15);
+            background: rgba(157, 78, 221, 0.2);
             color: #c084fc;
-            border: 1px solid rgba(139, 92, 246, 0.3);
+            border: 1px solid rgba(157, 78, 221, 0.4);
             font-size: 11px;
             padding: 2px 8px;
             border-radius: 8px;
@@ -242,12 +328,12 @@
             font-size: 11px;
             color: var(--text-muted);
             margin-top: 4px;
-            margin-left: 34px;
+            margin-left: 36px;
         }
 
         .hw-input {
             width: 100%;
-            background: rgba(0, 0, 0, 0.3);
+            background: rgba(0, 0, 0, 0.4);
             border: 1px solid var(--card-border);
             border-radius: 8px;
             padding: 8px 10px;
@@ -257,41 +343,74 @@
             outline: none;
         }
 
-        .grade-row {
+        .grade-item {
             display: flex;
-            align-items: center;
             justify-content: space-between;
-            padding: 12px 0;
-            border-bottom: 1px solid var(--card-border);
-        }
-
-        .grade-row:last-child {
-            border-bottom: none;
-        }
-
-        .subject-name {
-            font-size: 14px;
-            font-weight: 500;
-        }
-
-        .grade-pills {
-            display: flex;
-            gap: 6px;
-            flex-wrap: wrap;
-        }
-
-        .grade-pill {
-            background: rgba(6, 182, 212, 0.15);
-            color: var(--accent-cyan);
-            border: 1px solid rgba(6, 182, 212, 0.3);
-            width: 28px;
-            height: 28px;
-            border-radius: 8px;
-            display: flex;
             align-items: center;
-            justify-content: center;
+            padding: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .grade-input {
+            width: 80px;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--card-border);
+            border-radius: 6px;
+            padding: 6px;
+            color: var(--text-main);
+            text-align: center;
+            font-size: 13px;
+        }
+
+        .gpa-card {
+            background: linear-gradient(135deg, rgba(157, 78, 221, 0.2), rgba(255, 117, 24, 0.2));
+            border: 1px solid var(--accent-purple);
+            border-radius: 16px;
+            padding: 16px;
+            text-align: center;
+            margin-bottom: 16px;
+        }
+
+        .gpa-num {
+            font-size: 32px;
+            font-weight: 800;
+            color: var(--accent-orange);
+            text-shadow: 0 0 10px rgba(255, 117, 24, 0.5);
+        }
+
+        .profile-field {
+            margin-bottom: 12px;
+        }
+
+        .profile-field label {
+            display: block;
             font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+        }
+
+        .profile-field input {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--card-border);
+            border-radius: 8px;
+            padding: 10px;
+            color: var(--text-main);
+            font-size: 14px;
+        }
+
+        .btn-pumpkin {
+            width: 100%;
+            background: linear-gradient(135deg, var(--accent-orange), #e65c00);
+            border: none;
+            color: white;
+            padding: 12px;
+            border-radius: 12px;
             font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            margin-top: 10px;
+            box-shadow: 0 0 15px rgba(255, 117, 24, 0.3);
         }
 
         nav {
@@ -299,7 +418,7 @@
             bottom: 0;
             left: 0;
             right: 0;
-            background: rgba(10, 12, 16, 0.9);
+            background: rgba(10, 5, 18, 0.92);
             backdrop-filter: blur(16px);
             border-top: 1px solid var(--card-border);
             display: flex;
@@ -323,90 +442,54 @@
         }
 
         .nav-item.active {
-            color: var(--accent-purple);
-            background: rgba(139, 92, 246, 0.1);
-        }
-
-        .form-group {
-            margin-bottom: 14px;
-        }
-
-        .form-group label {
-            display: block;
-            font-size: 12px;
-            color: var(--text-muted);
-            margin-bottom: 6px;
-        }
-
-        .form-input {
-            width: 100%;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--card-border);
-            border-radius: 10px;
-            padding: 10px;
-            color: white;
-            font-size: 13px;
-        }
-
-        .btn-primary {
-            width: 100%;
-            background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
-            color: white;
-            border: none;
-            padding: 12px;
-            border-radius: 12px;
-            font-weight: 600;
-            font-size: 14px;
-            cursor: pointer;
-            margin-top: 8px;
-        }
-
-        .btn-danger {
-            background: rgba(239, 68, 68, 0.2);
-            border: 1px solid var(--accent-red);
-            color: var(--accent-red);
+            color: var(--accent-orange);
+            background: rgba(255, 117, 24, 0.12);
         }
     </style>
 </head>
 <body>
 
+    <!-- SPLASH SCREEN ANIMATION -->
+    <div id="splash-screen">
+        <div class="pumpkin-wrapper" id="pumpkin-container">
+            <div class="pumpkin" id="pumpkin">🎃</div>
+        </div>
+        <div class="splash-text">Human.ua 11-A</div>
+    </div>
+
     <header>
         <div class="user-info">
-            <div class="avatar" id="avatar-display">ІВ</div>
+            <div class="avatar" id="avatar-display">11-А</div>
             <div class="user-details">
                 <h1 id="user-name-display">Учень</h1>
-                <p>11-А клас • Human.ua</p>
+                <p id="user-class-display">11-А клас • Halloween 🎃</p>
             </div>
         </div>
+        <div style="font-size: 22px; cursor: pointer;" onclick="replaySplash()">🎃</div>
     </header>
 
     <main>
         <div class="timer-box">
-            <div class="timer-title" id="timer-status">Завантаження таймера...</div>
+            <div class="timer-title" id="timer-status">Завантаження...</div>
             <div class="timer-time" id="timer-clock">00:00:00</div>
-            <div class="timer-sub" id="timer-info">Поточний день та урок</div>
+            <div class="timer-sub" id="timer-info">Поточний час та урок</div>
         </div>
 
         <!-- TAB 1: HOME -->
         <div id="tab-home" class="tab-content active">
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-label">СЕРЕДНІЙ БАЛ</div>
-                    <div class="stat-value" id="avg-score">0.0</div>
-                    <div class="stat-label">Поточний місяць</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-label">КЛАС</div>
-                    <div class="stat-value">11-А</div>
-                    <div class="stat-label">Комбінат (К)</div>
-                </div>
+            <div class="day-picker">
+                <button class="day-btn" onclick="selectDay('Понеділок')">Пн</button>
+                <button class="day-btn" onclick="selectDay('Вівторок')">Вт</button>
+                <button class="day-btn" onclick="selectDay('Середа')">Ср</button>
+                <button class="day-btn" onclick="selectDay('Четвер')">Чт</button>
+                <button class="day-btn" onclick="selectDay('П\'ятниця')">Пт</button>
             </div>
 
             <div class="card">
                 <div class="card-header">
-                    <div class="card-title">📌 Розклад на сьогодні</div>
+                    <div class="card-title" id="selected-day-title">📌 Розклад</div>
                 </div>
-                <div id="today-lessons-list"></div>
+                <div id="day-lessons-list"></div>
             </div>
         </div>
 
@@ -416,50 +499,46 @@
                 <div class="card-header">
                     <div class="card-title">📅 Повний розклад 11-А</div>
                 </div>
-                <div id="schedule-container"></div>
+                <div id="full-schedule-container"></div>
             </div>
         </div>
 
         <!-- TAB 3: GRADES -->
         <div id="tab-grades" class="tab-content">
+            <div class="gpa-card">
+                <div style="font-size: 12px; color: var(--text-muted); text-transform: uppercase;">Середній бал</div>
+                <div class="gpa-num" id="gpa-val">0.0</div>
+            </div>
             <div class="card">
                 <div class="card-header">
                     <div class="card-title">📊 Журнал оцінок</div>
-                    <span style="font-size: 11px; color: var(--accent-cyan);">Авто-скидання 1-го числа</span>
                 </div>
                 <div id="grades-list"></div>
             </div>
         </div>
 
-        <!-- TAB 4: SETTINGS -->
-        <div id="tab-settings" class="tab-content">
+        <!-- TAB 4: PROFILE -->
+        <div id="tab-profile" class="tab-content">
             <div class="card">
                 <div class="card-header">
                     <div class="card-title">⚙️ Налаштування профілю</div>
                 </div>
-                <div class="form-group">
-                    <label>Ім'я учня</label>
-                    <input type="text" id="setting-name" class="form-input" value="Іван">
+                <div class="profile-field">
+                    <label>Ім'я та Прізвище</label>
+                    <input type="text" id="input-profile-name" value="Учень" oninput="saveProfile()">
                 </div>
-                <div class="form-group">
-                    <label>Render Backend URL</label>
-                    <input type="text" id="render-url-input" class="form-input" placeholder="https://your-bot.onrender.com">
+                <div class="profile-field">
+                    <label>Клас</label>
+                    <input type="text" id="input-profile-class" value="11-А" oninput="saveProfile()">
                 </div>
-                <button class="btn-primary" onclick="saveSettings()">Зберегти</button>
-            </div>
-
-            <div class="card">
-                <div class="card-header">
-                    <div class="card-title">🗑️ Керування даними</div>
-                </div>
-                <button class="btn-primary btn-danger" onclick="resetGrades()">Скинути оцінки місяця</button>
+                <button class="btn-pumpkin" onclick="replaySplash()">🎃 Переглянути анімацію гарбуза</button>
             </div>
         </div>
     </main>
 
     <nav>
         <div class="nav-item active" id="nav-home" onclick="switchTab('home')">
-            <span>🏠 Головна</span>
+            <span>🎃 Головна</span>
         </div>
         <div class="nav-item" id="nav-schedule" onclick="switchTab('schedule')">
             <span>📅 Розклад</span>
@@ -467,8 +546,8 @@
         <div class="nav-item" id="nav-grades" onclick="switchTab('grades')">
             <span>📊 Оцінки</span>
         </div>
-        <div class="nav-item" id="nav-settings" onclick="switchTab('settings')">
-            <span>⚙️ Налаштування</span>
+        <div class="nav-item" id="nav-profile" onclick="switchTab('profile')">
+            <span>⚙️ Профіль</span>
         </div>
     </nav>
 
@@ -479,8 +558,8 @@
                 { name: "Мистецтво", cab: "К" },
                 { name: "Англійська мова", cab: "10" },
                 { name: "Зарубіжна література", cab: "2" },
-                { name: "Астрономія", cab: "9" },
-                { name: "Математика", cab: "8" },
+                { name: "Фізика", cab: "9" },
+                { name: "Математика", cab: "5" },
                 { name: "Фізична культура", cab: "С/З" }
             ],
             "Вівторок": [
@@ -514,18 +593,67 @@
                 { name: "Фізика", cab: "К" },
                 { name: "Мистецтво", cab: "К" },
                 { name: "Всесвітня історія", cab: "К" },
-                { name: "Хімія", cab: "6" }
+                { name: "Хімія", cab: "10" }
             ]
         };
 
-        function getLessonTime(index) {
-            let startMinutes = 8 * 60 + index * 55;
-            let endMinutes = startMinutes + 45;
-            let sh = Math.floor(startMinutes / 60).toString().padStart(2, '0');
-            let sm = (startMinutes % 60).toString().padStart(2, '0');
-            let eh = Math.floor(endMinutes / 60).toString().padStart(2, '0');
-            let em = (endMinutes % 60).toString().padStart(2, '0');
-            return `${sh}:${sm} - ${eh}:${em}`;
+        const bellSchedule = [
+            { start: "08:00", end: "08:45" },
+            { start: "08:55", end: "09:40" },
+            { start: "09:50", end: "10:35" },
+            { start: "10:45", end: "11:30" },
+            { start: "11:40", end: "12:25" },
+            { start: "12:35", end: "13:20" },
+            { start: "13:30", end: "14:15" }
+        ];
+
+        let currentSelectedDay = "Понеділок";
+
+        function timeToMinutes(timeStr) {
+            const [h, m] = timeStr.split(':').map(Number);
+            return h * 60 + m;
+        }
+
+        function triggerPumpkinExplosion() {
+            const pumpkin = document.getElementById('pumpkin');
+            const container = document.getElementById('pumpkin-container');
+
+            for (let i = 0; i < 25; i++) {
+                let particle = document.createElement('div');
+                particle.className = 'particle';
+                container.appendChild(particle);
+
+                let angle = Math.random() * Math.PI * 2;
+                let distance = 60 + Math.random() * 100;
+                let x = Math.cos(angle) * distance;
+                let y = Math.sin(angle) * distance;
+
+                particle.animate([
+                    { transform: 'translate(0, 0) scale(1)', opacity: 1 },
+                    { transform: `translate(${x}px, ${y}px) scale(0)`, opacity: 0 }
+                ], {
+                    duration: 600,
+                    easing: 'cubic-bezier(0, .9, .57, 1)',
+                    fill: 'forwards'
+                });
+            }
+
+            pumpkin.classList.add('pumpkin-explode');
+
+            setTimeout(() => {
+                const splash = document.getElementById('splash-screen');
+                splash.style.opacity = '0';
+                splash.style.visibility = 'hidden';
+            }, 500);
+        }
+
+        function replaySplash() {
+            const splash = document.getElementById('splash-screen');
+            const pumpkin = document.getElementById('pumpkin');
+            pumpkin.classList.remove('pumpkin-explode');
+            splash.style.visibility = 'visible';
+            splash.style.opacity = '1';
+            setTimeout(triggerPumpkinExplosion, 1800);
         }
 
         function updateRealTimeTimer() {
@@ -549,11 +677,10 @@
             }
 
             let found = false;
-            for (let i = 0; i < dayLessons.length; i++) {
-                let startMins = 8 * 60 + i * 55;
-                let endMins = startMins + 45;
+            for (let i = 0; i < dayLessons.length && i < bellSchedule.length; i++) {
+                let startMins = timeToMinutes(bellSchedule[i].start);
+                let endMins = timeToMinutes(bellSchedule[i].end);
 
-                // Триває урок
                 if (currentMinutes >= startMins && currentMinutes < endMins) {
                     let totalSecsRemaining = (endMins - currentMinutes) * 60 - currentSeconds;
                     let mins = Math.floor(totalSecsRemaining / 60);
@@ -561,14 +688,13 @@
 
                     statusEl.innerText = `🔔 До кінця ${i + 1}-го уроку (${dayLessons[i].name})`;
                     clockEl.innerText = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-                    infoEl.innerText = `Каб. ${dayLessons[i].cab} • Урок триває`;
+                    infoEl.innerText = `Каб. ${dayLessons[i].cab} • Триває урок`;
                     found = true;
                     break;
                 }
 
-                // Триває перерва перед наступним уроком
-                if (i < dayLessons.length - 1) {
-                    let nextStartMins = 8 * 60 + (i + 1) * 55;
+                if (i < dayLessons.length - 1 && i < bellSchedule.length - 1) {
+                    let nextStartMins = timeToMinutes(bellSchedule[i + 1].start);
                     if (currentMinutes >= endMins && currentMinutes < nextStartMins) {
                         let totalSecsRemaining = (nextStartMins - currentMinutes) * 60 - currentSeconds;
                         let mins = Math.floor(totalSecsRemaining / 60);
@@ -584,8 +710,9 @@
             }
 
             if (!found) {
-                if (currentMinutes < 8 * 60) {
-                    let totalSecsRemaining = (8 * 60 - currentMinutes) * 60 - currentSeconds;
+                let firstStartMins = timeToMinutes(bellSchedule[0].start);
+                if (currentMinutes < firstStartMins) {
+                    let totalSecsRemaining = (firstStartMins - currentMinutes) * 60 - currentSeconds;
                     let hours = Math.floor(totalSecsRemaining / 3600);
                     let mins = Math.floor((totalSecsRemaining % 3600) / 60);
                     let secs = totalSecsRemaining % 60;
@@ -594,92 +721,27 @@
                     clockEl.innerText = `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
                     infoEl.innerText = `Перший урок: ${dayLessons[0].name} (Каб. ${dayLessons[0].cab})`;
                 } else {
-                    statusEl.innerText = "✅ Навчальний день завершено!";
+                    statusEl.innerText = "🎃 Навчальний день завершено!";
                     clockEl.innerText = now.toLocaleTimeString('uk-UA');
                     infoEl.innerText = `${currentDayName} • Всі уроки пройшли`;
                 }
             }
         }
 
-        function checkMonthlyReset() {
-            const now = new Date();
-            const currentMonthKey = `${now.getFullYear()}-${now.getMonth() + 1}`;
-            const lastSavedMonth = localStorage.getItem('human_last_month');
+        function selectDay(dayName) {
+            currentSelectedDay = dayName;
+            document.querySelectorAll('.day-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.innerText.trim() === getShortDay(dayName));
+            });
 
-            if (lastSavedMonth && lastSavedMonth !== currentMonthKey) {
-                localStorage.setItem('human_grades', JSON.stringify({}));
-            }
-            localStorage.setItem('human_last_month', currentMonthKey);
-        }
-
-        function renderSchedule() {
-            const container = document.getElementById('schedule-container');
+            document.getElementById('selected-day-title').innerText = `📌 Розклад на ${dayName}`;
+            const container = document.getElementById('day-lessons-list');
             container.innerHTML = '';
 
-            for (const [day, lessons] of Object.entries(schedule11A)) {
-                let dayHtml = `<div class="day-title">🗓️ ${day}</div>`;
-                lessons.forEach((lesson, idx) => {
-                    const hwSaved = localStorage.getItem(`hw_${day}_${idx}`) || '';
-                    dayHtml += `
-                        <div class="lesson-item">
-                            <div class="lesson-main">
-                                <div class="lesson-num">${idx + 1}</div>
-                                <div class="lesson-name">${lesson.name}</div>
-                                <div class="cabinet-badge">${lesson.cab}</div>
-                            </div>
-                            <div class="lesson-time">⏰ ${getLessonTime(idx)}</div>
-                            <input type="text" class="hw-input" placeholder="Домашнє завдання..." 
-                                value="${hwSaved}" oninput="saveHW('${day}', ${idx}, this.value)">
-                        </div>
-                    `;
-                });
-                container.innerHTML += dayHtml;
-            }
-        }
-
-        function saveHW(day, idx, value) {
-            localStorage.setItem(`hw_${day}_${idx}`, value);
-        }
-
-        function renderGrades() {
-            const defaultGrades = {
-                "Математика": [11, 10, 12],
-                "Фізика": [10, 9],
-                "Англійська мова": [11, 12],
-                "Українська мова": [10, 11]
-            };
-            const gradesData = JSON.parse(localStorage.getItem('human_grades') || JSON.stringify(defaultGrades));
-            const container = document.getElementById('grades-list');
-            container.innerHTML = '';
-
-            let totalSum = 0;
-            let totalCount = 0;
-
-            for (const [subject, grades] of Object.entries(gradesData)) {
-                let pillsHtml = grades.map(g => `<div class="grade-pill">${g}</div>`).join('');
-                grades.forEach(g => { totalSum += g; totalCount++; });
-
-                container.innerHTML += `
-                    <div class="grade-row">
-                        <div class="subject-name">${subject}</div>
-                        <div class="grade-pills">${pillsHtml}</div>
-                    </div>
-                `;
-            }
-
-            const avg = totalCount > 0 ? (totalSum / totalCount).toFixed(1) : "0.0";
-            document.getElementById('avg-score').innerText = avg;
-        }
-
-        function renderTodayLessons() {
-            const days = ["Неділя", "Понеділок", "Вівторок", "Середа", "Четвер", "П'ятниця", "Субота"];
-            const todayName = days[new Date().getDay()];
-            const container = document.getElementById('today-lessons-list');
-            
-            const lessons = schedule11A[todayName] || schedule11A["Понеділок"];
-            container.innerHTML = `<div style="color: var(--accent-cyan); font-weight: bold; margin-bottom: 10px;">Сьогодні (${todayName}):</div>`;
-
+            const lessons = schedule11A[dayName] || [];
             lessons.forEach((lesson, idx) => {
+                const timeSlot = bellSchedule[idx] ? `${bellSchedule[idx].start} - ${bellSchedule[idx].end}` : '---';
+                const hwSaved = localStorage.getItem(`hw_${dayName}_${idx}`) || '';
                 container.innerHTML += `
                     <div class="lesson-item">
                         <div class="lesson-main">
@@ -687,10 +749,113 @@
                             <div class="lesson-name">${lesson.name}</div>
                             <div class="cabinet-badge">${lesson.cab}</div>
                         </div>
-                        <div class="lesson-time">${getLessonTime(idx)}</div>
+                        <div class="lesson-time">⏰ ${timeSlot}</div>
+                        <input type="text" class="hw-input" placeholder="Домашнє завдання..." 
+                            value="${hwSaved}" oninput="saveHW('${dayName}', ${idx}, this.value)">
                     </div>
                 `;
             });
+        }
+
+        function getShortDay(fullDay) {
+            const map = {
+                "Понеділок": "Пн",
+                "Вівторок": "Вт",
+                "Середа": "Ср",
+                "Четвер": "Чт",
+                "П'ятниця": "Пт"
+            };
+            return map[fullDay] || "Пн";
+        }
+
+        function renderFullSchedule() {
+            const container = document.getElementById('full-schedule-container');
+            container.innerHTML = '';
+
+            for (const [day, lessons] of Object.entries(schedule11A)) {
+                let dayHtml = `<div style="font-size: 15px; font-weight: 700; color: var(--accent-orange); margin: 14px 0 10px 0;">🗓️ ${day}</div>`;
+                lessons.forEach((lesson, idx) => {
+                    const timeSlot = bellSchedule[idx] ? `${bellSchedule[idx].start} - ${bellSchedule[idx].end}` : '---';
+                    dayHtml += `
+                        <div class="lesson-item">
+                            <div class="lesson-main">
+                                <div class="lesson-num">${idx + 1}</div>
+                                <div class="lesson-name">${lesson.name}</div>
+                                <div class="cabinet-badge">${lesson.cab}</div>
+                            </div>
+                            <div class="lesson-time">⏰ ${timeSlot}</div>
+                        </div>
+                    `;
+                });
+                container.innerHTML += dayHtml;
+            }
+        }
+
+        function renderGrades() {
+            const allSubjects = new Set();
+            for (const lessons of Object.values(schedule11A)) {
+                lessons.forEach(l => allSubjects.add(l.name));
+            }
+
+            const container = document.getElementById('grades-list');
+            container.innerHTML = '';
+            let total = 0;
+            let count = 0;
+
+            allSubjects.forEach(subject => {
+                const savedGrade = localStorage.getItem(`grade_${subject}`) || '';
+                if (savedGrade) {
+                    const num = parseFloat(savedGrade);
+                    if (!isNaN(num)) {
+                        total += num;
+                        count++;
+                    }
+                }
+
+                container.innerHTML += `
+                    <div class="grade-item">
+                        <span style="font-size: 13px; font-weight: 600;">${subject}</span>
+                        <input type="text" class="grade-input" placeholder="Бали" value="${savedGrade}" 
+                            oninput="saveGrade('${subject}', this.value)">
+                    </div>
+                `;
+            });
+
+            const gpa = count > 0 ? (total / count).toFixed(1) : "0.0";
+            document.getElementById('gpa-val').innerText = gpa;
+        }
+
+        function saveHW(day, idx, value) {
+            localStorage.setItem(`hw_${day}_${idx}`, value);
+        }
+
+        function saveGrade(subject, value) {
+            localStorage.setItem(`grade_${subject}`, value);
+            renderGrades();
+        }
+
+        function saveProfile() {
+            const name = document.getElementById('input-profile-name').value || "Учень";
+            const cls = document.getElementById('input-profile-class').value || "11-А";
+
+            localStorage.setItem('user_name', name);
+            localStorage.setItem('user_class', cls);
+
+            document.getElementById('user-name-display').innerText = name;
+            document.getElementById('user-class-display').innerText = `${cls} клас • Halloween 🎃`;
+            document.getElementById('avatar-display').innerText = cls;
+        }
+
+        function loadProfile() {
+            const name = localStorage.getItem('user_name') || "Учень";
+            const cls = localStorage.getItem('user_class') || "11-А";
+
+            document.getElementById('input-profile-name').value = name;
+            document.getElementById('input-profile-class').value = cls;
+
+            document.getElementById('user-name-display').innerText = name;
+            document.getElementById('user-class-display').innerText = `${cls} клас • Halloween 🎃`;
+            document.getElementById('avatar-display').innerText = cls;
         }
 
         function switchTab(tabId) {
@@ -702,40 +867,19 @@
             window.scrollTo(0, 0);
         }
 
-        function saveSettings() {
-            const name = document.getElementById('setting-name').value;
-            const url = document.getElementById('render-url-input').value;
-            
-            localStorage.setItem('user_name', name);
-            localStorage.setItem('render_url', url);
-
-            document.getElementById('user-name-display').innerText = name;
-            document.getElementById('avatar-display').innerText = name.substring(0, 2).toUpperCase();
-            alert('Налаштування збережено!');
-        }
-
-        function resetGrades() {
-            if (confirm('Очистити оцінки поточного місяця?')) {
-                localStorage.setItem('human_grades', JSON.stringify({}));
-                renderGrades();
-                alert('Оцінки очищено!');
-            }
-        }
-
         window.onload = () => {
-            checkMonthlyReset();
-            renderSchedule();
+            setTimeout(triggerPumpkinExplosion, 2200);
+
+            const days = ["Неділя", "Понеділок", "Вівторок", "Середа", "Четвер", "П'ятниця", "Субота"];
+            const today = days[new Date().getDay()];
+            currentSelectedDay = schedule11A[today] ? today : "Понеділок";
+
+            loadProfile();
+            selectDay(currentSelectedDay);
+            renderFullSchedule();
             renderGrades();
-            renderTodayLessons();
-            
             updateRealTimeTimer();
             setInterval(updateRealTimeTimer, 1000);
-            
-            const savedName = localStorage.getItem('user_name') || 'Учень';
-            document.getElementById('setting-name').value = savedName;
-            document.getElementById('user-name-display').innerText = savedName;
-            document.getElementById('avatar-display').innerText = savedName.substring(0, 2).toUpperCase();
-            document.getElementById('render-url-input').value = localStorage.getItem('render_url') || '';
         };
     </script>
 </body>
