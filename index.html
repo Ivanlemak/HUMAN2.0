@@ -3,18 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Human.ua 11-A • Halloween Edition</title>
+    <title>Human.ua • 11-А</title>
+    <!-- FontAwesome Icons & Canvas Confetti -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
         :root {
-            --bg-dark: #0a0512;
-            --card-bg: #160c26;
-            --card-border: rgba(255, 117, 24, 0.25);
-            --accent-orange: #ff7518;
-            --accent-purple: #9d4edd;
-            --accent-green: #38b000;
-            --accent-red: #d90429;
-            --text-main: #f8f9fa;
-            --text-muted: #b1a7a6;
+            --bg-dark: #090a10;
+            --card-bg: #121624;
+            --card-border: rgba(255, 255, 255, 0.08);
+            --accent-purple: #8b5cf6;
+            --accent-cyan: #06b6d4;
+            --accent-green: #10b981;
+            --accent-gold: #ffb703;
+            --text-main: #f9fafb;
+            --text-muted: #9ca3af;
         }
 
         * {
@@ -32,145 +35,158 @@
             padding-bottom: 90px;
             overflow-x: hidden;
             background-image: 
-                radial-gradient(circle at 20% 15%, rgba(255, 117, 24, 0.12) 0%, transparent 45%),
-                radial-gradient(circle at 80% 85%, rgba(157, 78, 221, 0.15) 0%, transparent 45%);
+                radial-gradient(circle at 15% 15%, rgba(139, 92, 246, 0.15) 0%, transparent 45%),
+                radial-gradient(circle at 85% 85%, rgba(6, 182, 212, 0.12) 0%, transparent 45%);
             background-attachment: fixed;
+            position: relative;
         }
 
-        /* --- SPLASH SCREEN ANIMATION --- */
+        /* FALLING SNOW CANVAS */
+        #snow-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        /* SPLASH SCREEN ANIMATION */
         #splash-screen {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: #05020a;
+            background: #05070c;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             z-index: 9999;
-            transition: opacity 0.5s ease, visibility 0.5s;
+            transition: opacity 0.6s ease, visibility 0.6s;
         }
 
-        .pumpkin-wrapper {
+        .tree-wrapper {
             position: relative;
             display: flex;
             justify-content: center;
             align-items: center;
+            cursor: pointer;
         }
 
-        .pumpkin {
-            font-size: 90px;
-            cursor: pointer;
-            animation: swayPumpkin 1.5s ease-in-out infinite alternate;
-            filter: drop-shadow(0 0 25px rgba(255, 117, 24, 0.9));
+        .christmas-tree {
+            font-size: 100px;
+            animation: swayTree 2s ease-in-out infinite alternate;
+            filter: drop-shadow(0 0 35px rgba(139, 92, 246, 0.8));
             user-select: none;
         }
 
-        @keyframes swayPumpkin {
-            0% {
-                transform: rotate(-12deg) scale(1);
-                filter: drop-shadow(0 0 15px rgba(255, 117, 24, 0.7));
-            }
-            100% {
-                transform: rotate(12deg) scale(1.08);
-                filter: drop-shadow(0 0 35px rgba(255, 117, 24, 1));
-            }
+        @keyframes swayTree {
+            0% { transform: translateY(-5px) rotate(-4deg); }
+            100% { transform: translateY(8px) rotate(4deg); }
         }
 
-        .pumpkin-explode {
-            animation: explodePumpkin 0.6s forwards ease-out !important;
+        .tree-explode {
+            animation: explodeTree 0.7s forwards ease-out !important;
         }
 
-        @keyframes explodePumpkin {
-            0% {
-                transform: scale(1);
-                opacity: 1;
-                filter: drop-shadow(0 0 30px rgba(255, 117, 24, 1));
-            }
-            50% {
-                transform: scale(2.2);
-                opacity: 0.9;
-                filter: drop-shadow(0 0 80px rgba(255, 255, 255, 1));
-            }
-            100% {
-                transform: scale(3.5);
-                opacity: 0;
-                filter: drop-shadow(0 0 120px rgba(255, 117, 24, 0));
-            }
+        @keyframes explodeTree {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(2.2) rotate(10deg); opacity: 0.9; filter: drop-shadow(0 0 100px rgba(255, 255, 255, 1)); }
+            100% { transform: scale(3.5); opacity: 0; }
         }
 
-        .particle {
+        .sparkle {
             position: absolute;
-            width: 10px;
-            height: 10px;
-            background: var(--accent-orange);
+            width: 8px;
+            height: 8px;
+            background: #06b6d4;
             border-radius: 50%;
             pointer-events: none;
             opacity: 0;
-            box-shadow: 0 0 10px var(--accent-orange);
+            box-shadow: 0 0 12px #06b6d4;
         }
 
         .splash-text {
-            margin-top: 25px;
-            font-size: 16px;
+            margin-top: 20px;
+            font-size: 15px;
             font-weight: 700;
-            color: var(--accent-orange);
+            color: var(--accent-cyan);
             letter-spacing: 1.5px;
             text-transform: uppercase;
-            text-shadow: 0 0 10px rgba(255, 117, 24, 0.6);
         }
 
-        /* --- APP HEADER & UI --- */
+        /* HEADER HUMAN.UA STYLE */
         header {
             padding: 16px 20px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            background: rgba(10, 5, 18, 0.9);
-            backdrop-filter: blur(12px);
+            background: rgba(9, 10, 16, 0.85);
+            backdrop-filter: blur(16px);
             position: sticky;
             top: 0;
             z-index: 50;
             border-bottom: 1px solid var(--card-border);
         }
 
-        .user-info {
+        .brand-title {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 8px;
+            font-size: 16px;
+            font-weight: 800;
+            color: #ffffff;
         }
 
-        .avatar {
+        .brand-title i {
+            color: var(--accent-purple);
+        }
+
+        .user-greeting {
+            padding: 16px 20px 8px 20px;
+            max-width: 600px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .greeting-text h2 {
+            font-size: 22px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        .greeting-text p {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        .user-avatar-badge {
             width: 44px;
             height: 44px;
             border-radius: 50%;
-            background: linear-gradient(135deg, var(--accent-orange), var(--accent-purple));
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-cyan));
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: bold;
-            font-size: 18px;
-            color: white;
-            box-shadow: 0 0 15px rgba(255, 117, 24, 0.5);
-        }
-
-        .user-details h1 {
-            font-size: 18px;
-            font-weight: 700;
-            line-height: 1.2;
-        }
-
-        .user-details p {
-            font-size: 12px;
-            color: var(--text-muted);
+            font-weight: 800;
+            font-size: 15px;
+            color: #ffffff;
+            box-shadow: 0 0 18px rgba(139, 92, 246, 0.4);
+            border: 2px solid rgba(255, 255, 255, 0.15);
         }
 
         main {
-            padding: 16px;
+            padding: 12px 16px;
             max-width: 600px;
             margin: 0 auto;
+            position: relative;
+            z-index: 20;
         }
 
         .tab-content {
@@ -179,112 +195,231 @@
 
         .tab-content.active {
             display: block;
-            animation: fadeIn 0.4s ease;
+            animation: fadeIn 0.35s ease-out;
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(8px); }
+            from { opacity: 0; transform: translateY(6px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        .timer-box {
-            background: linear-gradient(135deg, rgba(255, 117, 24, 0.18), rgba(157, 78, 221, 0.2));
-            border: 1px solid rgba(255, 117, 24, 0.4);
-            border-radius: 18px;
-            padding: 16px;
-            margin-bottom: 16px;
-            text-align: center;
-            box-shadow: 0 0 20px rgba(255, 117, 24, 0.15);
+        /* HUMAN.UA CARDS STYLING */
+        .card-nz {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 22px;
+            padding: 18px;
+            margin-bottom: 14px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+            position: relative;
+            overflow: hidden;
         }
 
-        .timer-title {
-            font-size: 13px;
-            color: var(--accent-orange);
-            font-weight: 700;
+        .card-nz-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 11px;
+            font-weight: 800;
             text-transform: uppercase;
             letter-spacing: 0.8px;
+            color: var(--text-muted);
+            margin-bottom: 10px;
+        }
+
+        .dot-indicator {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background-color: #ef4444;
+            display: inline-block;
+            box-shadow: 0 0 8px #ef4444;
+        }
+
+        /* GPA BIG CARD */
+        .gpa-title {
+            font-size: 20px;
+            font-weight: 800;
+            color: #ffffff;
             margin-bottom: 4px;
         }
 
-        .timer-time {
+        .gpa-sub {
+            font-size: 12px;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .gpa-sub i {
+            color: var(--accent-cyan);
+        }
+
+        /* QUICK ACTION BUTTONS ROW */
+        .quick-actions-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 14px;
+        }
+
+        .quick-btn {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 18px;
+            padding: 14px 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .quick-btn:active {
+            transform: scale(0.96);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .quick-btn i {
+            font-size: 20px;
+            color: var(--accent-purple);
+        }
+
+        .quick-btn span {
+            font-size: 12px;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        /* STREAK CARD */
+        .streak-card {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.15), rgba(6, 182, 212, 0.1));
+            border: 1px solid rgba(139, 92, 246, 0.3);
+        }
+
+        .streak-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .streak-badge {
+            background: rgba(139, 92, 246, 0.2);
+            color: #c4b5fd;
+            border: 1px solid rgba(139, 92, 246, 0.4);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .streak-val {
+            font-size: 56px;
+            font-weight: 900;
+            color: var(--accent-cyan);
+            line-height: 1;
+            margin: 6px 0;
+            text-shadow: 0 0 20px rgba(6, 182, 212, 0.4);
+        }
+
+        .streak-unit {
+            font-size: 16px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-left: 6px;
+        }
+
+        .pill-tag {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--text-muted);
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        /* NOTIFICATION BOX */
+        .notice-card {
+            background: linear-gradient(135deg, rgba(6, 182, 212, 0.15), rgba(16, 185, 129, 0.1));
+            border: 1px solid rgba(6, 182, 212, 0.3);
+            border-radius: 18px;
+            padding: 14px;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .notice-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 12px;
+            background: rgba(6, 182, 212, 0.2);
+            color: var(--accent-cyan);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        /* TIMER BOX */
+        .timer-display {
             font-size: 30px;
             font-weight: 800;
             color: #ffffff;
-            margin: 4px 0;
             font-variant-numeric: tabular-nums;
-            text-shadow: 0 0 10px rgba(255, 117, 24, 0.4);
+            margin: 4px 0;
         }
 
-        .timer-sub {
-            font-size: 12px;
-            color: var(--text-muted);
-        }
-
+        /* DAY PICKER */
         .day-picker {
             display: flex;
-            gap: 8px;
+            gap: 6px;
             overflow-x: auto;
-            padding-bottom: 8px;
-            margin-bottom: 16px;
+            padding-bottom: 6px;
+            margin-bottom: 12px;
             scrollbar-width: none;
         }
 
-        .day-picker::-webkit-scrollbar {
-            display: none;
-        }
+        .day-picker::-webkit-scrollbar { display: none; }
 
         .day-btn {
-            background: rgba(255, 255, 255, 0.05);
+            background: rgba(255, 255, 255, 0.04);
             border: 1px solid var(--card-border);
             color: var(--text-muted);
-            padding: 10px 16px;
+            padding: 8px 14px;
             border-radius: 12px;
-            font-size: 13px;
-            font-weight: 600;
+            font-size: 12px;
+            font-weight: 700;
             cursor: pointer;
             white-space: nowrap;
-            transition: all 0.2s;
             flex: 1;
             text-align: center;
         }
 
         .day-btn.active {
-            background: linear-gradient(135deg, var(--accent-orange), #e65c00);
+            background: var(--accent-purple);
             color: #ffffff;
-            border-color: var(--accent-orange);
-            box-shadow: 0 0 12px rgba(255, 117, 24, 0.4);
+            border-color: var(--accent-purple);
+            box-shadow: 0 0 12px rgba(139, 92, 246, 0.5);
         }
 
-        .card {
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 20px;
-            padding: 18px;
-            margin-bottom: 16px;
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
-        }
-
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 14px;
-        }
-
-        .card-title {
-            font-size: 14px;
-            text-transform: uppercase;
-            letter-spacing: 0.8px;
-            color: var(--accent-orange);
-            font-weight: 700;
-        }
-
+        /* LESSON ITEM */
         .lesson-item {
-            background: rgba(255, 255, 255, 0.03);
+            background: rgba(255, 255, 255, 0.02);
             border: 1px solid var(--card-border);
             border-radius: 14px;
             padding: 12px;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
 
         .lesson-main {
@@ -297,31 +432,30 @@
             width: 26px;
             height: 26px;
             border-radius: 8px;
-            background: rgba(255, 117, 24, 0.15);
+            background: rgba(139, 92, 246, 0.15);
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 12px;
-            font-weight: bold;
-            color: var(--accent-orange);
-            border: 1px solid rgba(255, 117, 24, 0.3);
+            font-weight: 800;
+            color: var(--accent-purple);
         }
 
         .lesson-name {
-            font-weight: 600;
+            font-weight: 700;
             font-size: 14px;
             flex: 1;
             margin-left: 10px;
         }
 
         .cabinet-badge {
-            background: rgba(157, 78, 221, 0.2);
-            color: #c084fc;
-            border: 1px solid rgba(157, 78, 221, 0.4);
+            background: rgba(6, 182, 212, 0.15);
+            color: var(--accent-cyan);
+            border: 1px solid rgba(6, 182, 212, 0.3);
             font-size: 11px;
             padding: 2px 8px;
             border-radius: 8px;
-            font-weight: 600;
+            font-weight: 700;
         }
 
         .lesson-time {
@@ -343,16 +477,42 @@
             outline: none;
         }
 
+        /* ADVENT GRID */
+        .advent-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .advent-box {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            aspect-ratio: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .advent-box.opened {
+            background: rgba(16, 185, 129, 0.15);
+            border-color: var(--accent-green);
+        }
+
+        /* GRADES */
         .grade-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 10px;
+            padding: 10px 0;
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         }
 
         .grade-input {
-            width: 80px;
+            width: 70px;
             background: rgba(0, 0, 0, 0.4);
             border: 1px solid var(--card-border);
             border-radius: 6px;
@@ -362,29 +522,14 @@
             font-size: 13px;
         }
 
-        .gpa-card {
-            background: linear-gradient(135deg, rgba(157, 78, 221, 0.2), rgba(255, 117, 24, 0.2));
-            border: 1px solid var(--accent-purple);
-            border-radius: 16px;
-            padding: 16px;
-            text-align: center;
-            margin-bottom: 16px;
-        }
-
-        .gpa-num {
-            font-size: 32px;
-            font-weight: 800;
-            color: var(--accent-orange);
-            text-shadow: 0 0 10px rgba(255, 117, 24, 0.5);
-        }
-
+        /* PROFILE */
         .profile-field {
             margin-bottom: 12px;
         }
 
         .profile-field label {
             display: block;
-            font-size: 12px;
+            font-size: 11px;
             color: var(--text-muted);
             margin-bottom: 4px;
         }
@@ -397,11 +542,52 @@
             padding: 10px;
             color: var(--text-main);
             font-size: 14px;
+            outline: none;
         }
 
-        .btn-pumpkin {
+        .toggle-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 44px;
+            height: 22px;
+        }
+
+        .switch input { opacity: 0; width: 0; height: 0; }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #262c3a;
+            transition: .3s;
+            border-radius: 22px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .3s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider { background-color: var(--accent-purple); }
+        input:checked + .slider:before { transform: translateX(22px); }
+
+        .btn-nz {
             width: 100%;
-            background: linear-gradient(135deg, var(--accent-orange), #e65c00);
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-cyan));
             border: none;
             color: white;
             padding: 12px;
@@ -410,20 +596,20 @@
             font-size: 14px;
             cursor: pointer;
             margin-top: 10px;
-            box-shadow: 0 0 15px rgba(255, 117, 24, 0.3);
         }
 
+        /* BOTTOM NAVBAR HUMAN.UA */
         nav {
             position: fixed;
             bottom: 0;
             left: 0;
             right: 0;
-            background: rgba(10, 5, 18, 0.92);
+            background: rgba(9, 10, 16, 0.92);
             backdrop-filter: blur(16px);
             border-top: 1px solid var(--card-border);
             display: flex;
             justify-content: space-around;
-            padding: 10px 0 14px 0;
+            padding: 8px 0 12px 0;
             z-index: 100;
         }
 
@@ -434,120 +620,323 @@
             gap: 4px;
             color: var(--text-muted);
             text-decoration: none;
-            font-size: 11px;
+            font-size: 10px;
             font-weight: 600;
             cursor: pointer;
-            padding: 6px 12px;
-            border-radius: 10px;
+            padding: 6px 14px;
+            border-radius: 16px;
+        }
+
+        .nav-item i {
+            font-size: 18px;
         }
 
         .nav-item.active {
-            color: var(--accent-orange);
-            background: rgba(255, 117, 24, 0.12);
+            color: #ffffff;
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .nav-item.active i {
+            color: var(--accent-cyan);
         }
     </style>
 </head>
 <body>
 
-    <!-- SPLASH SCREEN ANIMATION -->
+    <canvas id="snow-canvas"></canvas>
+
+    <!-- SPLASH SCREEN -->
     <div id="splash-screen">
-        <div class="pumpkin-wrapper" id="pumpkin-container">
-            <div class="pumpkin" id="pumpkin">🎃</div>
+        <div class="tree-wrapper" id="tree-container" onclick="triggerTreeExplosion(); fireConfetti();">
+            <div class="christmas-tree" id="tree">🎄</div>
         </div>
-        <div class="splash-text">Human.ua 11-A</div>
+        <div class="splash-text">Human.ua • 11-А клас</div>
     </div>
 
     <header>
-        <div class="user-info">
-            <div class="avatar" id="avatar-display">11-А</div>
-            <div class="user-details">
-                <h1 id="user-name-display">Учень</h1>
-                <p id="user-class-display">11-А клас • Halloween 🎃</p>
-            </div>
+        <div class="brand-title">
+            <i class="fa-solid fa-graduation-cap"></i>
+            <span>Human.ua</span>
         </div>
-        <div style="font-size: 22px; cursor: pointer;" onclick="replaySplash()">🎃</div>
+        <div style="font-size: 20px; cursor: pointer;" onclick="fireConfetti()">🎆</div>
     </header>
 
-    <main>
-        <div class="timer-box">
-            <div class="timer-title" id="timer-status">Завантаження...</div>
-            <div class="timer-time" id="timer-clock">00:00:00</div>
-            <div class="timer-sub" id="timer-info">Поточний час та урок</div>
+    <div class="user-greeting">
+        <div class="greeting-text">
+            <h2 id="greeting-title">Добрий вечір, ivan</h2>
+            <p id="greeting-sub">11-А • п'ятниця, 30 жовтня</p>
         </div>
+        <div class="user-avatar-badge" id="avatar-display">11-А</div>
+    </div>
 
-        <!-- TAB 1: HOME -->
+    <main>
+        <!-- TAB 1: DASHBOARD / ГОЛОВНА -->
         <div id="tab-home" class="tab-content active">
-            <div class="day-picker">
-                <button class="day-btn" onclick="selectDay('Понеділок')">Пн</button>
-                <button class="day-btn" onclick="selectDay('Вівторок')">Вт</button>
-                <button class="day-btn" onclick="selectDay('Середа')">Ср</button>
-                <button class="day-btn" onclick="selectDay('Четвер')">Чт</button>
-                <button class="day-btn" onclick="selectDay('П\'ятниця')">Пт</button>
+            
+            <!-- AVERAGE GPA HUMAN.UA CARD -->
+            <div class="card-nz">
+                <div class="card-nz-header">
+                    <span class="dot-indicator"></span>
+                    <span>СЕРЕДНІЙ БАЛ</span>
+                </div>
+                <div class="gpa-title" id="gpa-title-display">Оновлюємо середній бал</div>
+                <div class="gpa-sub">
+                    <i class="fa-solid fa-arrows-rotate fa-spin"></i>
+                    <span>Забираємо оцінки з human.ua • Середній: <strong id="gpa-val" style="color: var(--accent-cyan);">0.0</strong></span>
+                </div>
             </div>
 
-            <div class="card">
-                <div class="card-header">
-                    <div class="card-title" id="selected-day-title">📌 Розклад</div>
+            <!-- NEXT LESSON NOTIFICATION NOTICE CARD -->
+            <div class="notice-card" id="next-lesson-notice">
+                <div class="notice-icon">
+                    <i class="fa-solid fa-bell"></i>
                 </div>
+                <div style="flex: 1;">
+                    <div style="font-size: 11px; font-weight: 800; color: var(--accent-cyan); text-transform: uppercase;">СПОБІЩЕННЯ ПРО НАСТУПНИЙ УРОК</div>
+                    <div style="font-size: 13px; font-weight: 700; margin-top: 2px;" id="notice-text">Завантаження інформації про перерву...</div>
+                </div>
+            </div>
+
+            <!-- QUICK ACTIONS GRID -->
+            <div class="quick-actions-grid">
+                <div class="quick-btn" onclick="fireConfetti(); switchTab('schedule');">
+                    <i class="fa-solid fa-calendar-days"></i>
+                    <span>Розклад</span>
+                </div>
+                <div class="quick-btn" onclick="scrollToHomework();">
+                    <i class="fa-solid fa-pen-to-square"></i>
+                    <span>ДЗ</span>
+                </div>
+                <div class="quick-btn" onclick="fireConfetti(); switchTab('grades');">
+                    <i class="fa-solid fa-clipboard-list"></i>
+                    <span>Табель</span>
+                </div>
+            </div>
+
+            <!-- MORNING ATTENDANCE REMINDER CARD -->
+            <div class="card-nz" id="morning-attendance-card" style="background: linear-gradient(135deg, rgba(255, 183, 3, 0.15), rgba(139, 92, 246, 0.15)); border: 1px solid rgba(255, 183, 3, 0.4);">
+                <div class="card-nz-header" style="color: var(--accent-gold);">
+                    <i class="fa-solid fa-bus"></i>
+                    <span>РАНКОВЕ ОПИТУВАНИЕ ВІДВІДУВАННЯ</span>
+                </div>
+                <div style="font-size: 13px; font-weight: 700; margin-bottom: 10px;">
+                    Як ви добираєтеся до школи сьогодні?
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;">
+                    <button onclick="quickMarkAttendance('ШК')" style="background: rgba(6, 182, 212, 0.2); border: 1px solid var(--accent-cyan); color: #fff; padding: 10px 4px; border-radius: 12px; font-size: 12px; font-weight: 800; cursor: pointer;">
+                        🚌 ШК
+                    </button>
+                    <button onclick="quickMarkAttendance('Р')" style="background: rgba(139, 92, 246, 0.2); border: 1px solid var(--accent-purple); color: #fff; padding: 10px 4px; border-radius: 12px; font-size: 12px; font-weight: 800; cursor: pointer;">
+                        轨 Р
+                    </button>
+                    <button onclick="quickMarkAttendance('Н')" style="background: rgba(239, 68, 68, 0.2); border: 1px solid #ef4444; color: #fff; padding: 10px 4px; border-radius: 12px; font-size: 12px; font-weight: 800; cursor: pointer;">
+                        ❌ Відсутній
+                    </button>
+                </div>
+                <div style="font-size: 11px; color: var(--text-muted); margin-top: 8px;" id="morning-status-text">
+                    Оберіть варіант для збереження в журнал.
+                </div>
+            </div>
+
+            <!-- STREAK CARD HUMAN.UA -->
+            <div class="card-nz streak-card">
+                <div class="streak-header">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <i class="fa-solid fa-sparkles" style="color: var(--accent-cyan);"></i>
+                        <span style="font-size: 11px; font-weight: 800; color: var(--accent-cyan); text-transform: uppercase;">СЕРІЯ</span>
+                    </div>
+                    <div class="streak-badge">
+                        <i class="fa-solid fa-trophy"></i>
+                        <span>Рекорд <span id="streak-record">0</span></span>
+                    </div>
+                </div>
+                <div style="font-size: 12px; color: var(--accent-cyan); font-weight: 600;">без низьких оцінок</div>
+                
+                <div class="streak-val">
+                    <span id="streak-days">0</span><span class="streak-unit">днів</span>
+                </div>
+
+                <div class="pill-tag">Дій до 3</div>
+            </div>
+
+            <!-- REAL-TIME TIMER BOX -->
+            <div class="card-nz">
+                <div class="card-nz-header">
+                    <i class="fa-regular fa-clock" style="color: var(--accent-purple);"></i>
+                    <span id="timer-status">Завантаження таймера...</span>
+                </div>
+                <div class="timer-display" id="timer-clock">00:00:00</div>
+                <div style="font-size: 12px; color: var(--text-muted);" id="timer-info">11-А клас • Зимовий семестр</div>
+            </div>
+
+            <!-- TODAY'S LESSONS -->
+            <div class="card-nz">
+                <div class="card-nz-header" style="justify-content: space-between;">
+                    <span>📌 УРОКИ ТА ДОМАШНЄ ЗАВДАННЯ</span>
+                </div>
+
+                <div class="day-picker">
+                    <button class="day-btn" onclick="selectDay('Понеділок')">Пн</button>
+                    <button class="day-btn" onclick="selectDay('Вівторок')">Вт</button>
+                    <button class="day-btn" onclick="selectDay('Середа')">Ср</button>
+                    <button class="day-btn" onclick="selectDay('Четвер')">Чт</button>
+                    <button class="day-btn" onclick="selectDay('П\'ятниця')">Пт</button>
+                </div>
+
                 <div id="day-lessons-list"></div>
             </div>
+
+            <!-- ADVENT CALENDAR -->
+            <div class="card-nz">
+                <div class="card-nz-header">
+                    <i class="fa-solid fa-gift" style="color: var(--accent-gold);"></i>
+                    <span>🎁 НОВОРІЧНИЙ АДВЕНТ-КАЛЕНДАР</span>
+                </div>
+                <div class="advent-grid" id="advent-container"></div>
+            </div>
+
         </div>
 
-        <!-- TAB 2: SCHEDULE -->
+        <!-- TAB 2: SCHEDULE / РОЗКЛАД -->
         <div id="tab-schedule" class="tab-content">
-            <div class="card">
-                <div class="card-header">
-                    <div class="card-title">📅 Повний розклад 11-А</div>
+            <div class="card-nz">
+                <div class="card-nz-header">
+                    <i class="fa-solid fa-calendar-week"></i>
+                    <span>ПОВНИЙ РОЗКЛАД 11-А</span>
                 </div>
                 <div id="full-schedule-container"></div>
             </div>
         </div>
 
-        <!-- TAB 3: GRADES -->
+        <!-- TAB 3: GRADES / ТАБЕЛЬ -->
         <div id="tab-grades" class="tab-content">
-            <div class="gpa-card">
-                <div style="font-size: 12px; color: var(--text-muted); text-transform: uppercase;">Середній бал</div>
-                <div class="gpa-num" id="gpa-val">0.0</div>
-            </div>
-            <div class="card">
-                <div class="card-header">
-                    <div class="card-title">📊 Журнал оцінок</div>
+            <div class="card-nz">
+                <div class="card-nz-header">
+                    <i class="fa-solid fa-chart-simple"></i>
+                    <span>УСПІШНІСТЬ ТА ТАБЕЛЬ</span>
                 </div>
                 <div id="grades-list"></div>
             </div>
         </div>
 
-        <!-- TAB 4: PROFILE -->
-        <div id="tab-profile" class="tab-content">
-            <div class="card">
-                <div class="card-header">
-                    <div class="card-title">⚙️ Налаштування профілю</div>
+        <!-- TAB 5: ATTENDANCE CALENDAR / КАЛЕНДАР ВІДВІДУВАННЯ -->
+        <div id="tab-attendance" class="tab-content">
+            <div class="card-nz">
+                <div class="card-nz-header">
+                    <i class="fa-solid fa-calendar-check" style="color: var(--accent-cyan);"></i>
+                    <span>КАЛЕНДАР ВІДВІДУВАННЯ ТА ТРАНСПОРТУ</span>
                 </div>
+                
+                <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">
+                    Відмічайте, як добиралися до школи, або якщо були відсутні. Історія зберігається 6 місяців.
+                </div>
+
                 <div class="profile-field">
-                    <label>Ім'я та Прізвище</label>
-                    <input type="text" id="input-profile-name" value="Учень" oninput="saveProfile()">
+                    <label>Оберіть дату</label>
+                    <input type="date" id="attendance-date" onchange="loadAttendanceForDate()">
+                </div>
+
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 14px;">
+                    <button id="btn-att-shk" onclick="selectAttendanceType('ШК')" style="background: rgba(255,255,255,0.05); border: 1px solid var(--card-border); color: #fff; padding: 12px; border-radius: 12px; font-size: 12px; font-weight: 800; cursor: pointer;">
+                        🚌 ШК<br><span style="font-size: 9px; color: var(--text-muted); font-weight: normal;">Шкільний автобус</span>
+                    </button>
+                    <button id="btn-att-r" onclick="selectAttendanceType('Р')" style="background: rgba(255,255,255,0.05); border: 1px solid var(--card-border); color: #fff; padding: 12px; border-radius: 12px; font-size: 12px; font-weight: 800; cursor: pointer;">
+                        🚍 Р<br><span style="font-size: 9px; color: var(--text-muted); font-weight: normal;">Рейсовий автобус</span>
+                    </button>
+                    <button id="btn-att-n" onclick="selectAttendanceType('Н')" style="background: rgba(255,255,255,0.05); border: 1px solid var(--card-border); color: #fff; padding: 12px; border-radius: 12px; font-size: 12px; font-weight: 800; cursor: pointer;">
+                        ❌ Н<br><span style="font-size: 9px; color: var(--text-muted); font-weight: normal;">Відсутній</span>
+                    </button>
+                </div>
+
+                <div style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 12px; border: 1px solid var(--card-border); margin-bottom: 14px;">
+                    <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 6px;">Експорт відвідуваності у файл для збереження:</div>
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px;">
+                        <button class="btn-nz" onclick="exportAttendanceFile('csv')" style="margin-top: 4px; background: linear-gradient(135deg, var(--accent-green), #059669); font-size: 12px; padding: 10px 6px;">
+                            <i class="fa-solid fa-file-csv" style="margin-right: 4px;"></i> Таблиця (.csv)
+                        </button>
+                        <button class="btn-nz" onclick="exportAttendanceFile('json')" style="margin-top: 4px; background: linear-gradient(135deg, var(--accent-purple), var(--accent-cyan)); font-size: 12px; padding: 10px 6px;">
+                            <i class="fa-brands fa-google-drive" style="margin-right: 4px;"></i> Файл JSON (.json)
+                        </button>
+                    </div>
+                </div>
+
+                <div class="card-nz-header" style="margin-top: 10px;">
+                    <i class="fa-solid fa-clock-rotate-left"></i>
+                    <span>ІСТОРІЯ ЗА 6 МІСЯЦІВ</span>
+                </div>
+                <div id="attendance-history-list" style="max-height: 250px; overflow-y: auto;"></div>
+            </div>
+        </div>
+
+        <!-- TAB 4: PROFILE / ПРОФІЛЬ -->
+        <div id="tab-profile" class="tab-content">
+            <div class="card-nz">
+                <div class="card-nz-header">
+                    <i class="fa-solid fa-user-gear"></i>
+                    <span>НАЛАШТУВАННЯ ПРОФІЛЮ</span>
+                </div>
+                
+                <div class="profile-field">
+                    <label>Ім'я увітання</label>
+                    <input type="text" id="input-profile-name" value="ivan" oninput="saveProfile()">
                 </div>
                 <div class="profile-field">
                     <label>Клас</label>
                     <input type="text" id="input-profile-class" value="11-А" oninput="saveProfile()">
                 </div>
-                <button class="btn-pumpkin" onclick="replaySplash()">🎃 Переглянути анімацію гарбуза</button>
+
+                <div class="toggle-row">
+                    <span style="font-size: 13px; font-weight: 600;">❄️ Снігопад та ялинки</span>
+                    <label class="switch">
+                        <input type="checkbox" id="toggle-snow" checked onchange="toggleSnow(this.checked)">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <div class="toggle-row">
+                    <span style="font-size: 13px; font-weight: 600;">🏖️ Ручний режим канікул</span>
+                    <label class="switch">
+                        <input type="checkbox" id="toggle-vacation" onchange="saveVacationSettings()">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <div class="profile-field">
+                    <label>📅 Початок канікул</label>
+                    <input type="date" id="vacation-start" onchange="saveVacationSettings()">
+                </div>
+
+                <div class="profile-field">
+                    <label>🏁 Кінець канікул</label>
+                    <input type="date" id="vacation-end" onchange="saveVacationSettings()">
+                </div>
+
+                <button class="btn-nz" onclick="fireConfetti(); replaySplash();">🎄 Анімація ялинки та Салют</button>
             </div>
         </div>
     </main>
 
+    <!-- NAVIGATION BAR -->
     <nav>
         <div class="nav-item active" id="nav-home" onclick="switchTab('home')">
-            <span>🎃 Головна</span>
+            <i class="fa-solid fa-house"></i>
+            <span>Головна</span>
         </div>
         <div class="nav-item" id="nav-schedule" onclick="switchTab('schedule')">
-            <span>📅 Розклад</span>
+            <i class="fa-solid fa-book-open"></i>
+            <span>Розклад</span>
         </div>
-        <div class="nav-item" id="nav-grades" onclick="switchTab('grades')">
-            <span>📊 Оцінки</span>
+        <div class="nav-item" id="nav-attendance" onclick="switchTab('attendance')">
+            <i class="fa-solid fa-calendar-check"></i>
+            <span>Календар</span>
+        </div>
+        <div class="nav-item" id="nav-history" onclick="switchTab('grades')">
+            <i class="fa-solid fa-clock-rotate-left"></i>
+            <span>Табель</span>
         </div>
         <div class="nav-item" id="nav-profile" onclick="switchTab('profile')">
-            <span>⚙️ Профіль</span>
+            <i class="fa-solid fa-user"></i>
+            <span>Профіль</span>
         </div>
     </nav>
 
@@ -582,7 +971,7 @@
             "Четвер": [
                 { name: "Захист України", cab: "ЗЗСО №1" },
                 { name: "Захист України", cab: "ЗЗСО №1" },
-                { name: "Географія", cab: "К" },
+                { name: "Географія", cab: "3" },
                 { name: "Українська мова", cab: "10" },
                 { name: "Фізична культура", cab: "С/З" },
                 { name: "Українська література", cab: "6" }
@@ -608,69 +997,282 @@
         ];
 
         let currentSelectedDay = "Понеділок";
+        let isSnowActive = true;
+        let attendanceData = JSON.parse(localStorage.getItem('user_attendance') || '{}');
+
+        function triggerTreeExplosion() {
+            const tree = document.getElementById('tree');
+            const container = document.getElementById('tree-container');
+
+            if (!tree || !container) return;
+
+            for (let i = 0; i < 30; i++) {
+                let sparkle = document.createElement('div');
+                sparkle.className = 'sparkle';
+                container.appendChild(sparkle);
+
+                let angle = Math.random() * Math.PI * 2;
+                let distance = 70 + Math.random() * 110;
+                let x = Math.cos(angle) * distance;
+                let y = Math.sin(angle) * distance;
+
+                sparkle.animate([
+                    { transform: 'translate(0, 0) scale(1)', opacity: 1 },
+                    { transform: `translate(${x}px, ${y}px) scale(0)`, opacity: 0 }
+                ], {
+                    duration: 700,
+                    easing: 'cubic-bezier(0, .9, .57, 1)',
+                    fill: 'forwards'
+                });
+            }
+
+            tree.classList.add('tree-explode');
+
+            setTimeout(() => {
+                const splash = document.getElementById('splash-screen');
+                if (splash) {
+                    splash.style.opacity = '0';
+                    splash.style.visibility = 'hidden';
+                }
+            }, 600);
+        }
+
+        function replaySplash() {
+            const splash = document.getElementById('splash-screen');
+            const tree = document.getElementById('tree');
+            if (tree && splash) {
+                tree.classList.remove('tree-explode');
+                splash.style.visibility = 'visible';
+                splash.style.opacity = '1';
+                setTimeout(triggerTreeExplosion, 1800);
+            }
+        }
+
+        function quickMarkAttendance(type) {
+            const today = new Date().toISOString().split('T')[0];
+            attendanceData[today] = type;
+            cleanOldAttendanceData();
+            localStorage.setItem('user_attendance', JSON.stringify(attendanceData));
+            
+            document.getElementById('morning-status-text').innerText = `Збережено: ${type} на сьогодні (${today})`;
+            renderAttendanceHistory();
+            fireConfetti();
+        }
+
+        function selectAttendanceType(type) {
+            const dateVal = document.getElementById('attendance-date').value;
+            if (!dateVal) {
+                alert("Оберіть дату!");
+                return;
+            }
+            attendanceData[dateVal] = type;
+            cleanOldAttendanceData();
+            localStorage.setItem('user_attendance', JSON.stringify(attendanceData));
+            loadAttendanceForDate();
+            renderAttendanceHistory();
+            fireConfetti();
+        }
+
+        function loadAttendanceForDate() {
+            const dateVal = document.getElementById('attendance-date').value;
+            const currentType = attendanceData[dateVal] || null;
+
+            ['shk', 'r', 'n'].forEach(id => {
+                const btn = document.getElementById(`btn-att-${id}`);
+                if (btn) btn.style.borderColor = 'var(--card-border)';
+            });
+
+            if (currentType === 'ШК' && document.getElementById('btn-att-shk')) {
+                document.getElementById('btn-att-shk').style.borderColor = 'var(--accent-cyan)';
+            } else if (currentType === 'Р' && document.getElementById('btn-att-r')) {
+                document.getElementById('btn-att-r').style.borderColor = 'var(--accent-purple)';
+            } else if (currentType === 'Н' && document.getElementById('btn-att-n')) {
+                document.getElementById('btn-att-n').style.borderColor = '#ef4444';
+            }
+        }
+
+        function cleanOldAttendanceData() {
+            const now = new Date();
+            const sixMonthsAgo = new Date();
+            sixMonthsAgo.setDate(now.getDate() - 180);
+
+            for (const dateStr in attendanceData) {
+                const entryDate = new Date(dateStr);
+                if (entryDate < sixMonthsAgo) {
+                    delete attendanceData[dateStr];
+                }
+            }
+        }
+
+        function renderAttendanceHistory() {
+            const container = document.getElementById('attendance-history-list');
+            if (!container) return;
+            container.innerHTML = '';
+
+            const sortedDates = Object.keys(attendanceData).sort().reverse();
+            if (sortedDates.length === 0) {
+                container.innerHTML = '<div style="font-size: 12px; color: var(--text-muted); padding: 8px;">Немає записів за 6 місяців.</div>';
+                return;
+            }
+
+            sortedDates.forEach(d => {
+                const val = attendanceData[d];
+                let label = "❌ Відсутній";
+                if (val === 'ШК') label = "🚌 Шкільний автобус";
+                if (val === 'Р') label = " Рейсовий автобус";
+
+                container.innerHTML += `
+                    <div style="display: flex; justify-between; align-items: center; padding: 8px; border-bottom: 1px solid var(--card-border); font-size: 12px;">
+                        <span>📅 ${d}</span>
+                        <span style="font-weight: 700;">${label}</span>
+                    </div>
+                `;
+            });
+        }
+
+        function exportAttendanceFile(format = 'json') {
+            cleanOldAttendanceData();
+
+            let blob, filename;
+            const dateSuffix = new Date().toISOString().split('T')[0];
+
+            if (format === 'csv') {
+                let csvContent = "\uFEFFДата,Статус,Опис\n";
+                const sortedDates = Object.keys(attendanceData).sort().reverse();
+
+                sortedDates.forEach(date => {
+                    const status = attendanceData[date];
+                    let desc = "Відсутній";
+                    if (status === 'ШК') desc = "Шкільний автобус";
+                    if (status === 'Р') desc = "Рейсовий автобус";
+                    csvContent += `"${date}","${status}","${desc}"\n`;
+                });
+
+                blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                filename = `human_attendance_11A_${dateSuffix}.csv`;
+            } else {
+                const fileData = JSON.stringify(attendanceData, null, 2);
+                blob = new Blob([fileData], { type: 'application/json' });
+                filename = `human_attendance_11A_${dateSuffix}.json`;
+            }
+
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
+            alert(`✅ Файл (${format.toUpperCase()}) збережено! Ви можете відкрити його в Google Таблицях / Excel або зберегти на Google Диск.`);
+            fireConfetti();
+        }
+
+        function fireConfetti() {
+            if (typeof confetti === 'function') {
+                confetti({ particleCount: 80, spread: 60, origin: { y: 0.2 } });
+            }
+        }
+
+        const canvas = document.getElementById('snow-canvas');
+        const ctx = canvas ? canvas.getContext('2d') : null;
+        let particles = [];
+
+        function resizeCanvas() {
+            if (!canvas) return;
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+
+        function createParticles() {
+            if (!canvas) return;
+            particles = [];
+            for (let i = 0; i < 35; i++) {
+                particles.push({
+                    type: 'snow',
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    r: Math.random() * 3 + 1,
+                    d: Math.random() * 1 + 0.5
+                });
+            }
+            for (let i = 0; i < 12; i++) {
+                particles.push({
+                    type: 'tree',
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    size: Math.random() * 10 + 12,
+                    d: Math.random() * 1.2 + 0.6
+                });
+            }
+        }
+
+        function drawParticles() {
+            if (!isSnowActive || !ctx || !canvas) {
+                if (ctx && canvas) ctx.clearRect(0, 0, canvas.width, canvas.height);
+                return;
+            }
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            for (let i = 0; i < particles.length; i++) {
+                let p = particles[i];
+                if (p.type === 'snow') {
+                    ctx.fillStyle = "rgba(255, 255, 255, 0.7)";
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2, true);
+                    ctx.fill();
+                } else if (p.type === 'tree') {
+                    ctx.font = `${p.size}px sans-serif`;
+                    ctx.fillText("🌲", p.x, p.y);
+                }
+            }
+            updateParticles();
+            requestAnimationFrame(drawParticles);
+        }
+
+        function updateParticles() {
+            if (!canvas) return;
+            for (let i = 0; i < particles.length; i++) {
+                let p = particles[i];
+                p.y += p.d;
+                p.x += Math.sin(p.y * 0.04) * 0.5;
+
+                if (p.y > canvas.height) {
+                    p.y = -20;
+                    p.x = Math.random() * canvas.width;
+                }
+            }
+        }
+
+        function toggleSnow(val) {
+            isSnowActive = val;
+            localStorage.setItem('snow_active', val);
+            if (val) drawParticles();
+        }
 
         function timeToMinutes(timeStr) {
             const [h, m] = timeStr.split(':').map(Number);
             return h * 60 + m;
         }
 
-        function triggerPumpkinExplosion() {
-            const pumpkin = document.getElementById('pumpkin');
-            const container = document.getElementById('pumpkin-container');
-
-            for (let i = 0; i < 25; i++) {
-                let particle = document.createElement('div');
-                particle.className = 'particle';
-                container.appendChild(particle);
-
-                let angle = Math.random() * Math.PI * 2;
-                let distance = 60 + Math.random() * 100;
-                let x = Math.cos(angle) * distance;
-                let y = Math.sin(angle) * distance;
-
-                particle.animate([
-                    { transform: 'translate(0, 0) scale(1)', opacity: 1 },
-                    { transform: `translate(${x}px, ${y}px) scale(0)`, opacity: 0 }
-                ], {
-                    duration: 600,
-                    easing: 'cubic-bezier(0, .9, .57, 1)',
-                    fill: 'forwards'
-                });
-            }
-
-            pumpkin.classList.add('pumpkin-explode');
-
-            setTimeout(() => {
-                const splash = document.getElementById('splash-screen');
-                splash.style.opacity = '0';
-                splash.style.visibility = 'hidden';
-            }, 500);
-        }
-
-        function replaySplash() {
-            const splash = document.getElementById('splash-screen');
-            const pumpkin = document.getElementById('pumpkin');
-            pumpkin.classList.remove('pumpkin-explode');
-            splash.style.visibility = 'visible';
-            splash.style.opacity = '1';
-            setTimeout(triggerPumpkinExplosion, 1800);
-        }
-
         function updateRealTimeTimer() {
             const now = new Date();
+            const statusEl = document.getElementById('timer-status');
+            const clockEl = document.getElementById('timer-clock');
+            const infoEl = document.getElementById('timer-info');
+
+            if (!statusEl || !clockEl || !infoEl) return;
+
             const days = ["Неділя", "Понеділок", "Вівторок", "Середа", "Четвер", "П'ятниця", "Субота"];
             const currentDayName = days[now.getDay()];
             const currentMinutes = now.getHours() * 60 + now.getMinutes();
             const currentSeconds = now.getSeconds();
 
-            const statusEl = document.getElementById('timer-status');
-            const clockEl = document.getElementById('timer-clock');
-            const infoEl = document.getElementById('timer-info');
-
             const dayLessons = schedule11A[currentDayName];
 
             if (!dayLessons) {
-                statusEl.innerText = "🏖️ Вихідний день";
+                statusEl.innerText = "ВИХІДНИЙ ДЕНЬ";
                 clockEl.innerText = now.toLocaleTimeString('uk-UA');
                 infoEl.innerText = `${currentDayName}, уроків немає`;
                 return;
@@ -686,7 +1288,7 @@
                     let mins = Math.floor(totalSecsRemaining / 60);
                     let secs = totalSecsRemaining % 60;
 
-                    statusEl.innerText = `🔔 До кінця ${i + 1}-го уроку (${dayLessons[i].name})`;
+                    statusEl.innerText = `ДО КІНЦЯ ${i + 1}-ГО УРОКУ (${dayLessons[i].name})`;
                     clockEl.innerText = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
                     infoEl.innerText = `Каб. ${dayLessons[i].cab} • Триває урок`;
                     found = true;
@@ -700,7 +1302,7 @@
                         let mins = Math.floor(totalSecsRemaining / 60);
                         let secs = totalSecsRemaining % 60;
 
-                        statusEl.innerText = `☕ Перерва! До уроку №${i + 2}`;
+                        statusEl.innerText = `ПЕРЕРВА! ДО УРОКУ №${i + 2}`;
                         clockEl.innerText = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
                         infoEl.innerText = `Наступний: ${dayLessons[i + 1].name} (Каб. ${dayLessons[i + 1].cab})`;
                         found = true;
@@ -717,15 +1319,39 @@
                     let mins = Math.floor((totalSecsRemaining % 3600) / 60);
                     let secs = totalSecsRemaining % 60;
 
-                    statusEl.innerText = "🌅 До початку 1-го уроку";
+                    statusEl.innerText = "ДО ПОЧАТКУ 1-ГО УРОКУ";
                     clockEl.innerText = `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
                     infoEl.innerText = `Перший урок: ${dayLessons[0].name} (Каб. ${dayLessons[0].cab})`;
                 } else {
-                    statusEl.innerText = "🎃 Навчальний день завершено!";
+                    statusEl.innerText = "НАВЧАЛЬНИЙ ДЕНЬ ЗАВЕРШЕНО";
                     clockEl.innerText = now.toLocaleTimeString('uk-UA');
-                    infoEl.innerText = `${currentDayName} • Всі уроки пройшли`;
+                    infoEl.innerText = `${currentDayName} • Гарного вечора!`;
                 }
             }
+        }
+
+        function renderAdventCalendar() {
+            const container = document.getElementById('advent-container');
+            if (!container) return;
+            container.innerHTML = '';
+            const icons = ["🎄", "🎁", "❄️", "🎅", "☃️", "⭐", "🎉", "🔔"];
+            
+            for (let i = 1; i <= 8; i++) {
+                const isOpened = localStorage.getItem(`advent_${i}`) === 'true';
+                container.innerHTML += `
+                    <div class="advent-box ${isOpened ? 'opened' : ''}" onclick="openAdvent(${i})">
+                        <div style="font-size: 13px; font-weight: bold; color: var(--accent-gold);">${i}</div>
+                        <div style="font-size: 16px;">${isOpened ? '✨' : icons[(i - 1) % icons.length]}</div>
+                    </div>
+                `;
+            }
+        }
+
+        function openAdvent(day) {
+            localStorage.setItem(`advent_${day}`, 'true');
+            alert(`🎁 Сюрприз на ${day}-й день: Успіхів у навчанні та гарних оцінок на Human.ua! 🎄✨`);
+            fireConfetti();
+            renderAdventCalendar();
         }
 
         function selectDay(dayName) {
@@ -734,8 +1360,8 @@
                 btn.classList.toggle('active', btn.innerText.trim() === getShortDay(dayName));
             });
 
-            document.getElementById('selected-day-title').innerText = `📌 Розклад на ${dayName}`;
             const container = document.getElementById('day-lessons-list');
+            if (!container) return;
             container.innerHTML = '';
 
             const lessons = schedule11A[dayName] || [];
@@ -758,22 +1384,17 @@
         }
 
         function getShortDay(fullDay) {
-            const map = {
-                "Понеділок": "Пн",
-                "Вівторок": "Вт",
-                "Середа": "Ср",
-                "Четвер": "Чт",
-                "П'ятниця": "Пт"
-            };
+            const map = { "Понеділок": "Пн", "Вівторок": "Вт", "Середа": "Ср", "Четвер": "Чт", "П'ятниця": "Пт" };
             return map[fullDay] || "Пн";
         }
 
         function renderFullSchedule() {
             const container = document.getElementById('full-schedule-container');
+            if (!container) return;
             container.innerHTML = '';
 
             for (const [day, lessons] of Object.entries(schedule11A)) {
-                let dayHtml = `<div style="font-size: 15px; font-weight: 700; color: var(--accent-orange); margin: 14px 0 10px 0;">🗓️ ${day}</div>`;
+                let dayHtml = `<div style="font-size: 14px; font-weight: 800; color: var(--accent-cyan); margin: 14px 0 8px 0;">🗓️ ${day}</div>`;
                 lessons.forEach((lesson, idx) => {
                     const timeSlot = bellSchedule[idx] ? `${bellSchedule[idx].start} - ${bellSchedule[idx].end}` : '---';
                     dayHtml += `
@@ -798,6 +1419,7 @@
             }
 
             const container = document.getElementById('grades-list');
+            if (!container) return;
             container.innerHTML = '';
             let total = 0;
             let count = 0;
@@ -815,14 +1437,17 @@
                 container.innerHTML += `
                     <div class="grade-item">
                         <span style="font-size: 13px; font-weight: 600;">${subject}</span>
-                        <input type="text" class="grade-input" placeholder="Бали" value="${savedGrade}" 
+                        <input type="text" class="grade-input" placeholder="Бал" value="${savedGrade}" 
                             oninput="saveGrade('${subject}', this.value)">
                     </div>
                 `;
             });
 
             const gpa = count > 0 ? (total / count).toFixed(1) : "0.0";
-            document.getElementById('gpa-val').innerText = gpa;
+            const gpaVal = document.getElementById('gpa-val');
+            const gpaTitle = document.getElementById('gpa-title-display');
+            if (gpaVal) gpaVal.innerText = gpa;
+            if (gpaTitle) gpaTitle.innerText = `Середній бал: ${gpa}`;
         }
 
         function saveHW(day, idx, value) {
@@ -834,50 +1459,111 @@
             renderGrades();
         }
 
+        function saveVacationSettings() {
+            const isManual = document.getElementById('toggle-vacation')?.checked;
+            const start = document.getElementById('vacation-start')?.value;
+            const end = document.getElementById('vacation-end')?.value;
+
+            localStorage.setItem('vacation_manual', isManual);
+            localStorage.setItem('vacation_start', start);
+            localStorage.setItem('vacation_end', end);
+
+            updateRealTimeTimer();
+        }
+
+        function loadVacationSettings() {
+            const isManual = localStorage.getItem('vacation_manual') === 'true';
+            const start = localStorage.getItem('vacation_start') || '';
+            const end = localStorage.getItem('vacation_end') || '';
+
+            const toggle = document.getElementById('toggle-vacation');
+            const startEl = document.getElementById('vacation-start');
+            const endEl = document.getElementById('vacation-end');
+
+            if (toggle) toggle.checked = isManual;
+            if (startEl) startEl.value = start;
+            if (endEl) endEl.value = end;
+        }
+
         function saveProfile() {
-            const name = document.getElementById('input-profile-name').value || "Учень";
-            const cls = document.getElementById('input-profile-class').value || "11-А";
+            const name = document.getElementById('input-profile-name')?.value || "ivan";
+            const cls = document.getElementById('input-profile-class')?.value || "11-А";
 
             localStorage.setItem('user_name', name);
             localStorage.setItem('user_class', cls);
 
-            document.getElementById('user-name-display').innerText = name;
-            document.getElementById('user-class-display').innerText = `${cls} клас • Halloween 🎃`;
-            document.getElementById('avatar-display').innerText = cls;
+            const title = document.getElementById('greeting-title');
+            const sub = document.getElementById('greeting-sub');
+            const avatar = document.getElementById('avatar-display');
+
+            if (title) title.innerText = `Добрий вечір, ${name}`;
+            if (sub) sub.innerText = `${cls} • п'ятниця, 30 жовтня`;
+            if (avatar) avatar.innerText = cls;
         }
 
         function loadProfile() {
-            const name = localStorage.getItem('user_name') || "Учень";
+            const name = localStorage.getItem('user_name') || "ivan";
             const cls = localStorage.getItem('user_class') || "11-А";
 
-            document.getElementById('input-profile-name').value = name;
-            document.getElementById('input-profile-class').value = cls;
+            const inputName = document.getElementById('input-profile-name');
+            const inputClass = document.getElementById('input-profile-class');
 
-            document.getElementById('user-name-display').innerText = name;
-            document.getElementById('user-class-display').innerText = `${cls} клас • Halloween 🎃`;
-            document.getElementById('avatar-display').innerText = cls;
+            if (inputName) inputName.value = name;
+            if (inputClass) inputClass.value = cls;
+
+            const title = document.getElementById('greeting-title');
+            const sub = document.getElementById('greeting-sub');
+            const avatar = document.getElementById('avatar-display');
+
+            if (title) title.innerText = `Добрий вечір, ${name}`;
+            if (sub) sub.innerText = `${cls} • п'ятниця, 30 жовтня`;
+            if (avatar) avatar.innerText = cls;
         }
 
         function switchTab(tabId) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
 
-            document.getElementById(`tab-${tabId}`).classList.add('active');
-            document.getElementById(`nav-${tabId}`).classList.add('active');
+            const targetTab = document.getElementById(`tab-${tabId}`);
+            if (targetTab) targetTab.classList.add('active');
+
+            const navBtn = document.getElementById(`nav-${tabId}`) || document.getElementById('nav-home');
+            if (navBtn) navBtn.classList.add('active');
             window.scrollTo(0, 0);
         }
 
+        function scrollToHomework() {
+            switchTab('home');
+            const list = document.getElementById('day-lessons-list');
+            if (list) list.scrollIntoView({ behavior: 'smooth' });
+        }
+
         window.onload = () => {
-            setTimeout(triggerPumpkinExplosion, 2200);
+            const todayStr = new Date().toISOString().split('T')[0];
+            const attDateInput = document.getElementById('attendance-date');
+            if (attDateInput) {
+                attDateInput.value = todayStr;
+                loadAttendanceForDate();
+            }
+
+            resizeCanvas();
+            createParticles();
+            drawParticles();
+            window.addEventListener('resize', resizeCanvas);
+
+            setTimeout(triggerTreeExplosion, 2000);
 
             const days = ["Неділя", "Понеділок", "Вівторок", "Середа", "Четвер", "П'ятниця", "Субота"];
             const today = days[new Date().getDay()];
             currentSelectedDay = schedule11A[today] ? today : "Понеділок";
 
             loadProfile();
+            loadVacationSettings();
             selectDay(currentSelectedDay);
             renderFullSchedule();
             renderGrades();
+            renderAdventCalendar();
+            renderAttendanceHistory();
             updateRealTimeTimer();
             setInterval(updateRealTimeTimer, 1000);
         };
