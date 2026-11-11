@@ -4,20 +4,82 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Human.ua • 11-А</title>
-    <!-- FontAwesome Icons & Canvas Confetti -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
         :root {
             --bg-dark: #090a10;
-            --card-bg: #121624;
+            --card-bg: rgba(18, 22, 36, 0.85);
             --card-border: rgba(255, 255, 255, 0.08);
             --accent-purple: #8b5cf6;
             --accent-cyan: #06b6d4;
             --accent-green: #10b981;
             --accent-gold: #ffb703;
+            --accent-pink: #ec4899;
             --text-main: #f9fafb;
             --text-muted: #9ca3af;
+            --grad-main: linear-gradient(135deg, #8b5cf6, #06b6d4);
+            --grad-bg: radial-gradient(circle at 15% 15%, rgba(139, 92, 246, 0.15) 0%, transparent 45%),
+                       radial-gradient(circle at 85% 85%, rgba(6, 182, 212, 0.12) 0%, transparent 45%);
+            --grad-card: linear-gradient(135deg, rgba(139, 92, 246, 0.15), rgba(6, 182, 212, 0.1));
+        }
+
+        body.theme-purple {
+            --grad-main: linear-gradient(135deg, #8b5cf6, #ec4899);
+            --grad-bg: radial-gradient(circle at 15% 15%, rgba(139, 92, 246, 0.2) 0%, transparent 45%),
+                       radial-gradient(circle at 85% 85%, rgba(236, 72, 153, 0.15) 0%, transparent 45%);
+            --grad-card: linear-gradient(135deg, rgba(139, 92, 246, 0.18), rgba(236, 72, 153, 0.12));
+        }
+        body.theme-cyan {
+            --grad-main: linear-gradient(135deg, #06b6d4, #10b981);
+            --grad-bg: radial-gradient(circle at 15% 15%, rgba(6, 182, 212, 0.2) 0%, transparent 45%),
+                       radial-gradient(circle at 85% 85%, rgba(16, 185, 129, 0.15) 0%, transparent 45%);
+            --grad-card: linear-gradient(135deg, rgba(6, 182, 212, 0.18), rgba(16, 185, 129, 0.12));
+        }
+        body.theme-sunset {
+            --grad-main: linear-gradient(135deg, #f97316, #ec4899);
+            --grad-bg: radial-gradient(circle at 15% 15%, rgba(249, 115, 22, 0.2) 0%, transparent 45%),
+                       radial-gradient(circle at 85% 85%, rgba(236, 72, 153, 0.15) 0%, transparent 45%);
+            --grad-card: linear-gradient(135deg, rgba(249, 115, 22, 0.18), rgba(236, 72, 153, 0.12));
+            --accent-purple: #f97316;
+            --accent-cyan: #ec4899;
+        }
+        body.theme-mint {
+            --grad-main: linear-gradient(135deg, #10b981, #06b6d4);
+            --grad-bg: radial-gradient(circle at 15% 15%, rgba(16, 185, 129, 0.2) 0%, transparent 45%),
+                       radial-gradient(circle at 85% 85%, rgba(6, 182, 212, 0.15) 0%, transparent 45%);
+            --grad-card: linear-gradient(135deg, rgba(16, 185, 129, 0.18), rgba(6, 182, 212, 0.12));
+            --accent-purple: #10b981;
+            --accent-cyan: #06b6d4;
+        }
+        body.theme-gold {
+            --grad-main: linear-gradient(135deg, #ffb703, #f97316);
+            --grad-bg: radial-gradient(circle at 15% 15%, rgba(255, 183, 3, 0.18) 0%, transparent 45%),
+                       radial-gradient(circle at 85% 85%, rgba(249, 115, 22, 0.15) 0%, transparent 45%);
+            --grad-card: linear-gradient(135deg, rgba(255, 183, 3, 0.18), rgba(249, 115, 22, 0.12));
+            --accent-purple: #ffb703;
+            --accent-cyan: #f97316;
+        }
+
+        body.weather-sunny {
+            --grad-bg: radial-gradient(circle at 15% 15%, rgba(255, 183, 3, 0.25) 0%, transparent 50%),
+                       radial-gradient(circle at 85% 85%, rgba(249, 115, 22, 0.2) 0%, transparent 50%),
+                       linear-gradient(180deg, #1a1a2e 0%, #090a10 100%);
+        }
+        body.weather-rainy {
+            --grad-bg: radial-gradient(circle at 15% 15%, rgba(6, 182, 212, 0.15) 0%, transparent 50%),
+                       radial-gradient(circle at 85% 85%, rgba(59, 130, 246, 0.2) 0%, transparent 50%),
+                       linear-gradient(180deg, #0f172a 0%, #090a10 100%);
+        }
+        body.weather-snowy {
+            --grad-bg: radial-gradient(circle at 15% 15%, rgba(255, 255, 255, 0.12) 0%, transparent 50%),
+                       radial-gradient(circle at 85% 85%, rgba(147, 197, 253, 0.15) 0%, transparent 50%),
+                       linear-gradient(180deg, #1e293b 0%, #090a10 100%);
+        }
+        body.weather-cloudy {
+            --grad-bg: radial-gradient(circle at 15% 15%, rgba(148, 163, 184, 0.15) 0%, transparent 50%),
+                       radial-gradient(circle at 85% 85%, rgba(100, 116, 139, 0.15) 0%, transparent 50%),
+                       linear-gradient(180deg, #1f2937 0%, #090a10 100%);
         }
 
         * {
@@ -34,618 +96,412 @@
             min-height: 100vh;
             padding-bottom: 90px;
             overflow-x: hidden;
-            background-image: 
-                radial-gradient(circle at 15% 15%, rgba(139, 92, 246, 0.15) 0%, transparent 45%),
-                radial-gradient(circle at 85% 85%, rgba(6, 182, 212, 0.12) 0%, transparent 45%);
+            background-image: var(--grad-bg);
             background-attachment: fixed;
             position: relative;
+            transition: background-image 0.6s ease;
         }
 
-        /* FALLING SNOW CANVAS */
-        #snow-canvas {
+        /* КАНВАС ОПАДІВ */
+        #weather-canvas {
             position: fixed;
-            top: 0;
-            left: 0;
+            inset: 0;
             width: 100%;
             height: 100%;
             pointer-events: none;
-            z-index: 10;
+            z-index: 15;
         }
 
-        /* SPLASH SCREEN ANIMATION */
+        /* SPLASH */
         #splash-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: #05070c;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
+            position: fixed; inset: 0;
+            background: linear-gradient(135deg, #05070c 0%, #1a1033 50%, #05070c 100%);
+            display: flex; flex-direction: column;
+            justify-content: center; align-items: center;
             z-index: 9999;
             transition: opacity 0.6s ease, visibility 0.6s;
         }
-
-        .tree-wrapper {
-            position: relative;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-        }
-
+        .tree-wrapper { position: relative; display: flex; justify-content: center; align-items: center; cursor: pointer; }
         .christmas-tree {
             font-size: 100px;
             animation: swayTree 2s ease-in-out infinite alternate;
             filter: drop-shadow(0 0 35px rgba(139, 92, 246, 0.8));
             user-select: none;
         }
-
         @keyframes swayTree {
             0% { transform: translateY(-5px) rotate(-4deg); }
             100% { transform: translateY(8px) rotate(4deg); }
         }
-
-        .tree-explode {
-            animation: explodeTree 0.7s forwards ease-out !important;
-        }
-
+        .tree-explode { animation: explodeTree 0.7s forwards ease-out !important; }
         @keyframes explodeTree {
             0% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(2.2) rotate(10deg); opacity: 0.9; filter: drop-shadow(0 0 100px rgba(255, 255, 255, 1)); }
+            50% { transform: scale(2.2) rotate(10deg); opacity: 0.9; filter: drop-shadow(0 0 100px rgba(255,255,255,1)); }
             100% { transform: scale(3.5); opacity: 0; }
         }
-
         .sparkle {
-            position: absolute;
-            width: 8px;
-            height: 8px;
-            background: #06b6d4;
-            border-radius: 50%;
-            pointer-events: none;
-            opacity: 0;
+            position: absolute; width: 8px; height: 8px;
+            background: #06b6d4; border-radius: 50%;
+            pointer-events: none; opacity: 0;
             box-shadow: 0 0 12px #06b6d4;
         }
-
         .splash-text {
-            margin-top: 20px;
-            font-size: 15px;
-            font-weight: 700;
-            color: var(--accent-cyan);
-            letter-spacing: 1.5px;
-            text-transform: uppercase;
+            margin-top: 20px; font-size: 15px; font-weight: 700;
+            color: var(--accent-cyan); letter-spacing: 1.5px; text-transform: uppercase;
         }
 
-        /* HEADER HUMAN.UA STYLE */
         header {
             padding: 16px 20px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
+            display: flex; align-items: center; justify-content: space-between;
             background: rgba(9, 10, 16, 0.85);
             backdrop-filter: blur(16px);
-            position: sticky;
-            top: 0;
-            z-index: 50;
+            position: sticky; top: 0; z-index: 50;
             border-bottom: 1px solid var(--card-border);
         }
-
-        .brand-title {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 16px;
-            font-weight: 800;
-            color: #ffffff;
-        }
-
-        .brand-title i {
-            color: var(--accent-purple);
-        }
-
+        .brand-title { display: flex; align-items: center; gap: 8px; font-size: 16px; font-weight: 800; color: #fff; }
+        .brand-title i { color: var(--accent-purple); }
         .user-greeting {
-            padding: 16px 20px 8px 20px;
-            max-width: 600px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            padding: 16px 20px 8px 20px; max-width: 600px; margin: 0 auto;
+            display: flex; justify-content: space-between; align-items: center;
         }
-
-        .greeting-text h2 {
-            font-size: 22px;
-            font-weight: 800;
-            letter-spacing: -0.5px;
-        }
-
-        .greeting-text p {
-            font-size: 13px;
-            color: var(--text-muted);
-            margin-top: 2px;
-        }
-
+        .greeting-text h2 { font-size: 22px; font-weight: 800; letter-spacing: -0.5px; }
+        .greeting-text p { font-size: 13px; color: var(--text-muted); margin-top: 2px; }
         .user-avatar-badge {
-            width: 44px;
-            height: 44px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--accent-purple), var(--accent-cyan));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 800;
-            font-size: 15px;
-            color: #ffffff;
+            width: 44px; height: 44px; border-radius: 50%;
+            background: var(--grad-main);
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 800; font-size: 15px; color: #fff;
             box-shadow: 0 0 18px rgba(139, 92, 246, 0.4);
             border: 2px solid rgba(255, 255, 255, 0.15);
         }
 
-        main {
-            padding: 12px 16px;
-            max-width: 600px;
-            margin: 0 auto;
-            position: relative;
-            z-index: 20;
-        }
+        main { padding: 12px 16px; max-width: 600px; margin: 0 auto; position: relative; z-index: 20; }
 
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
-            animation: fadeIn 0.35s ease-out;
-        }
-
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: fadeIn 0.35s ease-out; }
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(6px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* HUMAN.UA CARDS STYLING */
         .card-nz {
             background: var(--card-bg);
             border: 1px solid var(--card-border);
-            border-radius: 22px;
-            padding: 18px;
-            margin-bottom: 14px;
+            border-radius: 22px; padding: 18px; margin-bottom: 14px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
-            position: relative;
-            overflow: hidden;
+            position: relative; overflow: hidden;
+            transition: background 0.4s ease;
         }
-
         .card-nz-header {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 11px;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 0.8px;
-            color: var(--text-muted);
-            margin-bottom: 10px;
+            display: flex; align-items: center; gap: 8px;
+            font-size: 11px; font-weight: 800; text-transform: uppercase;
+            letter-spacing: 0.8px; color: var(--text-muted); margin-bottom: 10px;
         }
-
         .dot-indicator {
-            width: 7px;
-            height: 7px;
-            border-radius: 50%;
-            background-color: #ef4444;
-            display: inline-block;
+            width: 7px; height: 7px; border-radius: 50%;
+            background-color: #ef4444; display: inline-block;
             box-shadow: 0 0 8px #ef4444;
         }
 
-        /* GPA BIG CARD */
-        .gpa-title {
-            font-size: 20px;
-            font-weight: 800;
-            color: #ffffff;
-            margin-bottom: 4px;
-        }
+        .gpa-title { font-size: 20px; font-weight: 800; color: #fff; margin-bottom: 4px; }
+        .gpa-sub { font-size: 12px; color: var(--text-muted); display: flex; align-items: center; gap: 6px; }
+        .gpa-sub i { color: var(--accent-cyan); }
 
-        .gpa-sub {
-            font-size: 12px;
-            color: var(--text-muted);
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .gpa-sub i {
-            color: var(--accent-cyan);
-        }
-
-        /* QUICK ACTION BUTTONS ROW */
         .quick-actions-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            margin-bottom: 14px;
+            display: grid; grid-template-columns: repeat(3, 1fr);
+            gap: 10px; margin-bottom: 14px;
         }
-
         .quick-btn {
             background: var(--card-bg);
             border: 1px solid var(--card-border);
-            border-radius: 18px;
-            padding: 14px 10px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            cursor: pointer;
-            transition: all 0.2s ease;
+            border-radius: 18px; padding: 14px 10px;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            gap: 8px; cursor: pointer; transition: all 0.2s ease;
+            position: relative; overflow: hidden;
         }
+        .quick-btn:active { transform: scale(0.96); background: rgba(255,255,255,0.05); }
+        .quick-btn i { font-size: 20px; color: var(--accent-purple); }
+        .quick-btn span { font-size: 12px; font-weight: 700; color: #fff; }
 
-        .quick-btn:active {
-            transform: scale(0.96);
-            background: rgba(255, 255, 255, 0.05);
-        }
-
-        .quick-btn i {
-            font-size: 20px;
-            color: var(--accent-purple);
-        }
-
-        .quick-btn span {
-            font-size: 12px;
-            font-weight: 700;
-            color: #ffffff;
-        }
-
-        /* STREAK CARD */
         .streak-card {
-            background: linear-gradient(135deg, rgba(139, 92, 246, 0.15), rgba(6, 182, 212, 0.1));
+            background: var(--grad-card);
             border: 1px solid rgba(139, 92, 246, 0.3);
         }
-
-        .streak-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 8px;
-        }
-
+        .streak-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
         .streak-badge {
-            background: rgba(139, 92, 246, 0.2);
-            color: #c4b5fd;
+            background: rgba(139, 92, 246, 0.2); color: #c4b5fd;
             border: 1px solid rgba(139, 92, 246, 0.4);
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 11px;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 6px;
+            padding: 4px 12px; border-radius: 20px;
+            font-size: 11px; font-weight: 700;
+            display: flex; align-items: center; gap: 6px;
         }
-
         .streak-val {
-            font-size: 56px;
-            font-weight: 900;
-            color: var(--accent-cyan);
-            line-height: 1;
-            margin: 6px 0;
+            font-size: 56px; font-weight: 900; color: var(--accent-cyan);
+            line-height: 1; margin: 6px 0;
             text-shadow: 0 0 20px rgba(6, 182, 212, 0.4);
         }
-
-        .streak-unit {
-            font-size: 16px;
-            font-weight: 700;
-            color: #ffffff;
-            margin-left: 6px;
-        }
-
+        .streak-unit { font-size: 16px; font-weight: 700; color: #fff; margin-left: 6px; }
         .pill-tag {
-            display: inline-block;
-            background: rgba(255, 255, 255, 0.08);
-            color: var(--text-muted);
-            padding: 4px 12px;
-            border-radius: 12px;
-            font-size: 11px;
-            font-weight: 600;
+            display: inline-block; background: rgba(255,255,255,0.08);
+            color: var(--text-muted); padding: 4px 12px;
+            border-radius: 12px; font-size: 11px; font-weight: 600;
         }
 
-        /* NOTIFICATION BOX */
         .notice-card {
-            background: linear-gradient(135deg, rgba(6, 182, 212, 0.15), rgba(16, 185, 129, 0.1));
+            background: var(--grad-card);
             border: 1px solid rgba(6, 182, 212, 0.3);
-            border-radius: 18px;
-            padding: 14px;
-            margin-bottom: 14px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
+            border-radius: 18px; padding: 14px; margin-bottom: 14px;
+            display: flex; align-items: center; gap: 12px;
         }
-
         .notice-icon {
-            width: 38px;
-            height: 38px;
-            border-radius: 12px;
-            background: rgba(6, 182, 212, 0.2);
-            color: var(--accent-cyan);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-            flex-shrink: 0;
+            width: 38px; height: 38px; border-radius: 12px;
+            background: rgba(6, 182, 212, 0.2); color: var(--accent-cyan);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 18px; flex-shrink: 0;
         }
 
-        /* TIMER BOX */
         .timer-display {
-            font-size: 30px;
-            font-weight: 800;
-            color: #ffffff;
-            font-variant-numeric: tabular-nums;
-            margin: 4px 0;
+            font-size: 30px; font-weight: 800; color: #fff;
+            font-variant-numeric: tabular-nums; margin: 4px 0;
         }
 
-        /* DAY PICKER */
         .day-picker {
-            display: flex;
-            gap: 6px;
-            overflow-x: auto;
-            padding-bottom: 6px;
-            margin-bottom: 12px;
+            display: flex; gap: 6px; overflow-x: auto;
+            padding-bottom: 6px; margin-bottom: 12px;
             scrollbar-width: none;
         }
-
         .day-picker::-webkit-scrollbar { display: none; }
-
         .day-btn {
-            background: rgba(255, 255, 255, 0.04);
+            background: rgba(255,255,255,0.04);
             border: 1px solid var(--card-border);
             color: var(--text-muted);
-            padding: 8px 14px;
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: 700;
-            cursor: pointer;
-            white-space: nowrap;
-            flex: 1;
-            text-align: center;
+            padding: 8px 14px; border-radius: 12px;
+            font-size: 12px; font-weight: 700;
+            cursor: pointer; white-space: nowrap;
+            flex: 1; text-align: center;
         }
-
         .day-btn.active {
-            background: var(--accent-purple);
-            color: #ffffff;
-            border-color: var(--accent-purple);
+            background: var(--grad-main);
+            color: #fff; border-color: transparent;
             box-shadow: 0 0 12px rgba(139, 92, 246, 0.5);
         }
 
-        /* LESSON ITEM */
         .lesson-item {
-            background: rgba(255, 255, 255, 0.02);
+            background: rgba(255,255,255,0.02);
             border: 1px solid var(--card-border);
-            border-radius: 14px;
-            padding: 12px;
-            margin-bottom: 8px;
+            border-radius: 14px; padding: 12px; margin-bottom: 8px;
+            position: relative; overflow: hidden;
         }
-
-        .lesson-main {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
+        .lesson-main { display: flex; justify-content: space-between; align-items: center; }
         .lesson-num {
-            width: 26px;
-            height: 26px;
-            border-radius: 8px;
+            width: 26px; height: 26px; border-radius: 8px;
             background: rgba(139, 92, 246, 0.15);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-            font-weight: 800;
-            color: var(--accent-purple);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 12px; font-weight: 800; color: var(--accent-purple);
         }
-
-        .lesson-name {
-            font-weight: 700;
-            font-size: 14px;
-            flex: 1;
-            margin-left: 10px;
-        }
-
+        .lesson-name { font-weight: 700; font-size: 14px; flex: 1; margin-left: 10px; }
         .cabinet-badge {
-            background: rgba(6, 182, 212, 0.15);
-            color: var(--accent-cyan);
+            background: rgba(6, 182, 212, 0.15); color: var(--accent-cyan);
             border: 1px solid rgba(6, 182, 212, 0.3);
-            font-size: 11px;
-            padding: 2px 8px;
-            border-radius: 8px;
-            font-weight: 700;
+            font-size: 11px; padding: 2px 8px; border-radius: 8px; font-weight: 700;
         }
-
-        .lesson-time {
-            font-size: 11px;
-            color: var(--text-muted);
-            margin-top: 4px;
-            margin-left: 36px;
-        }
-
+        .lesson-time { font-size: 11px; color: var(--text-muted); margin-top: 4px; margin-left: 36px; }
         .hw-input {
-            width: 100%;
-            background: rgba(0, 0, 0, 0.4);
-            border: 1px solid var(--card-border);
-            border-radius: 8px;
-            padding: 8px 10px;
-            color: var(--text-main);
-            font-size: 12px;
-            margin-top: 8px;
-            outline: none;
+            width: 100%; background: rgba(0,0,0,0.4);
+            border: 1px solid var(--card-border); border-radius: 8px;
+            padding: 8px 10px; color: var(--text-main);
+            font-size: 12px; margin-top: 8px; outline: none;
         }
 
-        /* ADVENT GRID */
-        .advent-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 8px;
-            margin-top: 8px;
-        }
-
+        .advent-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 8px; }
         .advent-box {
-            background: rgba(255, 255, 255, 0.03);
+            background: rgba(255,255,255,0.03);
             border: 1px solid var(--card-border);
-            border-radius: 12px;
-            aspect-ratio: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
+            border-radius: 12px; aspect-ratio: 1;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center; cursor: pointer;
+            position: relative; overflow: hidden;
         }
+        .advent-box.opened { background: rgba(16, 185, 129, 0.15); border-color: var(--accent-green); }
 
-        .advent-box.opened {
-            background: rgba(16, 185, 129, 0.15);
-            border-color: var(--accent-green);
-        }
-
-        /* GRADES */
         .grade-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.05);
         }
-
         .grade-input {
-            width: 70px;
-            background: rgba(0, 0, 0, 0.4);
-            border: 1px solid var(--card-border);
-            border-radius: 6px;
-            padding: 6px;
-            color: var(--text-main);
-            text-align: center;
-            font-size: 13px;
+            width: 70px; background: rgba(0,0,0,0.4);
+            border: 1px solid var(--card-border); border-radius: 6px;
+            padding: 6px; color: var(--text-main);
+            text-align: center; font-size: 13px;
         }
 
-        /* PROFILE */
-        .profile-field {
-            margin-bottom: 12px;
+        .profile-field { margin-bottom: 12px; }
+        .profile-field label { display: block; font-size: 11px; color: var(--text-muted); margin-bottom: 4px; }
+        .profile-field input, .profile-field select {
+            width: 100%; background: rgba(0,0,0,0.4);
+            border: 1px solid var(--card-border); border-radius: 8px;
+            padding: 10px; color: var(--text-main);
+            font-size: 14px; outline: none;
         }
 
-        .profile-field label {
-            display: block;
-            font-size: 11px;
-            color: var(--text-muted);
-            margin-bottom: 4px;
-        }
-
-        .profile-field input {
-            width: 100%;
-            background: rgba(0, 0, 0, 0.4);
-            border: 1px solid var(--card-border);
-            border-radius: 8px;
-            padding: 10px;
-            color: var(--text-main);
-            font-size: 14px;
-            outline: none;
-        }
-
-        .toggle-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-        }
-
-        .switch {
-            position: relative;
-            display: inline-block;
-            width: 44px;
-            height: 22px;
-        }
-
+        .toggle-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .switch { position: relative; display: inline-block; width: 44px; height: 22px; }
         .switch input { opacity: 0; width: 0; height: 0; }
-
         .slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background-color: #262c3a;
-            transition: .3s;
-            border-radius: 22px;
+            position: absolute; cursor: pointer; inset: 0;
+            background-color: #262c3a; transition: .3s; border-radius: 22px;
         }
-
         .slider:before {
-            position: absolute;
-            content: "";
-            height: 16px;
-            width: 16px;
-            left: 3px;
-            bottom: 3px;
-            background-color: white;
-            transition: .3s;
-            border-radius: 50%;
+            position: absolute; content: "";
+            height: 16px; width: 16px; left: 3px; bottom: 3px;
+            background-color: white; transition: .3s; border-radius: 50%;
         }
-
-        input:checked + .slider { background-color: var(--accent-purple); }
+        input:checked + .slider { background: var(--grad-main); }
         input:checked + .slider:before { transform: translateX(22px); }
 
         .btn-nz {
-            width: 100%;
-            background: linear-gradient(135deg, var(--accent-purple), var(--accent-cyan));
-            border: none;
-            color: white;
-            padding: 12px;
+            width: 100%; background: var(--grad-main);
+            border: none; color: #fff; padding: 12px;
+            border-radius: 12px; font-weight: 700; font-size: 14px;
+            cursor: pointer; margin-top: 10px;
+            transition: transform 0.15s ease;
+        }
+        .btn-nz:active { transform: scale(0.97); }
+
+        .theme-grid {
+            display: grid; grid-template-columns: repeat(3, 1fr);
+            gap: 10px; margin-bottom: 12px;
+        }
+        .theme-swatch {
+            aspect-ratio: 1; border-radius: 14px;
+            border: 2px solid transparent; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 20px; transition: all 0.2s ease;
+            position: relative; overflow: hidden;
+        }
+        .theme-swatch:hover { transform: scale(1.05); }
+        .theme-swatch.active { border-color: #fff; box-shadow: 0 0 16px rgba(255,255,255,0.5); }
+        .theme-swatch.active::after {
+            content: '✓'; position: absolute;
+            top: 4px; right: 6px;
+            font-size: 12px; color: #fff; font-weight: 900;
+        }
+        .sw-purple { background: linear-gradient(135deg, #8b5cf6, #ec4899); }
+        .sw-cyan { background: linear-gradient(135deg, #06b6d4, #10b981); }
+        .sw-sunset { background: linear-gradient(135deg, #f97316, #ec4899); }
+        .sw-mint { background: linear-gradient(135deg, #10b981, #06b6d4); }
+        .sw-gold { background: linear-gradient(135deg, #ffb703, #f97316); }
+        .sw-classic { background: linear-gradient(135deg, #121624, #2a2f45); }
+
+        .weather-card {
+            background: var(--grad-card);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 18px; padding: 14px;
+            display: flex; align-items: center; gap: 14px;
+            margin-bottom: 14px;
+        }
+        .weather-icon { font-size: 38px; line-height: 1; filter: drop-shadow(0 0 8px currentColor); }
+        .weather-info { flex: 1; }
+        .weather-temp { font-size: 22px; font-weight: 800; }
+        .weather-desc { font-size: 12px; color: var(--text-muted); }
+        .weather-loc { font-size: 11px; color: var(--accent-cyan); margin-top: 2px; }
+
+        .search-results { max-height: 240px; overflow-y: auto; margin-top: 10px; }
+        .search-result-item {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--card-border);
+            border-radius: 10px; padding: 10px;
+            margin-bottom: 6px; cursor: pointer;
+            font-size: 13px; transition: all 0.15s ease;
+        }
+        .search-result-item:hover { background: rgba(255,255,255,0.08); border-color: var(--accent-cyan); }
+        .search-result-item small { color: var(--text-muted); font-size: 11px; }
+
+        .btn-secondary {
+            background: rgba(255,255,255,0.06);
+            border: 1px solid var(--card-border);
+            color: var(--text-main); padding: 10px;
+            border-radius: 10px; font-weight: 700;
+            font-size: 13px; cursor: pointer;
+            display: flex; align-items: center;
+            justify-content: center; gap: 6px;
+        }
+        .btn-secondary:active { transform: scale(0.97); }
+
+        /* ПЕРЕМИКАЧ ОПАДІВ */
+        .weather-mode-picker {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 6px;
+            margin-bottom: 14px;
+        }
+        .wm-btn {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid var(--card-border);
+            color: var(--text-muted);
+            padding: 10px 4px;
             border-radius: 12px;
+            font-size: 11px;
             font-weight: 700;
-            font-size: 14px;
             cursor: pointer;
-            margin-top: 10px;
-        }
-
-        /* BOTTOM NAVBAR HUMAN.UA */
-        nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: rgba(9, 10, 16, 0.92);
-            backdrop-filter: blur(16px);
-            border-top: 1px solid var(--card-border);
-            display: flex;
-            justify-content: space-around;
-            padding: 8px 0 12px 0;
-            z-index: 100;
-        }
-
-        .nav-item {
             display: flex;
             flex-direction: column;
             align-items: center;
             gap: 4px;
-            color: var(--text-muted);
-            text-decoration: none;
-            font-size: 10px;
-            font-weight: 600;
-            cursor: pointer;
-            padding: 6px 14px;
-            border-radius: 16px;
+            transition: all 0.2s ease;
+        }
+        .wm-btn .wm-icon { font-size: 18px; }
+        .wm-btn.active {
+            background: var(--grad-main);
+            color: #fff;
+            border-color: transparent;
+            box-shadow: 0 0 12px rgba(139, 92, 246, 0.5);
+        }
+        .wm-btn:active { transform: scale(0.95); }
+
+        /* Мокрий блиск під час дощу */
+        body.raining .card-nz,
+        body.raining .quick-btn,
+        body.raining .notice-card,
+        body.raining .weather-card,
+        body.raining header,
+        body.raining nav,
+        body.raining .lesson-item {
+            background-image:
+                linear-gradient(180deg,
+                    rgba(180, 220, 255, 0.06) 0%,
+                    transparent 30%,
+                    transparent 70%,
+                    rgba(120, 180, 255, 0.04) 100%);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(180, 220, 255, 0.08);
         }
 
-        .nav-item i {
-            font-size: 18px;
+        nav {
+            position: fixed; bottom: 0; left: 0; right: 0;
+            background: rgba(9, 10, 16, 0.92);
+            backdrop-filter: blur(16px);
+            border-top: 1px solid var(--card-border);
+            display: flex; justify-content: space-around;
+            padding: 8px 0 12px 0; z-index: 100;
         }
+        .nav-item {
+            display: flex; flex-direction: column;
+            align-items: center; gap: 4px;
+            color: var(--text-muted); text-decoration: none;
+            font-size: 10px; font-weight: 600;
+            cursor: pointer; padding: 6px 14px; border-radius: 16px;
+        }
+        .nav-item i { font-size: 18px; }
+        .nav-item.active { color: #fff; background: rgba(255,255,255,0.08); }
+        .nav-item.active i { color: var(--accent-cyan); }
 
-        .nav-item.active {
-            color: #ffffff;
-            background: rgba(255, 255, 255, 0.08);
-        }
-
-        .nav-item.active i {
-            color: var(--accent-cyan);
-        }
+        .spinner { animation: spin 1s linear infinite; }
+        @keyframes spin { from { transform: rotate(0); } to { transform: rotate(360deg); } }
     </style>
 </head>
-<body>
+<body class="theme-classic">
 
-    <canvas id="snow-canvas"></canvas>
+    <canvas id="weather-canvas"></canvas>
 
-    <!-- SPLASH SCREEN -->
     <div id="splash-screen">
         <div class="tree-wrapper" id="tree-container" onclick="triggerTreeExplosion(); fireConfetti();">
             <div class="christmas-tree" id="tree">🎄</div>
@@ -670,10 +526,21 @@
     </div>
 
     <main>
-        <!-- TAB 1: DASHBOARD / ГОЛОВНА -->
+        <!-- HOME -->
         <div id="tab-home" class="tab-content active">
-            
-            <!-- AVERAGE GPA HUMAN.UA CARD -->
+
+            <div id="weather-widget" class="weather-card" style="display:none;">
+                <div class="weather-icon" id="weather-icon">☀️</div>
+                <div class="weather-info">
+                    <div class="weather-temp" id="weather-temp">--°C</div>
+                    <div class="weather-desc" id="weather-desc">Завантаження...</div>
+                    <div class="weather-loc" id="weather-loc">📍 Локація</div>
+                </div>
+                <button class="btn-secondary" style="padding: 8px 10px; width: auto;" onclick="switchTab('weather')">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                </button>
+            </div>
+
             <div class="card-nz">
                 <div class="card-nz-header">
                     <span class="dot-indicator"></span>
@@ -686,18 +553,14 @@
                 </div>
             </div>
 
-            <!-- NEXT LESSON NOTIFICATION NOTICE CARD -->
             <div class="notice-card" id="next-lesson-notice">
-                <div class="notice-icon">
-                    <i class="fa-solid fa-bell"></i>
-                </div>
+                <div class="notice-icon"><i class="fa-solid fa-bell"></i></div>
                 <div style="flex: 1;">
-                    <div style="font-size: 11px; font-weight: 800; color: var(--accent-cyan); text-transform: uppercase;">СПОБІЩЕННЯ ПРО НАСТУПНИЙ УРОК</div>
+                    <div style="font-size: 11px; font-weight: 800; color: var(--accent-cyan); text-transform: uppercase;">СПОВІЩЕННЯ ПРО НАСТУПНИЙ УРОК</div>
                     <div style="font-size: 13px; font-weight: 700; margin-top: 2px;" id="notice-text">Завантаження інформації про перерву...</div>
                 </div>
             </div>
 
-            <!-- QUICK ACTIONS GRID -->
             <div class="quick-actions-grid">
                 <div class="quick-btn" onclick="fireConfetti(); switchTab('schedule');">
                     <i class="fa-solid fa-calendar-days"></i>
@@ -713,32 +576,24 @@
                 </div>
             </div>
 
-            <!-- MORNING ATTENDANCE REMINDER CARD -->
-            <div class="card-nz" id="morning-attendance-card" style="background: linear-gradient(135deg, rgba(255, 183, 3, 0.15), rgba(139, 92, 246, 0.15)); border: 1px solid rgba(255, 183, 3, 0.4);">
+            <div class="card-nz" id="morning-attendance-card" style="background: linear-gradient(135deg, rgba(255,183,3,0.15), rgba(139,92,246,0.15)); border: 1px solid rgba(255,183,3,0.4);">
                 <div class="card-nz-header" style="color: var(--accent-gold);">
                     <i class="fa-solid fa-bus"></i>
-                    <span>РАНКОВЕ ОПИТУВАНИЕ ВІДВІДУВАННЯ</span>
+                    <span>РАНКОВЕ ОПИТУВАННЯ ВІДВІДУВАННЯ</span>
                 </div>
                 <div style="font-size: 13px; font-weight: 700; margin-bottom: 10px;">
                     Як ви добираєтеся до школи сьогодні?
                 </div>
                 <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;">
-                    <button onclick="quickMarkAttendance('ШК')" style="background: rgba(6, 182, 212, 0.2); border: 1px solid var(--accent-cyan); color: #fff; padding: 10px 4px; border-radius: 12px; font-size: 12px; font-weight: 800; cursor: pointer;">
-                        🚌 ШК
-                    </button>
-                    <button onclick="quickMarkAttendance('Р')" style="background: rgba(139, 92, 246, 0.2); border: 1px solid var(--accent-purple); color: #fff; padding: 10px 4px; border-radius: 12px; font-size: 12px; font-weight: 800; cursor: pointer;">
-                        轨 Р
-                    </button>
-                    <button onclick="quickMarkAttendance('Н')" style="background: rgba(239, 68, 68, 0.2); border: 1px solid #ef4444; color: #fff; padding: 10px 4px; border-radius: 12px; font-size: 12px; font-weight: 800; cursor: pointer;">
-                        ❌ Відсутній
-                    </button>
+                    <button onclick="quickMarkAttendance('ШК')" style="background: rgba(6,182,212,0.2); border: 1px solid var(--accent-cyan); color: #fff; padding: 10px 4px; border-radius: 12px; font-size: 12px; font-weight: 800; cursor: pointer;">🚌 ШК</button>
+                    <button onclick="quickMarkAttendance('Р')" style="background: rgba(139,92,246,0.2); border: 1px solid var(--accent-purple); color: #fff; padding: 10px 4px; border-radius: 12px; font-size: 12px; font-weight: 800; cursor: pointer;">🚍 Р</button>
+                    <button onclick="quickMarkAttendance('Н')" style="background: rgba(239,68,68,0.2); border: 1px solid #ef4444; color: #fff; padding: 10px 4px; border-radius: 12px; font-size: 12px; font-weight: 800; cursor: pointer;">❌ Відсутній</button>
                 </div>
                 <div style="font-size: 11px; color: var(--text-muted); margin-top: 8px;" id="morning-status-text">
                     Оберіть варіант для збереження в журнал.
                 </div>
             </div>
 
-            <!-- STREAK CARD HUMAN.UA -->
             <div class="card-nz streak-card">
                 <div class="streak-header">
                     <div style="display: flex; align-items: center; gap: 8px;">
@@ -751,15 +606,10 @@
                     </div>
                 </div>
                 <div style="font-size: 12px; color: var(--accent-cyan); font-weight: 600;">без низьких оцінок</div>
-                
-                <div class="streak-val">
-                    <span id="streak-days">0</span><span class="streak-unit">днів</span>
-                </div>
-
+                <div class="streak-val"><span id="streak-days">0</span><span class="streak-unit">днів</span></div>
                 <div class="pill-tag">Дій до 3</div>
             </div>
 
-            <!-- REAL-TIME TIMER BOX -->
             <div class="card-nz">
                 <div class="card-nz-header">
                     <i class="fa-regular fa-clock" style="color: var(--accent-purple);"></i>
@@ -769,12 +619,10 @@
                 <div style="font-size: 12px; color: var(--text-muted);" id="timer-info">11-А клас • Зимовий семестр</div>
             </div>
 
-            <!-- TODAY'S LESSONS -->
             <div class="card-nz">
                 <div class="card-nz-header" style="justify-content: space-between;">
                     <span>📌 УРОКИ ТА ДОМАШНЄ ЗАВДАННЯ</span>
                 </div>
-
                 <div class="day-picker">
                     <button class="day-btn" onclick="selectDay('Понеділок')">Пн</button>
                     <button class="day-btn" onclick="selectDay('Вівторок')">Вт</button>
@@ -782,11 +630,9 @@
                     <button class="day-btn" onclick="selectDay('Четвер')">Чт</button>
                     <button class="day-btn" onclick="selectDay('П\'ятниця')">Пт</button>
                 </div>
-
                 <div id="day-lessons-list"></div>
             </div>
 
-            <!-- ADVENT CALENDAR -->
             <div class="card-nz">
                 <div class="card-nz-header">
                     <i class="fa-solid fa-gift" style="color: var(--accent-gold);"></i>
@@ -794,10 +640,9 @@
                 </div>
                 <div class="advent-grid" id="advent-container"></div>
             </div>
-
         </div>
 
-        <!-- TAB 2: SCHEDULE / РОЗКЛАД -->
+        <!-- SCHEDULE -->
         <div id="tab-schedule" class="tab-content">
             <div class="card-nz">
                 <div class="card-nz-header">
@@ -808,7 +653,7 @@
             </div>
         </div>
 
-        <!-- TAB 3: GRADES / ТАБЕЛЬ -->
+        <!-- GRADES -->
         <div id="tab-grades" class="tab-content">
             <div class="card-nz">
                 <div class="card-nz-header">
@@ -819,23 +664,20 @@
             </div>
         </div>
 
-        <!-- TAB 5: ATTENDANCE CALENDAR / КАЛЕНДАР ВІДВІДУВАННЯ -->
+        <!-- ATTENDANCE -->
         <div id="tab-attendance" class="tab-content">
             <div class="card-nz">
                 <div class="card-nz-header">
                     <i class="fa-solid fa-calendar-check" style="color: var(--accent-cyan);"></i>
                     <span>КАЛЕНДАР ВІДВІДУВАННЯ ТА ТРАНСПОРТУ</span>
                 </div>
-                
                 <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">
                     Відмічайте, як добиралися до школи, або якщо були відсутні. Історія зберігається 6 місяців.
                 </div>
-
                 <div class="profile-field">
                     <label>Оберіть дату</label>
                     <input type="date" id="attendance-date" onchange="loadAttendanceForDate()">
                 </div>
-
                 <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 14px;">
                     <button id="btn-att-shk" onclick="selectAttendanceType('ШК')" style="background: rgba(255,255,255,0.05); border: 1px solid var(--card-border); color: #fff; padding: 12px; border-radius: 12px; font-size: 12px; font-weight: 800; cursor: pointer;">
                         🚌 ШК<br><span style="font-size: 9px; color: var(--text-muted); font-weight: normal;">Шкільний автобус</span>
@@ -847,19 +689,17 @@
                         ❌ Н<br><span style="font-size: 9px; color: var(--text-muted); font-weight: normal;">Відсутній</span>
                     </button>
                 </div>
-
                 <div style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 12px; border: 1px solid var(--card-border); margin-bottom: 14px;">
-                    <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 6px;">Експорт відвідуваності у файл для збереження:</div>
+                    <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 6px;">Експорт відвідуваності:</div>
                     <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px;">
                         <button class="btn-nz" onclick="exportAttendanceFile('csv')" style="margin-top: 4px; background: linear-gradient(135deg, var(--accent-green), #059669); font-size: 12px; padding: 10px 6px;">
                             <i class="fa-solid fa-file-csv" style="margin-right: 4px;"></i> Таблиця (.csv)
                         </button>
-                        <button class="btn-nz" onclick="exportAttendanceFile('json')" style="margin-top: 4px; background: linear-gradient(135deg, var(--accent-purple), var(--accent-cyan)); font-size: 12px; padding: 10px 6px;">
-                            <i class="fa-brands fa-google-drive" style="margin-right: 4px;"></i> Файл JSON (.json)
+                        <button class="btn-nz" onclick="exportAttendanceFile('json')" style="margin-top: 4px; font-size: 12px; padding: 10px 6px;">
+                            <i class="fa-brands fa-google-drive" style="margin-right: 4px;"></i> Файл JSON
                         </button>
                     </div>
                 </div>
-
                 <div class="card-nz-header" style="margin-top: 10px;">
                     <i class="fa-solid fa-clock-rotate-left"></i>
                     <span>ІСТОРІЯ ЗА 6 МІСЯЦІВ</span>
@@ -868,14 +708,72 @@
             </div>
         </div>
 
-        <!-- TAB 4: PROFILE / ПРОФІЛЬ -->
+        <!-- WEATHER -->
+        <div id="tab-weather" class="tab-content">
+            <div class="card-nz">
+                <div class="card-nz-header">
+                    <i class="fa-solid fa-cloud-sun" style="color: var(--accent-cyan);"></i>
+                    <span>ПОГОДА ТА ГЕОЛОКАЦІЯ</span>
+                </div>
+                <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">
+                    Використовуйте GPS або знайдіть своє місто/село вручну — тема та опади підлаштуються під погоду.
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px;">
+                    <button class="btn-nz" onclick="getGPSLocation()" style="margin-top: 0;">
+                        <i class="fa-solid fa-location-crosshairs" style="margin-right: 6px;"></i> Моя GPS-локація
+                    </button>
+                    <button class="btn-secondary" onclick="applyWeatherThemeToApp()">
+                        <i class="fa-solid fa-palette"></i> Оновити тему
+                    </button>
+                </div>
+
+                <div class="toggle-row">
+                    <span style="font-size: 13px; font-weight: 600;">🎨 Авто-тема за погодою</span>
+                    <label class="switch">
+                        <input type="checkbox" id="toggle-weather-theme" onchange="toggleWeatherTheme(this.checked)">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <div id="weather-status" style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">
+                    Натисніть "Моя GPS-локація" або знайдіть місто нижче.
+                </div>
+            </div>
+
+            <div class="card-nz">
+                <div class="card-nz-header">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <span>ПОШУК МІСТА / СЕЛА / ОБЛАСТІ</span>
+                </div>
+
+                <div class="profile-field">
+                    <label>Введіть назву населеного пункту, область, район або поштовий індекс</label>
+                    <input type="text" id="city-search-input" placeholder="Наприклад: Київ, Львівська, 01001..."
+                           oninput="debouncedCitySearch(this.value)">
+                </div>
+
+                <div id="search-results" class="search-results"></div>
+            </div>
+
+            <div class="card-nz">
+                <div class="card-nz-header">
+                    <i class="fa-solid fa-map-location-dot"></i>
+                    <span>ОБРАНА ЛОКАЦІЯ</span>
+                </div>
+                <div id="selected-location-info" style="font-size: 13px; color: var(--text-muted);">
+                    Ще не обрано. Використайте GPS або пошук.
+                </div>
+            </div>
+        </div>
+
+        <!-- PROFILE -->
         <div id="tab-profile" class="tab-content">
             <div class="card-nz">
                 <div class="card-nz-header">
                     <i class="fa-solid fa-user-gear"></i>
-                    <span>НАЛАШТУВАННЯ ПРОФІЛЮ</span>
+                    <span>ПРОФІЛЬ</span>
                 </div>
-                
                 <div class="profile-field">
                     <label>Ім'я увітання</label>
                     <input type="text" id="input-profile-name" value="ivan" oninput="saveProfile()">
@@ -884,63 +782,133 @@
                     <label>Клас</label>
                     <input type="text" id="input-profile-class" value="11-А" oninput="saveProfile()">
                 </div>
+            </div>
 
+            <div class="card-nz">
+                <div class="card-nz-header">
+                    <i class="fa-solid fa-palette" style="color: var(--accent-pink);"></i>
+                    <span>🎨 ВИБІРКОВА КАСТОМІЗАЦІЯ — ТЕМА</span>
+                </div>
+                <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px;">
+                    Оберіть одну з 6 градієнтних тем. Зміна застосовується миттєво.
+                </div>
+                <div class="theme-grid" id="theme-grid">
+                    <div class="theme-swatch sw-classic" data-theme="classic" title="Класична"></div>
+                    <div class="theme-swatch sw-purple" data-theme="purple" title="Purple Dream"></div>
+                    <div class="theme-swatch sw-cyan" data-theme="cyan" title="Cyan Mint"></div>
+                    <div class="theme-swatch sw-sunset" data-theme="sunset" title="Sunset Fire"></div>
+                    <div class="theme-swatch sw-mint" data-theme="mint" title="Fresh Mint"></div>
+                    <div class="theme-swatch sw-gold" data-theme="gold" title="Golden Hour"></div>
+                </div>
+            </div>
+
+            <div class="card-nz">
+                <div class="card-nz-header">
+                    <i class="fa-solid fa-cloud-showers-heavy" style="color: var(--accent-cyan);"></i>
+                    <span>🌦️ РЕЖИМ ОПАДІВ</span>
+                </div>
+                <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px;">
+                    ❄️ Сніг накопичується на картках. 🌧️ Дощ стікає краплями з елементів.
+                </div>
+                <div class="weather-mode-picker" id="weather-mode-picker">
+                    <button class="wm-btn" data-mode="off"><span class="wm-icon">🚫</span><span>Вимк</span></button>
+                    <button class="wm-btn" data-mode="snow"><span class="wm-icon">❄️</span><span>Сніг</span></button>
+                    <button class="wm-btn" data-mode="rain"><span class="wm-icon">🌧️</span><span>Дощ</span></button>
+                    <button class="wm-btn" data-mode="auto"><span class="wm-icon">🌤️</span><span>Авто</span></button>
+                </div>
+            </div>
+
+            <div class="card-nz">
+                <div class="card-nz-header">
+                    <i class="fa-solid fa-wand-magic-sparkles" style="color: var(--accent-gold);"></i>
+                    <span>✨ ЕФЕКТИ</span>
+                </div>
                 <div class="toggle-row">
-                    <span style="font-size: 13px; font-weight: 600;">❄️ Снігопад та ялинки</span>
+                    <span style="font-size: 13px; font-weight: 600;">🎉 Салют при діях</span>
                     <label class="switch">
-                        <input type="checkbox" id="toggle-snow" checked onchange="toggleSnow(this.checked)">
+                        <input type="checkbox" id="toggle-confetti" checked onchange="toggleConfetti(this.checked)">
                         <span class="slider"></span>
                     </label>
                 </div>
-
                 <div class="toggle-row">
-                    <span style="font-size: 13px; font-weight: 600;">🏖️ Ручний режим канікул</span>
+                    <span style="font-size: 13px; font-weight: 600;">💫 Анімації інтерфейсу</span>
+                    <label class="switch">
+                        <input type="checkbox" id="toggle-animations" checked onchange="toggleAnimations(this.checked)">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="card-nz">
+                <div class="card-nz-header">
+                    <i class="fa-solid fa-cloud-sun-rain" style="color: var(--accent-cyan);"></i>
+                    <span>🌤️ КАСТОМІЗАЦІЯ ЗА ПОГОДОЮ</span>
+                </div>
+                <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px;">
+                    Тема автоматично змінюється відповідно до поточної погоди у вашій локації.
+                </div>
+                <div class="toggle-row">
+                    <span style="font-size: 13px; font-weight: 600;">Авто-тема за погодою</span>
+                    <label class="switch">
+                        <input type="checkbox" id="toggle-weather-theme-profile" onchange="toggleWeatherTheme(this.checked)">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <button class="btn-nz" onclick="switchTab('weather')" style="background: linear-gradient(135deg, var(--accent-cyan), var(--accent-green));">
+                    <i class="fa-solid fa-location-crosshairs" style="margin-right: 6px;"></i> Налаштувати локацію та погоду
+                </button>
+            </div>
+
+            <div class="card-nz">
+                <div class="card-nz-header">
+                    <i class="fa-solid fa-umbrella-beach" style="color: var(--accent-gold);"></i>
+                    <span>🏖️ КАНІКУЛИ</span>
+                </div>
+                <div class="toggle-row">
+                    <span style="font-size: 13px; font-weight: 600;">Ручний режим канікул</span>
                     <label class="switch">
                         <input type="checkbox" id="toggle-vacation" onchange="saveVacationSettings()">
                         <span class="slider"></span>
                     </label>
                 </div>
-
                 <div class="profile-field">
                     <label>📅 Початок канікул</label>
                     <input type="date" id="vacation-start" onchange="saveVacationSettings()">
                 </div>
-
                 <div class="profile-field">
                     <label>🏁 Кінець канікул</label>
                     <input type="date" id="vacation-end" onchange="saveVacationSettings()">
                 </div>
-
-                <button class="btn-nz" onclick="fireConfetti(); replaySplash();">🎄 Анімація ялинки та Салют</button>
             </div>
+
+            <button class="btn-nz" onclick="fireConfetti(); replaySplash();" style="background: linear-gradient(135deg, var(--accent-gold), var(--accent-pink));">
+                🎄 Анімація ялинки та Салют
+            </button>
         </div>
     </main>
 
-    <!-- NAVIGATION BAR -->
     <nav>
         <div class="nav-item active" id="nav-home" onclick="switchTab('home')">
-            <i class="fa-solid fa-house"></i>
-            <span>Головна</span>
+            <i class="fa-solid fa-house"></i><span>Головна</span>
         </div>
         <div class="nav-item" id="nav-schedule" onclick="switchTab('schedule')">
-            <i class="fa-solid fa-book-open"></i>
-            <span>Розклад</span>
+            <i class="fa-solid fa-book-open"></i><span>Розклад</span>
         </div>
         <div class="nav-item" id="nav-attendance" onclick="switchTab('attendance')">
-            <i class="fa-solid fa-calendar-check"></i>
-            <span>Календар</span>
+            <i class="fa-solid fa-calendar-check"></i><span>Календар</span>
         </div>
-        <div class="nav-item" id="nav-history" onclick="switchTab('grades')">
-            <i class="fa-solid fa-clock-rotate-left"></i>
-            <span>Табель</span>
+        <div class="nav-item" id="nav-weather" onclick="switchTab('weather')">
+            <i class="fa-solid fa-cloud-sun"></i><span>Погода</span>
         </div>
         <div class="nav-item" id="nav-profile" onclick="switchTab('profile')">
-            <i class="fa-solid fa-user"></i>
-            <span>Профіль</span>
+            <i class="fa-solid fa-user"></i><span>Профіль</span>
         </div>
     </nav>
 
     <script>
+        /* =========================================================
+           БАЗОВІ ДАНІ
+           ========================================================= */
         const schedule11A = {
             "Понеділок": [
                 { name: "Українська мова", cab: "К" },
@@ -997,43 +965,37 @@
         ];
 
         let currentSelectedDay = "Понеділок";
-        let isSnowActive = true;
+        let isConfettiActive = true;
+        let isAnimationsActive = true;
+        let weatherThemeEnabled = false;
+        let currentWeatherCode = null;
         let attendanceData = JSON.parse(localStorage.getItem('user_attendance') || '{}');
 
+        /* =========================================================
+           SPLASH / CONFETTI
+           ========================================================= */
         function triggerTreeExplosion() {
             const tree = document.getElementById('tree');
             const container = document.getElementById('tree-container');
-
             if (!tree || !container) return;
 
             for (let i = 0; i < 30; i++) {
                 let sparkle = document.createElement('div');
                 sparkle.className = 'sparkle';
                 container.appendChild(sparkle);
-
                 let angle = Math.random() * Math.PI * 2;
                 let distance = 70 + Math.random() * 110;
                 let x = Math.cos(angle) * distance;
                 let y = Math.sin(angle) * distance;
-
                 sparkle.animate([
                     { transform: 'translate(0, 0) scale(1)', opacity: 1 },
                     { transform: `translate(${x}px, ${y}px) scale(0)`, opacity: 0 }
-                ], {
-                    duration: 700,
-                    easing: 'cubic-bezier(0, .9, .57, 1)',
-                    fill: 'forwards'
-                });
+                ], { duration: 700, easing: 'cubic-bezier(0, .9, .57, 1)', fill: 'forwards' });
             }
-
             tree.classList.add('tree-explode');
-
             setTimeout(() => {
                 const splash = document.getElementById('splash-screen');
-                if (splash) {
-                    splash.style.opacity = '0';
-                    splash.style.visibility = 'hidden';
-                }
+                if (splash) { splash.style.opacity = '0'; splash.style.visibility = 'hidden'; }
             }, 600);
         }
 
@@ -1048,12 +1010,31 @@
             }
         }
 
+        function fireConfetti() {
+            if (!isConfettiActive) return;
+            if (typeof confetti === 'function') {
+                confetti({ particleCount: 80, spread: 60, origin: { y: 0.2 } });
+            }
+        }
+
+        function toggleConfetti(val) {
+            isConfettiActive = val;
+            localStorage.setItem('confetti_active', val);
+        }
+
+        function toggleAnimations(val) {
+            isAnimationsActive = val;
+            localStorage.setItem('animations_active', val);
+        }
+
+        /* =========================================================
+           ВІДВІДУВАННЯ
+           ========================================================= */
         function quickMarkAttendance(type) {
             const today = new Date().toISOString().split('T')[0];
             attendanceData[today] = type;
             cleanOldAttendanceData();
             localStorage.setItem('user_attendance', JSON.stringify(attendanceData));
-            
             document.getElementById('morning-status-text').innerText = `Збережено: ${type} на сьогодні (${today})`;
             renderAttendanceHistory();
             fireConfetti();
@@ -1061,10 +1042,7 @@
 
         function selectAttendanceType(type) {
             const dateVal = document.getElementById('attendance-date').value;
-            if (!dateVal) {
-                alert("Оберіть дату!");
-                return;
-            }
+            if (!dateVal) { alert("Оберіть дату!"); return; }
             attendanceData[dateVal] = type;
             cleanOldAttendanceData();
             localStorage.setItem('user_attendance', JSON.stringify(attendanceData));
@@ -1076,31 +1054,25 @@
         function loadAttendanceForDate() {
             const dateVal = document.getElementById('attendance-date').value;
             const currentType = attendanceData[dateVal] || null;
-
             ['shk', 'r', 'n'].forEach(id => {
                 const btn = document.getElementById(`btn-att-${id}`);
                 if (btn) btn.style.borderColor = 'var(--card-border)';
             });
-
-            if (currentType === 'ШК' && document.getElementById('btn-att-shk')) {
+            if (currentType === 'ШК' && document.getElementById('btn-att-shk'))
                 document.getElementById('btn-att-shk').style.borderColor = 'var(--accent-cyan)';
-            } else if (currentType === 'Р' && document.getElementById('btn-att-r')) {
+            else if (currentType === 'Р' && document.getElementById('btn-att-r'))
                 document.getElementById('btn-att-r').style.borderColor = 'var(--accent-purple)';
-            } else if (currentType === 'Н' && document.getElementById('btn-att-n')) {
+            else if (currentType === 'Н' && document.getElementById('btn-att-n'))
                 document.getElementById('btn-att-n').style.borderColor = '#ef4444';
-            }
         }
 
         function cleanOldAttendanceData() {
             const now = new Date();
             const sixMonthsAgo = new Date();
             sixMonthsAgo.setDate(now.getDate() - 180);
-
             for (const dateStr in attendanceData) {
                 const entryDate = new Date(dateStr);
-                if (entryDate < sixMonthsAgo) {
-                    delete attendanceData[dateStr];
-                }
+                if (entryDate < sixMonthsAgo) delete attendanceData[dateStr];
             }
         }
 
@@ -1108,21 +1080,18 @@
             const container = document.getElementById('attendance-history-list');
             if (!container) return;
             container.innerHTML = '';
-
             const sortedDates = Object.keys(attendanceData).sort().reverse();
             if (sortedDates.length === 0) {
                 container.innerHTML = '<div style="font-size: 12px; color: var(--text-muted); padding: 8px;">Немає записів за 6 місяців.</div>';
                 return;
             }
-
             sortedDates.forEach(d => {
                 const val = attendanceData[d];
                 let label = "❌ Відсутній";
                 if (val === 'ШК') label = "🚌 Шкільний автобус";
-                if (val === 'Р') label = " Рейсовий автобус";
-
+                if (val === 'Р') label = "🚍 Рейсовий автобус";
                 container.innerHTML += `
-                    <div style="display: flex; justify-between; align-items: center; padding: 8px; border-bottom: 1px solid var(--card-border); font-size: 12px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px; border-bottom: 1px solid var(--card-border); font-size: 12px;">
                         <span>📅 ${d}</span>
                         <span style="font-weight: 700;">${label}</span>
                     </div>
@@ -1132,125 +1101,35 @@
 
         function exportAttendanceFile(format = 'json') {
             cleanOldAttendanceData();
-
             let blob, filename;
             const dateSuffix = new Date().toISOString().split('T')[0];
-
             if (format === 'csv') {
                 let csvContent = "\uFEFFДата,Статус,Опис\n";
-                const sortedDates = Object.keys(attendanceData).sort().reverse();
-
-                sortedDates.forEach(date => {
+                Object.keys(attendanceData).sort().reverse().forEach(date => {
                     const status = attendanceData[date];
                     let desc = "Відсутній";
                     if (status === 'ШК') desc = "Шкільний автобус";
                     if (status === 'Р') desc = "Рейсовий автобус";
                     csvContent += `"${date}","${status}","${desc}"\n`;
                 });
-
                 blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
                 filename = `human_attendance_11A_${dateSuffix}.csv`;
             } else {
-                const fileData = JSON.stringify(attendanceData, null, 2);
-                blob = new Blob([fileData], { type: 'application/json' });
+                blob = new Blob([JSON.stringify(attendanceData, null, 2)], { type: 'application/json' });
                 filename = `human_attendance_11A_${dateSuffix}.json`;
             }
-
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
-            a.href = url;
-            a.download = filename;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
+            a.href = url; a.download = filename;
+            document.body.appendChild(a); a.click(); document.body.removeChild(a);
             URL.revokeObjectURL(url);
-
-            alert(`✅ Файл (${format.toUpperCase()}) збережено! Ви можете відкрити його в Google Таблицях / Excel або зберегти на Google Диск.`);
+            alert(`✅ Файл (${format.toUpperCase()}) збережено!`);
             fireConfetti();
         }
 
-        function fireConfetti() {
-            if (typeof confetti === 'function') {
-                confetti({ particleCount: 80, spread: 60, origin: { y: 0.2 } });
-            }
-        }
-
-        const canvas = document.getElementById('snow-canvas');
-        const ctx = canvas ? canvas.getContext('2d') : null;
-        let particles = [];
-
-        function resizeCanvas() {
-            if (!canvas) return;
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        }
-
-        function createParticles() {
-            if (!canvas) return;
-            particles = [];
-            for (let i = 0; i < 35; i++) {
-                particles.push({
-                    type: 'snow',
-                    x: Math.random() * canvas.width,
-                    y: Math.random() * canvas.height,
-                    r: Math.random() * 3 + 1,
-                    d: Math.random() * 1 + 0.5
-                });
-            }
-            for (let i = 0; i < 12; i++) {
-                particles.push({
-                    type: 'tree',
-                    x: Math.random() * canvas.width,
-                    y: Math.random() * canvas.height,
-                    size: Math.random() * 10 + 12,
-                    d: Math.random() * 1.2 + 0.6
-                });
-            }
-        }
-
-        function drawParticles() {
-            if (!isSnowActive || !ctx || !canvas) {
-                if (ctx && canvas) ctx.clearRect(0, 0, canvas.width, canvas.height);
-                return;
-            }
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-            for (let i = 0; i < particles.length; i++) {
-                let p = particles[i];
-                if (p.type === 'snow') {
-                    ctx.fillStyle = "rgba(255, 255, 255, 0.7)";
-                    ctx.beginPath();
-                    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2, true);
-                    ctx.fill();
-                } else if (p.type === 'tree') {
-                    ctx.font = `${p.size}px sans-serif`;
-                    ctx.fillText("🌲", p.x, p.y);
-                }
-            }
-            updateParticles();
-            requestAnimationFrame(drawParticles);
-        }
-
-        function updateParticles() {
-            if (!canvas) return;
-            for (let i = 0; i < particles.length; i++) {
-                let p = particles[i];
-                p.y += p.d;
-                p.x += Math.sin(p.y * 0.04) * 0.5;
-
-                if (p.y > canvas.height) {
-                    p.y = -20;
-                    p.x = Math.random() * canvas.width;
-                }
-            }
-        }
-
-        function toggleSnow(val) {
-            isSnowActive = val;
-            localStorage.setItem('snow_active', val);
-            if (val) drawParticles();
-        }
-
+        /* =========================================================
+           ТАЙМЕР
+           ========================================================= */
         function timeToMinutes(timeStr) {
             const [h, m] = timeStr.split(':').map(Number);
             return h * 60 + m;
@@ -1261,14 +1140,25 @@
             const statusEl = document.getElementById('timer-status');
             const clockEl = document.getElementById('timer-clock');
             const infoEl = document.getElementById('timer-info');
-
             if (!statusEl || !clockEl || !infoEl) return;
+
+            const manualVac = localStorage.getItem('vacation_manual') === 'true';
+            if (manualVac) {
+                const start = localStorage.getItem('vacation_start');
+                const end = localStorage.getItem('vacation_end');
+                const today = now.toISOString().split('T')[0];
+                if (start && end && today >= start && today <= end) {
+                    statusEl.innerText = "🏖️ КАНІКУЛИ";
+                    clockEl.innerText = "Відпочиваємо!";
+                    infoEl.innerText = `Канікули до ${end}`;
+                    return;
+                }
+            }
 
             const days = ["Неділя", "Понеділок", "Вівторок", "Середа", "Четвер", "П'ятниця", "Субота"];
             const currentDayName = days[now.getDay()];
             const currentMinutes = now.getHours() * 60 + now.getMinutes();
             const currentSeconds = now.getSeconds();
-
             const dayLessons = schedule11A[currentDayName];
 
             if (!dayLessons) {
@@ -1287,21 +1177,18 @@
                     let totalSecsRemaining = (endMins - currentMinutes) * 60 - currentSeconds;
                     let mins = Math.floor(totalSecsRemaining / 60);
                     let secs = totalSecsRemaining % 60;
-
                     statusEl.innerText = `ДО КІНЦЯ ${i + 1}-ГО УРОКУ (${dayLessons[i].name})`;
                     clockEl.innerText = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
                     infoEl.innerText = `Каб. ${dayLessons[i].cab} • Триває урок`;
                     found = true;
                     break;
                 }
-
                 if (i < dayLessons.length - 1 && i < bellSchedule.length - 1) {
                     let nextStartMins = timeToMinutes(bellSchedule[i + 1].start);
                     if (currentMinutes >= endMins && currentMinutes < nextStartMins) {
                         let totalSecsRemaining = (nextStartMins - currentMinutes) * 60 - currentSeconds;
                         let mins = Math.floor(totalSecsRemaining / 60);
                         let secs = totalSecsRemaining % 60;
-
                         statusEl.innerText = `ПЕРЕРВА! ДО УРОКУ №${i + 2}`;
                         clockEl.innerText = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
                         infoEl.innerText = `Наступний: ${dayLessons[i + 1].name} (Каб. ${dayLessons[i + 1].cab})`;
@@ -1318,7 +1205,6 @@
                     let hours = Math.floor(totalSecsRemaining / 3600);
                     let mins = Math.floor((totalSecsRemaining % 3600) / 60);
                     let secs = totalSecsRemaining % 60;
-
                     statusEl.innerText = "ДО ПОЧАТКУ 1-ГО УРОКУ";
                     clockEl.innerText = `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
                     infoEl.innerText = `Перший урок: ${dayLessons[0].name} (Каб. ${dayLessons[0].cab})`;
@@ -1330,12 +1216,14 @@
             }
         }
 
+        /* =========================================================
+           АДВЕНТ
+           ========================================================= */
         function renderAdventCalendar() {
             const container = document.getElementById('advent-container');
             if (!container) return;
             container.innerHTML = '';
             const icons = ["🎄", "🎁", "❄️", "🎅", "☃️", "⭐", "🎉", "🔔"];
-            
             for (let i = 1; i <= 8; i++) {
                 const isOpened = localStorage.getItem(`advent_${i}`) === 'true';
                 container.innerHTML += `
@@ -1354,16 +1242,17 @@
             renderAdventCalendar();
         }
 
+        /* =========================================================
+           РОЗКЛАД / ДЗ
+           ========================================================= */
         function selectDay(dayName) {
             currentSelectedDay = dayName;
             document.querySelectorAll('.day-btn').forEach(btn => {
                 btn.classList.toggle('active', btn.innerText.trim() === getShortDay(dayName));
             });
-
             const container = document.getElementById('day-lessons-list');
             if (!container) return;
             container.innerHTML = '';
-
             const lessons = schedule11A[dayName] || [];
             lessons.forEach((lesson, idx) => {
                 const timeSlot = bellSchedule[idx] ? `${bellSchedule[idx].start} - ${bellSchedule[idx].end}` : '---';
@@ -1376,11 +1265,12 @@
                             <div class="cabinet-badge">${lesson.cab}</div>
                         </div>
                         <div class="lesson-time">⏰ ${timeSlot}</div>
-                        <input type="text" class="hw-input" placeholder="Домашнє завдання..." 
+                        <input type="text" class="hw-input" placeholder="Домашнє завдання..."
                             value="${hwSaved}" oninput="saveHW('${dayName}', ${idx}, this.value)">
                     </div>
                 `;
             });
+            if (typeof rebuildSnowLayers === 'function') setTimeout(rebuildSnowLayers, 100);
         }
 
         function getShortDay(fullDay) {
@@ -1392,7 +1282,6 @@
             const container = document.getElementById('full-schedule-container');
             if (!container) return;
             container.innerHTML = '';
-
             for (const [day, lessons] of Object.entries(schedule11A)) {
                 let dayHtml = `<div style="font-size: 14px; font-weight: 800; color: var(--accent-cyan); margin: 14px 0 8px 0;">🗓️ ${day}</div>`;
                 lessons.forEach((lesson, idx) => {
@@ -1412,37 +1301,37 @@
             }
         }
 
+        function saveHW(day, idx, value) {
+            localStorage.setItem(`hw_${day}_${idx}`, value);
+        }
+
+        /* =========================================================
+           ТАБЕЛЬ
+           ========================================================= */
         function renderGrades() {
             const allSubjects = new Set();
             for (const lessons of Object.values(schedule11A)) {
                 lessons.forEach(l => allSubjects.add(l.name));
             }
-
             const container = document.getElementById('grades-list');
             if (!container) return;
             container.innerHTML = '';
-            let total = 0;
-            let count = 0;
+            let total = 0, count = 0;
 
             allSubjects.forEach(subject => {
                 const savedGrade = localStorage.getItem(`grade_${subject}`) || '';
                 if (savedGrade) {
                     const num = parseFloat(savedGrade);
-                    if (!isNaN(num)) {
-                        total += num;
-                        count++;
-                    }
+                    if (!isNaN(num)) { total += num; count++; }
                 }
-
                 container.innerHTML += `
                     <div class="grade-item">
                         <span style="font-size: 13px; font-weight: 600;">${subject}</span>
-                        <input type="text" class="grade-input" placeholder="Бал" value="${savedGrade}" 
+                        <input type="text" class="grade-input" placeholder="Бал" value="${savedGrade}"
                             oninput="saveGrade('${subject}', this.value)">
                     </div>
                 `;
             });
-
             const gpa = count > 0 ? (total / count).toFixed(1) : "0.0";
             const gpaVal = document.getElementById('gpa-val');
             const gpaTitle = document.getElementById('gpa-title-display');
@@ -1450,52 +1339,22 @@
             if (gpaTitle) gpaTitle.innerText = `Середній бал: ${gpa}`;
         }
 
-        function saveHW(day, idx, value) {
-            localStorage.setItem(`hw_${day}_${idx}`, value);
-        }
-
         function saveGrade(subject, value) {
             localStorage.setItem(`grade_${subject}`, value);
             renderGrades();
         }
 
-        function saveVacationSettings() {
-            const isManual = document.getElementById('toggle-vacation')?.checked;
-            const start = document.getElementById('vacation-start')?.value;
-            const end = document.getElementById('vacation-end')?.value;
-
-            localStorage.setItem('vacation_manual', isManual);
-            localStorage.setItem('vacation_start', start);
-            localStorage.setItem('vacation_end', end);
-
-            updateRealTimeTimer();
-        }
-
-        function loadVacationSettings() {
-            const isManual = localStorage.getItem('vacation_manual') === 'true';
-            const start = localStorage.getItem('vacation_start') || '';
-            const end = localStorage.getItem('vacation_end') || '';
-
-            const toggle = document.getElementById('toggle-vacation');
-            const startEl = document.getElementById('vacation-start');
-            const endEl = document.getElementById('vacation-end');
-
-            if (toggle) toggle.checked = isManual;
-            if (startEl) startEl.value = start;
-            if (endEl) endEl.value = end;
-        }
-
+        /* =========================================================
+           ПРОФІЛЬ
+           ========================================================= */
         function saveProfile() {
             const name = document.getElementById('input-profile-name')?.value || "ivan";
             const cls = document.getElementById('input-profile-class')?.value || "11-А";
-
             localStorage.setItem('user_name', name);
             localStorage.setItem('user_class', cls);
-
             const title = document.getElementById('greeting-title');
             const sub = document.getElementById('greeting-sub');
             const avatar = document.getElementById('avatar-display');
-
             if (title) title.innerText = `Добрий вечір, ${name}`;
             if (sub) sub.innerText = `${cls} • п'ятниця, 30 жовтня`;
             if (avatar) avatar.innerText = cls;
@@ -1504,22 +1363,276 @@
         function loadProfile() {
             const name = localStorage.getItem('user_name') || "ivan";
             const cls = localStorage.getItem('user_class') || "11-А";
-
             const inputName = document.getElementById('input-profile-name');
             const inputClass = document.getElementById('input-profile-class');
-
             if (inputName) inputName.value = name;
             if (inputClass) inputClass.value = cls;
-
             const title = document.getElementById('greeting-title');
             const sub = document.getElementById('greeting-sub');
             const avatar = document.getElementById('avatar-display');
-
             if (title) title.innerText = `Добрий вечір, ${name}`;
             if (sub) sub.innerText = `${cls} • п'ятниця, 30 жовтня`;
             if (avatar) avatar.innerText = cls;
         }
 
+        function saveVacationSettings() {
+            const isManual = document.getElementById('toggle-vacation')?.checked;
+            const start = document.getElementById('vacation-start')?.value;
+            const end = document.getElementById('vacation-end')?.value;
+            localStorage.setItem('vacation_manual', isManual);
+            localStorage.setItem('vacation_start', start);
+            localStorage.setItem('vacation_end', end);
+            updateRealTimeTimer();
+        }
+
+        function loadVacationSettings() {
+            const isManual = localStorage.getItem('vacation_manual') === 'true';
+            const start = localStorage.getItem('vacation_start') || '';
+            const end = localStorage.getItem('vacation_end') || '';
+            const toggle = document.getElementById('toggle-vacation');
+            const startEl = document.getElementById('vacation-start');
+            const endEl = document.getElementById('vacation-end');
+            if (toggle) toggle.checked = isManual;
+            if (startEl) startEl.value = start;
+            if (endEl) endEl.value = end;
+        }
+
+        /* =========================================================
+           ТЕМИ
+           ========================================================= */
+        function applyTheme(theme) {
+            document.body.classList.remove('theme-classic','theme-purple','theme-cyan','theme-sunset','theme-mint','theme-gold');
+            if (theme && theme !== 'classic') {
+                document.body.classList.add(`theme-${theme}`);
+            } else {
+                document.body.classList.add('theme-classic');
+            }
+            localStorage.setItem('app_theme', theme || 'classic');
+            document.querySelectorAll('.theme-swatch').forEach(sw => {
+                sw.classList.toggle('active', sw.dataset.theme === (theme || 'classic'));
+            });
+        }
+
+        function loadTheme() {
+            const saved = localStorage.getItem('app_theme') || 'classic';
+            applyTheme(saved);
+        }
+
+        function initThemeSwatches() {
+            document.querySelectorAll('.theme-swatch').forEach(sw => {
+                sw.addEventListener('click', () => {
+                    applyTheme(sw.dataset.theme);
+                    fireConfetti();
+                });
+            });
+        }
+
+        /* =========================================================
+           ПОГОДА + GPS + ПОШУК
+           ========================================================= */
+        const WEATHER_CODES = {
+            0: { icon: '☀️', desc: 'Ясно', theme: 'sunny' },
+            1: { icon: '🌤️', desc: 'Переважно ясно', theme: 'sunny' },
+            2: { icon: '⛅', desc: 'Мінлива хмарність', theme: 'cloudy' },
+            3: { icon: '☁️', desc: 'Похмуро', theme: 'cloudy' },
+            45: { icon: '🌫️', desc: 'Туман', theme: 'cloudy' },
+            48: { icon: '🌫️', desc: 'Паморозь', theme: 'cloudy' },
+            51: { icon: '🌦️', desc: 'Мряка', theme: 'rainy' },
+            53: { icon: '🌦️', desc: 'Мряка', theme: 'rainy' },
+            55: { icon: '🌧️', desc: 'Сильна мряка', theme: 'rainy' },
+            61: { icon: '🌧️', desc: 'Дощ', theme: 'rainy' },
+            63: { icon: '🌧️', desc: 'Дощ', theme: 'rainy' },
+            65: { icon: '⛈️', desc: 'Сильний дощ', theme: 'rainy' },
+            71: { icon: '🌨️', desc: 'Сніг', theme: 'snowy' },
+            73: { icon: '❄️', desc: 'Сніг', theme: 'snowy' },
+            75: { icon: '❄️', desc: 'Сильний сніг', theme: 'snowy' },
+            77: { icon: '🌨️', desc: 'Снігові зерна', theme: 'snowy' },
+            80: { icon: '🌦️', desc: 'Злива', theme: 'rainy' },
+            81: { icon: '🌧️', desc: 'Злива', theme: 'rainy' },
+            82: { icon: '⛈️', desc: 'Сильна злива', theme: 'rainy' },
+            85: { icon: '🌨️', desc: 'Снігова злива', theme: 'snowy' },
+            86: { icon: '❄️', desc: 'Сильний сніг', theme: 'snowy' },
+            95: { icon: '⛈️', desc: 'Гроза', theme: 'rainy' },
+            96: { icon: '⛈️', desc: 'Гроза з градом', theme: 'rainy' },
+            99: { icon: '⛈️', desc: 'Сильна гроза з градом', theme: 'rainy' }
+        };
+
+        function weatherInfoFromCode(code) {
+            return WEATHER_CODES[code] || { icon: '🌡️', desc: 'Невідомо', theme: 'cloudy' };
+        }
+
+        function applyWeatherThemeToApp() {
+            if (!weatherThemeEnabled || currentWeatherCode === null) return;
+            const info = weatherInfoFromCode(currentWeatherCode);
+            document.body.classList.remove('weather-sunny','weather-rainy','weather-snowy','weather-cloudy');
+            document.body.classList.add(`weather-${info.theme}`);
+            if (typeof updateAutoWeatherTheme === 'function') {
+                updateAutoWeatherTheme(info.theme);
+            }
+        }
+
+        function toggleWeatherTheme(val) {
+            weatherThemeEnabled = val;
+            localStorage.setItem('weather_theme_enabled', val);
+            const t1 = document.getElementById('toggle-weather-theme');
+            const t2 = document.getElementById('toggle-weather-theme-profile');
+            if (t1) t1.checked = val;
+            if (t2) t2.checked = val;
+            if (!val) {
+                document.body.classList.remove('weather-sunny','weather-rainy','weather-snowy','weather-cloudy');
+            } else {
+                applyWeatherThemeToApp();
+            }
+        }
+
+        async function fetchWeather(lat, lon, locationName) {
+            try {
+                const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code,wind_speed_10m,relative_humidity_2m&timezone=auto`;
+                const res = await fetch(url);
+                const data = await res.json();
+                if (!data.current) throw new Error('No weather data');
+
+                const temp = Math.round(data.current.temperature_2m);
+                const code = data.current.weather_code;
+                const wind = data.current.wind_speed_10m;
+                const humidity = data.current.relative_humidity_2m;
+                currentWeatherCode = code;
+                const info = weatherInfoFromCode(code);
+
+                const ww = document.getElementById('weather-widget');
+                if (ww) ww.style.display = 'flex';
+                document.getElementById('weather-icon').innerText = info.icon;
+                document.getElementById('weather-temp').innerText = `${temp}°C`;
+                document.getElementById('weather-desc').innerText = `${info.desc} • 💧${humidity}% • 💨${wind} м/с`;
+                document.getElementById('weather-loc').innerText = `📍 ${locationName}`;
+
+                const status = document.getElementById('weather-status');
+                if (status) status.innerText = `Оновлено: ${new Date().toLocaleTimeString('uk-UA')}`;
+
+                const sel = document.getElementById('selected-location-info');
+                if (sel) {
+                    sel.innerHTML = `<strong>${locationName}</strong><br>
+                        ${info.icon} ${info.desc}, ${temp}°C<br>
+                        💧 Вологість: ${humidity}% • 💨 Вітер: ${wind} м/с<br>
+                        🌐 Координати: ${lat.toFixed(3)}, ${lon.toFixed(3)}`;
+                }
+
+                localStorage.setItem('weather_location', JSON.stringify({ lat, lon, name: locationName }));
+                localStorage.setItem('weather_last', JSON.stringify({ temp, code, desc: info.desc, icon: info.icon, humidity, wind }));
+
+                applyWeatherThemeToApp();
+                if (typeof updateAutoWeatherTheme === 'function') {
+                    updateAutoWeatherTheme(info.theme);
+                }
+                return { temp, code, info, wind, humidity };
+            } catch (err) {
+                console.error('Weather fetch error:', err);
+                const status = document.getElementById('weather-status');
+                if (status) status.innerText = '⚠️ Не вдалося отримати погоду. Перевірте інтернет.';
+            }
+        }
+
+        function getGPSLocation() {
+            const status = document.getElementById('weather-status');
+            if (status) { status.innerText = '📡 Отримуємо GPS-координати...'; status.style.color = 'var(--accent-cyan)'; }
+
+            if (!navigator.geolocation) {
+                alert('❌ Geolocation API не підтримується вашим браузером.');
+                return;
+            }
+
+            navigator.geolocation.getCurrentPosition(
+                async (pos) => {
+                    const { latitude, longitude } = pos.coords;
+                    if (status) { status.innerText = '🌍 Визначаємо назву місця...'; }
+
+                    let name = `${latitude.toFixed(2)}, ${longitude.toFixed(2)}`;
+                    try {
+                        const r = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&accept-language=uk&zoom=10`);
+                        const d = await r.json();
+                        if (d.display_name) {
+                            const parts = d.display_name.split(',').slice(0, 3).join(',').trim();
+                            name = parts;
+                        }
+                    } catch (e) { /* ігноруємо */ }
+
+                    await fetchWeather(latitude, longitude, name);
+                },
+                (err) => {
+                    let msg = 'Помилка GPS';
+                    if (err.code === 1) msg = '🚫 Дозвіл на GPS відхилено. Дозвольте доступ у налаштуваннях браузера.';
+                    else if (err.code === 2) msg = '📡 GPS-сигнал недоступний.';
+                    else if (err.code === 3) msg = '⏱️ Час очікування GPS вичерпано.';
+                    if (status) { status.innerText = msg; status.style.color = '#ef4444'; }
+                },
+                { enableHighAccuracy: true, timeout: 15000, maximumAge: 60000 }
+            );
+        }
+
+        let searchTimer = null;
+        function debouncedCitySearch(query) {
+            clearTimeout(searchTimer);
+            searchTimer = setTimeout(() => searchCity(query), 500);
+        }
+
+        async function searchCity(query) {
+            const resultsEl = document.getElementById('search-results');
+            if (!resultsEl) return;
+            if (!query || query.trim().length < 2) {
+                resultsEl.innerHTML = '';
+                return;
+            }
+            resultsEl.innerHTML = '<div style="font-size: 12px; color: var(--text-muted); padding: 8px;"><i class="fa-solid fa-spinner spinner"></i> Пошук...</div>';
+
+            const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&countrycodes=ua&addressdetails=1&limit=10&accept-language=uk`;
+
+            try {
+                const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
+                const data = await res.json();
+
+                if (!data || data.length === 0) {
+                    resultsEl.innerHTML = '<div style="font-size: 12px; color: var(--text-muted); padding: 8px;">Нічого не знайдено. Спробуйте іншу назву, область або поштовий індекс.</div>';
+                    return;
+                }
+
+                resultsEl.innerHTML = '';
+                data.forEach(place => {
+                    const lat = parseFloat(place.lat);
+                    const lon = parseFloat(place.lon);
+                    const addr = place.address || {};
+                    const name = place.name || addr.city || addr.town || addr.village || addr.hamlet || place.display_name.split(',')[0];
+                    const region = addr.state || addr.region || '';
+                    const district = addr.county || addr.city_district || '';
+                    const postcode = addr.postcode || '';
+                    const typeLabel = place.type || place.class || '';
+
+                    const details = [region, district, postcode].filter(Boolean).join(' • ');
+
+                    const item = document.createElement('div');
+                    item.className = 'search-result-item';
+                    item.innerHTML = `
+                        <div style="font-weight: 700; font-size: 13px; color: var(--text-main);">📍 ${name}</div>
+                        <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">
+                            ${details || 'Україна'} ${typeLabel ? '• ' + typeLabel : ''}
+                        </div>
+                    `;
+                    item.onclick = () => {
+                        resultsEl.innerHTML = '';
+                        document.getElementById('city-search-input').value = '';
+                        fetchWeather(lat, lon, [name, region].filter(Boolean).join(', '));
+                        fireConfetti();
+                    };
+                    resultsEl.appendChild(item);
+                });
+            } catch (err) {
+                console.error('Search error:', err);
+                resultsEl.innerHTML = '<div style="font-size: 12px; color: #ef4444; padding: 8px;">⚠️ Помилка пошуку. Перевірте інтернет.</div>';
+            }
+        }
+
+        /* =========================================================
+           НАВІГАЦІЯ
+           ========================================================= */
         function switchTab(tabId) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
@@ -1530,26 +1643,436 @@
             const navBtn = document.getElementById(`nav-${tabId}`) || document.getElementById('nav-home');
             if (navBtn) navBtn.classList.add('active');
             window.scrollTo(0, 0);
+            if (typeof rebuildSnowLayers === 'function') setTimeout(rebuildSnowLayers, 80);
         }
 
         function scrollToHomework() {
             switchTab('home');
-            const list = document.getElementById('day-lessons-list');
-            if (list) list.scrollIntoView({ behavior: 'smooth' });
+            setTimeout(() => {
+                const list = document.getElementById('day-lessons-list');
+                if (list) list.scrollIntoView({ behavior: 'smooth' });
+            }, 100);
         }
 
+        /* =========================================================
+           🌨️ РЕАЛІСТИЧНИЙ СНІГ / ДОЩ
+           ========================================================= */
+        const weatherCanvas = document.getElementById('weather-canvas');
+        const wctx = weatherCanvas ? weatherCanvas.getContext('2d') : null;
+        let W = 0, H = 0;
+
+        let weatherMode = localStorage.getItem('weather_mode') || 'auto';
+        let currentWeatherTheme = 'none';
+
+        let airParticles = [];
+        let snowLayers = [];
+        let runoffDrops = [];
+        let splashes = [];
+        let trackedElements = [];
+
+        function resizeWeatherCanvas() {
+            if (!weatherCanvas) return;
+            W = weatherCanvas.width = window.innerWidth;
+            H = weatherCanvas.height = window.innerHeight;
+            rebuildSnowLayers();
+        }
+
+        function collectTrackedElements() {
+            const selectors = [
+                'header',
+                '.card-nz',
+                '.quick-btn',
+                '.notice-card',
+                '.weather-card',
+                'nav',
+                '.lesson-item',
+                '.advent-box',
+                '.user-avatar-badge',
+                '.streak-card'
+            ];
+            trackedElements = [];
+            selectors.forEach(sel => {
+                document.querySelectorAll(sel).forEach(el => {
+                    const r = el.getBoundingClientRect();
+                    if (r.width > 30 && r.height > 15 && r.top < H && r.bottom > 0) {
+                        trackedElements.push({
+                            el,
+                            rect: r,
+                            topY: r.top,
+                            left: r.left,
+                            right: r.right,
+                            bottom: r.bottom,
+                            width: r.width
+                        });
+                    }
+                });
+            });
+        }
+
+        function rebuildSnowLayers() {
+            collectTrackedElements();
+            const oldLayers = new Map();
+            snowLayers.forEach(l => oldLayers.set(l.el, l.snow));
+
+            snowLayers = trackedElements.map(t => ({
+                el: t.el,
+                rect: t.rect,
+                topY: t.topY,
+                left: t.left,
+                right: t.right,
+                bottom: t.bottom,
+                width: t.width,
+                snow: oldLayers.get(t.el) || 0,
+                maxSnow: Math.min(t.width * 0.08, 18),
+                seed: Math.random() * 100
+            }));
+        }
+
+        function spawnAirParticle() {
+            if (!W || !H) return;
+            if (weatherMode === 'snow' || (weatherMode === 'auto' && currentWeatherTheme === 'snowy')) {
+                airParticles.push({
+                    type: 'snow',
+                    x: Math.random() * W,
+                    y: -10,
+                    r: 1.5 + Math.random() * 2.5,
+                    vy: 0.5 + Math.random() * 1.2,
+                    vx: (Math.random() - 0.5) * 0.4,
+                    sway: Math.random() * Math.PI * 2,
+                    swaySpeed: 0.01 + Math.random() * 0.02,
+                    swayAmp: 0.5 + Math.random() * 1.5,
+                    life: 0
+                });
+            } else if (weatherMode === 'rain' || (weatherMode === 'auto' && (currentWeatherTheme === 'rainy' || currentWeatherTheme === 'stormy'))) {
+                airParticles.push({
+                    type: 'rain',
+                    x: Math.random() * W,
+                    y: -20,
+                    len: 12 + Math.random() * 10,
+                    vy: 9 + Math.random() * 6,
+                    vx: 0.6 + Math.random() * 0.4,
+                    alpha: 0.4 + Math.random() * 0.4,
+                    life: 0
+                });
+            }
+        }
+
+        function updateAirParticles(dt) {
+            const sf = dt / 16.67;
+            for (let i = airParticles.length - 1; i >= 0; i--) {
+                const p = airParticles[i];
+                p.life += dt;
+
+                if (p.type === 'snow') {
+                    p.sway += p.swaySpeed * sf;
+                    p.x += (p.vx + Math.sin(p.sway) * p.swayAmp) * sf;
+                    p.y += p.vy * sf;
+                    if (tryDepositSnow(p)) { airParticles.splice(i, 1); continue; }
+                    if (p.y > H + 10) airParticles.splice(i, 1);
+                } else if (p.type === 'rain') {
+                    p.x += p.vx * sf;
+                    p.y += p.vy * sf;
+                    if (tryStartRunoff(p)) { airParticles.splice(i, 1); continue; }
+                    if (p.y > H + 20) airParticles.splice(i, 1);
+                }
+            }
+        }
+
+        function tryDepositSnow(p) {
+            for (const layer of snowLayers) {
+                const r = layer.rect;
+                if (p.x > r.left + 2 && p.x < r.right - 2 &&
+                    p.y >= r.top - 1 && p.y <= r.top + 3) {
+                    layer.snow = Math.min(layer.maxSnow, layer.snow + 0.06);
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        function tryStartRunoff(p) {
+            for (const layer of snowLayers) {
+                const r = layer.rect;
+                if (p.x > r.left + 2 && p.x < r.right - 2 &&
+                    p.y >= r.top - 2 && p.y <= r.top + 4) {
+                    for (let k = 0; k < 3; k++) {
+                        splashes.push({
+                            x: p.x,
+                            y: r.top,
+                            vx: (Math.random() - 0.5) * 3,
+                            vy: -Math.random() * 2 - 1,
+                            r: 0.8 + Math.random() * 1.2,
+                            life: 0,
+                            maxLife: 300 + Math.random() * 200
+                        });
+                    }
+                    runoffDrops.push({
+                        x: p.x,
+                        y: r.top,
+                        vy: 0.8 + Math.random() * 1.2,
+                        r: 1 + Math.random() * 1.5,
+                        alpha: 0.5 + Math.random() * 0.3,
+                        targetBottom: r.bottom,
+                        trail: []
+                    });
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        function updateRunoffDrops(dt) {
+            const sf = dt / 16.67;
+            for (let i = runoffDrops.length - 1; i >= 0; i--) {
+                const d = runoffDrops[i];
+                d.y += d.vy * sf;
+                d.vy += 0.05 * sf;
+                d.vy = Math.min(d.vy, 3);
+
+                if (Math.random() < 0.15) {
+                    d.trail.push({ x: d.x + (Math.random() - 0.5) * 3, y: d.y, r: 0.5 + Math.random() * 0.8, alpha: 0.4 });
+                    if (d.trail.length > 6) d.trail.shift();
+                }
+                d.trail.forEach(t => { t.alpha *= 0.985; });
+                d.trail = d.trail.filter(t => t.alpha > 0.05);
+
+                if (d.y >= d.targetBottom) {
+                    if (Math.random() < 0.4) {
+                        airParticles.push({
+                            type: 'rain',
+                            x: d.x,
+                            y: d.targetBottom,
+                            len: 8,
+                            vy: 6,
+                            vx: 0.3,
+                            alpha: 0.4,
+                            life: 0
+                        });
+                    }
+                    runoffDrops.splice(i, 1);
+                }
+            }
+        }
+
+        function updateSplashes(dt) {
+            const sf = dt / 16.67;
+            for (let i = splashes.length - 1; i >= 0; i--) {
+                const s = splashes[i];
+                s.x += s.vx * sf;
+                s.y += s.vy * sf;
+                s.vy += 0.15 * sf;
+                s.life += dt;
+                if (s.life > s.maxLife || s.y > H) splashes.splice(i, 1);
+            }
+        }
+
+        function updateSnowLayers(dt) {
+            for (const layer of snowLayers) {
+                if (layer.snow > 0) {
+                    layer.snow = Math.max(0, layer.snow - 0.0015 * (dt / 16.67));
+                }
+            }
+        }
+
+        function drawWeather() {
+            if (!wctx) return;
+            wctx.clearRect(0, 0, W, H);
+
+            const isRaining = weatherMode === 'rain' || (weatherMode === 'auto' && (currentWeatherTheme === 'rainy' || currentWeatherTheme === 'stormy'));
+            const isSnowing = weatherMode === 'snow' || (weatherMode === 'auto' && currentWeatherTheme === 'snowy');
+
+            // Сніг на картках
+            if (isSnowing) {
+                for (const layer of snowLayers) {
+                    if (layer.snow <= 0.2) continue;
+                    const r = layer.rect;
+                    const h = layer.snow;
+
+                    const grad = wctx.createLinearGradient(0, r.top - h, 0, r.top + 2);
+                    grad.addColorStop(0, 'rgba(255, 255, 255, 0.95)');
+                    grad.addColorStop(0.7, 'rgba(240, 248, 255, 0.9)');
+                    grad.addColorStop(1, 'rgba(200, 220, 240, 0.6)');
+
+                    wctx.fillStyle = grad;
+                    wctx.beginPath();
+                    wctx.moveTo(r.left + 4, r.top + 1);
+                    const steps = Math.max(6, Math.floor(r.width / 14));
+                    for (let i = 0; i <= steps; i++) {
+                        const x = r.left + 4 + (r.width - 8) * (i / steps);
+                        const wave = Math.sin(i * 1.7 + layer.seed) * (h * 0.4);
+                        wctx.lineTo(x, r.top - h + wave);
+                    }
+                    wctx.lineTo(r.right - 4, r.top + 1);
+                    wctx.closePath();
+                    wctx.fill();
+
+                    wctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+                    wctx.beginPath();
+                    wctx.ellipse(r.left + r.width * 0.3, r.top - h * 0.6, r.width * 0.15, h * 0.25, 0, 0, Math.PI * 2);
+                    wctx.fill();
+                }
+            }
+
+            // Стікання дощу
+            if (isRaining) {
+                for (const d of runoffDrops) {
+                    for (const t of d.trail) {
+                        wctx.fillStyle = `rgba(140, 200, 255, ${t.alpha})`;
+                        wctx.beginPath();
+                        wctx.arc(t.x, t.y, t.r, 0, Math.PI * 2);
+                        wctx.fill();
+                    }
+                    wctx.fillStyle = `rgba(180, 220, 255, ${d.alpha})`;
+                    wctx.beginPath();
+                    wctx.arc(d.x, d.y, d.r, 0, Math.PI * 2);
+                    wctx.fill();
+                    wctx.fillStyle = `rgba(255, 255, 255, ${d.alpha * 0.8})`;
+                    wctx.beginPath();
+                    wctx.arc(d.x - d.r * 0.3, d.y - d.r * 0.3, d.r * 0.4, 0, Math.PI * 2);
+                    wctx.fill();
+                }
+            }
+
+            // Частинки
+            for (const p of airParticles) {
+                if (p.type === 'snow') {
+                    wctx.fillStyle = 'rgba(200, 220, 255, 0.3)';
+                    wctx.beginPath();
+                    wctx.arc(p.x + 0.5, p.y + 0.5, p.r, 0, Math.PI * 2);
+                    wctx.fill();
+                    const g = wctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r);
+                    g.addColorStop(0, 'rgba(255, 255, 255, 1)');
+                    g.addColorStop(1, 'rgba(230, 240, 255, 0.7)');
+                    wctx.fillStyle = g;
+                    wctx.beginPath();
+                    wctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                    wctx.fill();
+                    if (p.r > 2.5) {
+                        wctx.strokeStyle = 'rgba(255, 255, 255, 0.8)';
+                        wctx.lineWidth = 0.6;
+                        for (let a = 0; a < 6; a++) {
+                            const ang = (a / 6) * Math.PI * 2;
+                            wctx.beginPath();
+                            wctx.moveTo(p.x, p.y);
+                            wctx.lineTo(p.x + Math.cos(ang) * p.r * 1.3, p.y + Math.sin(ang) * p.r * 1.3);
+                            wctx.stroke();
+                        }
+                    }
+                } else if (p.type === 'rain') {
+                    const grad = wctx.createLinearGradient(p.x, p.y, p.x - p.vx * 2, p.y - p.len);
+                    grad.addColorStop(0, `rgba(160, 200, 255, ${p.alpha})`);
+                    grad.addColorStop(1, `rgba(160, 200, 255, 0)`);
+                    wctx.strokeStyle = grad;
+                    wctx.lineWidth = 1.4;
+                    wctx.lineCap = 'round';
+                    wctx.beginPath();
+                    wctx.moveTo(p.x, p.y);
+                    wctx.lineTo(p.x - p.vx * 1.5, p.y - p.len);
+                    wctx.stroke();
+                }
+            }
+
+            // Бризки
+            for (const s of splashes) {
+                const a = 1 - s.life / s.maxLife;
+                wctx.fillStyle = `rgba(180, 220, 255, ${a * 0.9})`;
+                wctx.beginPath();
+                wctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+                wctx.fill();
+            }
+        }
+
+        let lastWeatherTime = performance.now();
+        let spawnAccumulator = 0;
+
+        function weatherLoop(now) {
+            const dt = Math.min(50, now - lastWeatherTime);
+            lastWeatherTime = now;
+
+            const isRaining = weatherMode === 'rain' || (weatherMode === 'auto' && (currentWeatherTheme === 'rainy' || currentWeatherTheme === 'stormy'));
+            const isSnowing = weatherMode === 'snow' || (weatherMode === 'auto' && currentWeatherTheme === 'snowy');
+
+            if (isRaining || isSnowing) {
+                spawnAccumulator += dt;
+                const rate = isSnowing ? 22 : 45;
+                const interval = 1000 / rate;
+                while (spawnAccumulator > interval) {
+                    spawnAirParticle();
+                    spawnAccumulator -= interval;
+                }
+            } else {
+                spawnAccumulator = 0;
+            }
+
+            updateAirParticles(dt);
+            updateRunoffDrops(dt);
+            updateSplashes(dt);
+            updateSnowLayers(dt);
+            drawWeather();
+
+            requestAnimationFrame(weatherLoop);
+        }
+
+        function setWeatherMode(mode) {
+            weatherMode = mode;
+            localStorage.setItem('weather_mode', mode);
+            document.body.classList.remove('raining', 'snowing');
+            if (mode === 'rain') document.body.classList.add('raining');
+            if (mode === 'snow') document.body.classList.add('snowing');
+            if (mode === 'auto') {
+                if (currentWeatherTheme === 'rainy' || currentWeatherTheme === 'stormy') document.body.classList.add('raining');
+                if (currentWeatherTheme === 'snowy') document.body.classList.add('snowing');
+            }
+
+            airParticles = [];
+            runoffDrops = [];
+            splashes = [];
+            snowLayers.forEach(l => l.snow = 0);
+
+            document.querySelectorAll('.wm-btn').forEach(b => {
+                b.classList.toggle('active', b.dataset.mode === mode);
+            });
+
+            rebuildSnowLayers();
+        }
+
+        function initWeatherModePicker() {
+            document.querySelectorAll('.wm-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    setWeatherMode(btn.dataset.mode);
+                    if (typeof fireConfetti === 'function') fireConfetti();
+                });
+            });
+            setWeatherMode(weatherMode);
+        }
+
+        function updateAutoWeatherTheme(theme) {
+            currentWeatherTheme = theme || 'none';
+            if (weatherMode === 'auto') {
+                document.body.classList.remove('raining', 'snowing');
+                if (theme === 'rainy' || theme === 'stormy') document.body.classList.add('raining');
+                if (theme === 'snowy') document.body.classList.add('snowing');
+            }
+        }
+
+        let scrollTimeout = null;
+        function onScrollOrResize() {
+            if (scrollTimeout) clearTimeout(scrollTimeout);
+            scrollTimeout = setTimeout(() => { rebuildSnowLayers(); }, 60);
+        }
+        window.addEventListener('scroll', onScrollOrResize, { passive: true });
+        window.addEventListener('resize', () => {
+            resizeWeatherCanvas();
+            onScrollOrResize();
+        });
+
+        /* =========================================================
+           ІНІЦІАЛІЗАЦІЯ
+           ========================================================= */
         window.onload = () => {
             const todayStr = new Date().toISOString().split('T')[0];
             const attDateInput = document.getElementById('attendance-date');
-            if (attDateInput) {
-                attDateInput.value = todayStr;
-                loadAttendanceForDate();
-            }
-
-            resizeCanvas();
-            createParticles();
-            drawParticles();
-            window.addEventListener('resize', resizeCanvas);
+            if (attDateInput) { attDateInput.value = todayStr; loadAttendanceForDate(); }
 
             setTimeout(triggerTreeExplosion, 2000);
 
@@ -1559,6 +2082,50 @@
 
             loadProfile();
             loadVacationSettings();
+            loadTheme();
+            initThemeSwatches();
+
+            const confSaved = localStorage.getItem('confetti_active');
+            const animSaved = localStorage.getItem('animations_active');
+            const wtSaved = localStorage.getItem('weather_theme_enabled');
+
+            if (confSaved !== null) { isConfettiActive = confSaved === 'true'; const t = document.getElementById('toggle-confetti'); if (t) t.checked = isConfettiActive; }
+            if (animSaved !== null) { isAnimationsActive = animSaved === 'true'; const t = document.getElementById('toggle-animations'); if (t) t.checked = isAnimationsActive; }
+            if (wtSaved !== null) {
+                weatherThemeEnabled = wtSaved === 'true';
+                const t1 = document.getElementById('toggle-weather-theme');
+                const t2 = document.getElementById('toggle-weather-theme-profile');
+                if (t1) t1.checked = weatherThemeEnabled;
+                if (t2) t2.checked = weatherThemeEnabled;
+            }
+
+            const savedLoc = localStorage.getItem('weather_location');
+            const savedWeather = localStorage.getItem('weather_last');
+            if (savedLoc && savedWeather) {
+                try {
+                    const loc = JSON.parse(savedLoc);
+                    const w = JSON.parse(savedWeather);
+                    const ww = document.getElementById('weather-widget');
+                    if (ww) ww.style.display = 'flex';
+                    document.getElementById('weather-icon').innerText = w.icon;
+                    document.getElementById('weather-temp').innerText = `${w.temp}°C`;
+                    document.getElementById('weather-desc').innerText = `${w.desc} • 💧${w.humidity}% • 💨${w.wind} м/с`;
+                    document.getElementById('weather-loc').innerText = `📍 ${loc.name}`;
+                    currentWeatherCode = w.code;
+                    const sel = document.getElementById('selected-location-info');
+                    if (sel) {
+                        sel.innerHTML = `<strong>${loc.name}</strong><br>
+                            ${w.icon} ${w.desc}, ${w.temp}°C<br>
+                            💧 Вологість: ${w.humidity}% • 💨 Вітер: ${w.wind} м/с<br>
+                            🌐 Координати: ${loc.lat.toFixed(3)}, ${loc.lon.toFixed(3)}`;
+                    }
+                    const info = weatherInfoFromCode(w.code);
+                    currentWeatherTheme = info.theme;
+                    applyWeatherThemeToApp();
+                    if (typeof updateAutoWeatherTheme === 'function') updateAutoWeatherTheme(info.theme);
+                } catch (e) { console.warn(e); }
+            }
+
             selectDay(currentSelectedDay);
             renderFullSchedule();
             renderGrades();
@@ -1566,6 +2133,15 @@
             renderAttendanceHistory();
             updateRealTimeTimer();
             setInterval(updateRealTimeTimer, 1000);
+
+            // Запуск рушія погоди
+            resizeWeatherCanvas();
+            initWeatherModePicker();
+            requestAnimationFrame((t) => { lastWeatherTime = t; weatherLoop(t); });
+
+            // Оновити слои після рендера
+            setTimeout(rebuildSnowLayers, 500);
+            setTimeout(rebuildSnowLayers, 1500);
         };
     </script>
 </body>
