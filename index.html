@@ -3,16 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Human.ua • Хмарний Щоденник</title>
+    <title>Human.ua • Щоденник</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     
-    <!-- ПІДКЛЮЧЕННЯ FIREBASE REALTIME DATABASE -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getDatabase, ref, set, get, child, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        // ВАШІ НАЛАШТУВАННЯ FIREBASE
         const firebaseConfig = {
             apiKey: "AIzaSyCzQbQ9lRGCTOaaaY0X2-TcsOCQLtwsEZQ",
             authDomain: "human-5d93e.firebaseapp.com",
@@ -25,70 +23,54 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
-
-        // Робимо функції доступними
         window.fb = { db, ref, set, get, child, update };
         
-        // =========================================================
-        // ВАШ API КЛЮЧ ВІД GEMINI (ВСТАВТЕ)
-        // =========================================================
+        // ВАШ API КЛЮЧ ВІД GEMINI
+        // За потреби створіть новий ключ у Google AI Studio (https://aistudio.google.com/app/apikey)
         const GEMINI_API_KEY = "AQ.Ab8RN6LA2QCiUa_dOQ3LK67DZwzI4K7ImeE0Fr-lm-4ogr4Hkg";
-        window.GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+        window.GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`;
 
         window.dispatchEvent(new Event('firebaseReady'));
     </script>
 
     <style>
-        :root {
-            --bg: #09090b; --surface: rgba(30, 30, 35, 0.6); --border: rgba(255, 255, 255, 0.08);
-            --text-main: #f4f4f5; --text-muted: #a1a1aa; --accent: #f43f5e; --accent-bg: rgba(244, 63, 94, 0.15);
-            --green: #10b981; --red: #ef4444;
-            --radius-lg: 24px; --radius-md: 16px; --blur: 24px;
-        }
+        :root { --bg: #09090b; --surface: rgba(30, 30, 35, 0.6); --border: rgba(255, 255, 255, 0.08); --text-main: #f4f4f5; --text-muted: #a1a1aa; --accent: #f43f5e; --accent-bg: rgba(244, 63, 94, 0.15); --radius-lg: 24px; --radius-md: 16px; --blur: 24px; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
         body { background-color: var(--bg); color: var(--text-main); min-height: 100vh; padding-bottom: 110px; overflow-x: hidden; position: relative; }
         .bg-glow { position: fixed; top: -20%; left: -10%; width: 120%; height: 120%; background: radial-gradient(circle at 50% 0%, var(--accent-bg) 0%, transparent 60%); z-index: -1; pointer-events: none; }
         #weather-canvas { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 10; }
-        
         header { padding: 30px 20px 10px 20px; display: flex; justify-content: space-between; align-items: flex-start; max-width: 600px; margin: 0 auto; z-index: 20; position: relative; }
         .date-text { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 4px; }
         .page-title { font-size: 34px; font-weight: 800; letter-spacing: -1px; }
         .header-btn { width: 44px; height: 44px; border-radius: 50%; background: var(--surface); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 18px; cursor: pointer; }
-        
         main { padding: 10px 16px; max-width: 600px; margin: 0 auto; position: relative; z-index: 20; }
         .tab-content { display: none; animation: fadeIn 0.3s ease-out; }
         .tab-content.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        
         .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 20px; margin-bottom: 16px; backdrop-filter: blur(var(--blur)); }
         .list-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; margin-bottom: 16px; }
         .list-item { display: flex; align-items: center; padding: 16px; border-bottom: 1px solid var(--border); cursor: pointer; }
         .list-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 18px; margin-right: 14px; }
-        
         .input-group { margin-bottom: 16px; }
         .input-group label { display: block; font-size: 12px; color: var(--text-muted); margin-bottom: 6px; }
         .input-field { width: 100%; background: rgba(0,0,0,0.2); border: 1px solid var(--border); color: #fff; padding: 14px; border-radius: var(--radius-md); font-size: 15px; outline: none; }
         .btn { width: 100%; background: var(--accent); color: #fff; border: none; padding: 14px; border-radius: var(--radius-md); font-weight: 600; font-size: 15px; cursor: pointer; margin-bottom: 10px; }
         .btn-secondary { background: var(--surface); border: 1px solid var(--border); color: #fff; }
-        
         .day-carousel { display: flex; gap: 8px; overflow-x: auto; padding: 8px; margin-bottom: 20px; background: var(--surface); border-radius: var(--radius-lg); border: 1px solid var(--border); }
         .day-item { flex: 1; min-width: 54px; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 10px 0; border-radius: var(--radius-md); cursor: pointer; }
         .day-item.active { background: var(--accent); color: #fff; }
         .day-name { font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--text-muted); }
         .day-item.active .day-name { color: rgba(255,255,255,0.8); }
-        
         nav { position: fixed; bottom: 20px; left: 16px; right: 16px; background: rgba(20, 20, 20, 0.85); backdrop-filter: blur(20px); border: 1px solid var(--border); border-radius: 30px; display: flex; justify-content: space-between; padding: 8px 12px; z-index: 100; max-width: 600px; margin: 0 auto; }
         .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--text-muted); font-size: 10px; font-weight: 500; cursor: pointer; padding: 8px 12px; border-radius: 20px; }
         .nav-item.active { color: #fff; background: rgba(255,255,255,0.1); }
         .nav-item.active i { color: var(--accent); }
-        
         #auth-screen { position: fixed; inset: 0; background: var(--bg); z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 20px; }
         .auth-box { width: 100%; max-width: 400px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 30px; }
     </style>
 </head>
 <body>
 
-    <!-- ЕКРАН ВХОДУ -->
     <div id="auth-screen">
         <div class="auth-box">
             <div style="font-size: 28px; font-weight: 800; text-align: center; margin-bottom: 8px;">Human.ua</div>
@@ -99,17 +81,16 @@
                 <input type="text" class="input-field" id="auth-name" placeholder="Іван">
             </div>
             <div class="input-group">
-                <label>Код класу (або пароль адміна)</label>
+                <label>Код класу</label>
                 <input type="text" class="input-field" id="auth-code" placeholder="Наприклад: X7Y9Z">
             </div>
             
             <button class="btn" onclick="loginUser()">Увійти</button>
             <button class="btn btn-secondary" onclick="createNewClass()">Створити клас (Вчитель)</button>
-            <div id="auth-status" style="text-align: center; font-size: 13px; margin-top: 10px; color: var(--accent);"></div>
+            <div id="auth-status" style="text-align: center; font-size: 13px; margin-top: 10px; color: var(--accent); font-weight: 600;"></div>
         </div>
     </div>
 
-    <!-- ДОДАТОК -->
     <div id="app-container" style="display: none;">
         <div class="bg-glow"></div>
         <canvas id="weather-canvas"></canvas>
@@ -123,7 +104,6 @@
         </header>
 
         <main>
-            <!-- СЬОГОДНІ -->
             <div id="tab-home" class="tab-content active">
                 <div class="card">
                     <div style="font-size: 16px; font-weight: 700; margin-bottom: 8px;">Мій клас: <span id="home-class-name"></span></div>
@@ -141,7 +121,6 @@
                 </div>
             </div>
 
-            <!-- РОЗКЛАД -->
             <div id="tab-schedule" class="tab-content">
                 <div class="day-carousel" id="day-carousel-container"></div>
                 <div id="schedule-list" class="list-card"></div>
@@ -150,15 +129,16 @@
                     <button class="btn" onclick="openScheduleEditor()"><i class="fa-solid fa-pen"></i> Змінити розклад вручну</button>
                 </div>
 
+                <!-- БЛОК ШІ -->
                 <div id="ai-scan-block" class="card" style="margin-top: 16px; display: none;">
                     <div style="font-weight: 700; margin-bottom: 10px;"><i class="fa-solid fa-wand-magic-sparkles"></i> AI Аналіз фото</div>
+                    <p style="font-size: 12px; color: #aaa; margin-bottom: 10px;">Завантажте чітке фото розкладу, і Gemini спробує його розпізнати.</p>
                     <input type="file" id="ai-image-upload" accept="image/*" style="display: none;" onchange="processScheduleImage(this)">
-                    <button class="btn btn-secondary" onclick="document.getElementById('ai-image-upload').click()">Завантажити фото розкладу</button>
-                    <div id="ai-status" style="font-size: 12px; color: var(--accent); margin-top: 10px;"></div>
+                    <button class="btn btn-secondary" onclick="document.getElementById('ai-image-upload').click()">Завантажити фото</button>
+                    <div id="ai-status" style="font-size: 13px; color: var(--accent); margin-top: 10px; font-weight: 600; text-align: center;"></div>
                 </div>
             </div>
 
-            <!-- ЇДАЛЬНЯ -->
             <div id="tab-canteen" class="tab-content">
                 <div class="card">
                     <div style="font-weight: 700; margin-bottom: 12px;">Меню на сьогодні</div>
@@ -173,7 +153,6 @@
                 </div>
             </div>
 
-            <!-- ПРОФІЛЬ -->
             <div id="tab-profile" class="tab-content">
                 <div class="card" style="display: flex; align-items: center; gap: 16px;">
                     <div style="width: 70px; height: 70px; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: bold;" id="prof-avatar">11</div>
@@ -183,17 +162,6 @@
                         <div id="prof-role" style="font-size: 12px; font-weight: 700; color: var(--accent); margin-top: 4px;"></div>
                     </div>
                 </div>
-
-                <div class="card">
-                    <div style="font-weight: 700; margin-bottom: 12px;">Змінити ім'я</div>
-                    <input type="text" class="input-field" id="prof-input-name" oninput="updateProfileName()">
-                </div>
-
-                <div id="admin-panel" class="card" style="display: none; border: 1px solid rgba(239, 68, 68, 0.4);">
-                    <div style="font-weight: 700; color: #f87171; margin-bottom: 10px;">🛡️ Панель Адміністратора</div>
-                    <div id="users-list" style="font-size: 14px; color: var(--text-muted);">Завантаження користувачів...</div>
-                </div>
-
                 <button class="btn btn-secondary" onclick="logout()" style="color: #ef4444; border-color: #ef4444;">Вийти</button>
             </div>
         </main>
@@ -220,31 +188,28 @@
             }
         });
 
-        // ВХІД
         async function loginUser() {
-            if (!firebaseReady) { alert("Зачекайте, база даних завантажується..."); return; }
+            if (!firebaseReady) { document.getElementById('auth-status').innerText = "База даних ще не готова..."; return; }
             const name = document.getElementById('auth-name').value.trim();
             const code = document.getElementById('auth-code').value.trim();
             const status = document.getElementById('auth-status');
 
             if (!name || !code) { status.innerText = "Заповніть всі поля!"; return; }
-            status.innerText = "Перевірка...";
+            status.innerText = "З'єднання з базою...";
 
-            // СЕКРЕТНИЙ КОД АДМІНА
-            if (code === "SUPERADMIN2024") {
-                await window.fb.set(window.fb.ref(window.fb.db, 'users/' + name), { name, className: "ALL", role: "admin", classId: "ALL" });
-                loginSuccess(name, "ALL", "admin", "ALL");
-                return;
-            }
+            try {
+                const dbRef = window.fb.ref(window.fb.db);
+                const snapshot = await window.fb.get(window.fb.child(dbRef, 'classes'));
+                
+                if (!snapshot.exists()) {
+                    status.innerText = "У базі ще немає жодного класу. Створіть його!";
+                    return;
+                }
 
-            // Пошук коду класу
-            const dbRef = window.fb.ref(window.fb.db);
-            const snapshot = await window.fb.get(window.fb.child(dbRef, 'classes'));
-            let foundClassId = null;
-            let foundClassName = null;
-
-            if (snapshot.exists()) {
+                let foundClassId = null;
+                let foundClassName = null;
                 const classes = snapshot.val();
+                
                 for (const key in classes) {
                     if (classes[key].code === code) {
                         foundClassId = key;
@@ -252,34 +217,40 @@
                         break;
                     }
                 }
-            }
 
-            if (foundClassId) {
-                await window.fb.set(window.fb.ref(window.fb.db, 'users/' + name), { name, className: foundClassName, role: "student", classId: foundClassId });
-                loginSuccess(name, foundClassName, "student", foundClassId);
-            } else {
-                status.innerText = "Невірний код класу!";
+                if (foundClassId) {
+                    status.innerText = "Вхід...";
+                    await window.fb.set(window.fb.ref(window.fb.db, 'users/' + name), { name, className: foundClassName, role: "student", classId: foundClassId });
+                    loginSuccess(name, foundClassName, "student", foundClassId);
+                } else {
+                    status.innerText = "Невірний код класу!";
+                }
+            } catch (error) {
+                console.error(error);
+                status.innerText = "Помилка доступу! Перевірте Rules у Firebase.";
             }
         }
 
         async function createNewClass() {
             if (!firebaseReady) { alert("Зачекайте..."); return; }
             const name = document.getElementById('auth-name').value.trim();
-            if (!name) { alert("Введіть своє ім'я в полі вище!"); return; }
+            if (!name) { alert("Спочатку введіть своє ім'я!"); return; }
             
             const className = prompt("Введіть назву класу (наприклад: 11-А):");
             if (!className) return;
 
             const classCode = Math.random().toString(36).substring(2, 7).toUpperCase();
             
-            await window.fb.set(window.fb.ref(window.fb.db, 'classes/' + className), {
-                name: className, code: classCode, schedule: getDefaultSchedule(), canteen: "Борщ, пюре з котлетою", teacher: name
-            });
-
-            await window.fb.set(window.fb.ref(window.fb.db, 'users/' + name), { name, className, role: "teacher", classId: className });
-
-            alert(`Клас ${className} створено!\nКод для учнів: ${classCode}`);
-            loginSuccess(name, className, "teacher", className);
+            try {
+                await window.fb.set(window.fb.ref(window.fb.db, 'classes/' + className), {
+                    name: className, code: classCode, schedule: { "Пн": [], "Вт": [], "Ср": [], "Чт": [], "Пт": [] }, canteen: "Меню ще не додано", teacher: name
+                });
+                await window.fb.set(window.fb.ref(window.fb.db, 'users/' + name), { name, className, role: "teacher", classId: className });
+                alert(`Клас ${className} створено!\nКод для учнів: ${classCode}`);
+                loginSuccess(name, className, "teacher", className);
+            } catch(e) {
+                alert("Помилка створення: перевірте Rules у Firebase.");
+            }
         }
 
         function loginSuccess(name, className, role, classId, isRestore = false) {
@@ -291,15 +262,10 @@
 
             document.getElementById('prof-name').innerText = name;
             document.getElementById('prof-class').innerText = className;
-            document.getElementById('prof-input-name').value = name;
             document.getElementById('home-class-name').innerText = className;
 
             const roleLabel = document.getElementById('prof-role');
-            if (role === 'admin') {
-                roleLabel.innerText = "Головний Адмін";
-                document.getElementById('admin-panel').style.display = 'block';
-                loadAdminUsers();
-            } else if (role === 'teacher') {
+            if (role === 'teacher') {
                 roleLabel.innerText = "Класний Керівник";
                 document.getElementById('schedule-edit-btn').style.display = 'block';
                 document.getElementById('canteen-edit-block').style.display = 'block';
@@ -308,12 +274,7 @@
                 roleLabel.innerText = "Учень";
             }
 
-            if (classId !== "ALL") {
-                loadClassData(classId);
-            } else {
-                document.getElementById('home-class-code').innerText = "---";
-                document.getElementById('schedule-list').innerHTML = "<div style='padding:20px; color:gray;'>Виберіть клас для перегляду</div>";
-            }
+            loadClassData(classId);
             initSnow();
         }
 
@@ -329,8 +290,6 @@
 
         function logout() { localStorage.removeItem('currentUser'); location.reload(); }
         function switchTab(tabId, title) { document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active')); document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active')); document.getElementById(`tab-${tabId}`).classList.add('active'); document.getElementById(`nav-${tabId}`).classList.add('active'); document.getElementById('header-title').innerText = title; window.scrollTo(0, 0); }
-
-        function getDefaultSchedule() { return { "Пн": [], "Вт": [], "Ср": [], "Чт": [], "Пт": [] }; }
 
         function renderSchedule() {
             const carousel = document.getElementById('day-carousel-container');
@@ -351,7 +310,8 @@
                 document.querySelectorAll('#day-carousel-container .day-item').forEach(el => { el.classList.toggle('active', el.querySelector('.day-name').innerText === day); });
                 list.innerHTML = '';
                 const lessons = currentClassDB.schedule[day] || [];
-                if(lessons.length === 0) { list.innerHTML = '<div style="padding: 20px; text-align: center; color: var(--text-muted);">Уроків немає</div>'; return; }
+                if(lessons.length === 0) { 
+ list.innerHTML = '<div style="padding: 20px; text-align: center; color: var(--text-muted);">Уроків немає</div>'; return; }
                 lessons.forEach(l => {
                     list.innerHTML += `<div class="list-item"><div style="font-size: 13px; font-weight: 700; color: var(--text-muted); width: 44px;">${l.time || ''}</div><div class="list-info"><div class="list-title">${l.name}</div><div class="list-sub">Каб. ${l.cab}</div></div></div>`;
                 });
@@ -359,12 +319,14 @@
             renderDay(currentDay);
         }
 
+        function renderCanteen() { document.getElementById('canteen-menu-display').innerText = currentClassDB.canteen || "Меню порожнє"; document.getElementById('canteen-input').value = currentClassDB.canteen || ""; }
+        async function saveCanteenMenu() { const text = document.getElementById('canteen-input').value; await window.fb.update(window.fb.ref(window.fb.db, 'classes/' + currentUser.classId), { canteen: text }); alert("Меню збережено!"); currentClassDB.canteen = text; renderCanteen(); }
+        
         async function openScheduleEditor() {
             const day = prompt("Введіть день (Пн, Вт, Ср, Чт, Пт):");
             if (!day) return;
-            const newStr = prompt(`Введіть уроки для ${day} (Назва:Кабінет:Час через кому).\nПриклад: Математика:5:08:00, Фізика:9:08:55`);
+            const newStr = prompt(`Введіть уроки для ${day} (Назва:Кабінет:Час).\nПриклад: Математика:5:08:00, Фізика:9:08:55`);
             if (!newStr) return;
-
             const newLessons = newStr.split(',').map(s => { const p = s.split(':'); return { name: p[0].trim(), cab: p[1] ? p[1].trim() : '-', time: p[2] ? `${p[2]}:${p[3]||'00'}` : '08:00' }; });
             currentClassDB.schedule[day] = newLessons;
             await window.fb.update(window.fb.ref(window.fb.db, 'classes/' + currentUser.classId), { schedule: currentClassDB.schedule });
@@ -372,50 +334,106 @@
             renderSchedule();
         }
 
+        // --- ФУНКЦІЯ ШІ ---
         async function processScheduleImage(input) {
             if (!input.files || input.files.length === 0) return;
             const file = input.files[0];
             const statusDiv = document.getElementById('ai-status');
-            if (!window.GEMINI_API_URL || window.GEMINI_API_URL.includes("ВСТАВТЕ_ВАШ_КЛЮЧ")) { statusDiv.innerText = "❌ Вставте API ключ Gemini у код."; return; }
-            statusDiv.innerText = "⏳ Аналізую фото...";
+            
+            statusDiv.style.color = "var(--accent)";
+            statusDiv.innerText = "⏳ Читаю фото та відправляю в Gemini...";
 
             const reader = new FileReader();
             reader.onload = async (e) => {
                 const base64Data = e.target.result.split(',')[1];
-                const payload = { contents: [{ parts: [{ text: `Проаналізуй фото розкладу. Поверни СУВОРО JSON: {"Пн": [{"name": "Урок", "cab": "Каб", "time": "08:00"}], ...}` }, { inline_data: { mime_type: file.type, data: base64Data } }] }] };
+                const mimeType = file.type || "image/jpeg";
+                
+                const promptText = `Ти — шкільний асистент. Уважно подивись на це фото розкладу уроків. 
+Розпізнай уроки для днів тижня і поверни СУВОРО валідний JSON (без markdown-тегів і без зайвого тексту) за такою структурою:
+{
+  "Пн": [{"name": "Назва предмета", "cab": "Номер кабінету або -", "time": "08:30"}],
+  "Вт": [],
+  "Ср": [],
+  "Чт": [],
+  "Пт": []
+}
+Якщо для дня немає уроків або текст нечитабельний, став порожній масив [].`;
+
+                const payload = {
+                    contents: [{
+                        parts: [
+                            { text: promptText },
+                            { inline_data: { mime_type: mimeType, data: base64Data } }
+                        ]
+                    }],
+                    generationConfig: {
+                        responseMimeType: "application/json"
+                    }
+                };
+
                 try {
-                    const res = await fetch(window.GEMINI_API_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                    const res = await fetch(window.GEMINI_API_URL, { 
+                        method: 'POST', 
+                        headers: { 'Content-Type': 'application/json' }, 
+                        body: JSON.stringify(payload) 
+                    });
+                    
                     const data = await res.json();
-                    let text = data.candidates[0].content.parts[0].text.replace(/```json/g, '').replace(/```/g, '').trim();
-                    const newSchedule = JSON.parse(text);
-                    currentClassDB.schedule = newSchedule;
-                    await window.fb.update(window.fb.ref(window.fb.db, 'classes/' + currentUser.classId), { schedule: newSchedule });
-                    statusDiv.innerText = "✅ Розклад оновлено!";
-                    renderSchedule();
-                } catch (err) { statusDiv.innerText = "❌ Помилка. Перевірте ключ або фото."; }
+                    
+                    if (!res.ok || data.error) {
+                        const msg = data?.error?.message || `HTTP ${res.status}`;
+                        statusDiv.style.color = "#ef4444";
+                        statusDiv.innerText = "❌ Помилка API: " + msg;
+                        console.error("Gemini API error:", data);
+                        return;
+                    }
+
+                    const rawText = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+                    if (!rawText) {
+                        statusDiv.style.color = "#ef4444";
+                        statusDiv.innerText = "❌ Модель не повернула текст відповіді.";
+                        console.error("Unexpected Gemini response:", data);
+                        return;
+                    }
+
+                    const cleanJson = rawText.replace(/```json/gi, '').replace(/```/g, '').trim();
+                    
+                    try {
+                        const parsed = JSON.parse(cleanJson);
+                        const days = ["Пн", "Вт", "Ср", "Чт", "Пт"];
+                        const normalizedSchedule = {};
+                        days.forEach((d) => {
+                            const list = Array.isArray(parsed[d]) ? parsed[d] : [];
+                            normalizedSchedule[d] = list.map((item) => ({
+                                name: String(item?.name || "Урок").trim(),
+                                cab: String(item?.cab || "-").trim(),
+                                time: String(item?.time || "08:00").trim()
+                            }));
+                        });
+
+                        currentClassDB.schedule = normalizedSchedule;
+                        await window.fb.update(
+                            window.fb.ref(window.fb.db, 'classes/' + currentUser.classId),
+                            { schedule: normalizedSchedule }
+                        );
+                        
+                        statusDiv.style.color = "#10b981";
+                        statusDiv.innerText = "✅ Розклад успішно оновлено!";
+                        renderSchedule();
+                    } catch (jsonError) {
+                        statusDiv.style.color = "#ef4444";
+                        statusDiv.innerText = "❌ ШІ відповів, але формат невірний. Спробуйте інше фото.";
+                        console.log("AI Response:", rawText);
+                    }
+                    
+                } catch (err) { 
+                    statusDiv.style.color = "#ef4444";
+                    statusDiv.innerText = "❌ Помилка з'єднання з ШІ.";
+                    console.error(err);
+                }
             };
             reader.readAsDataURL(file);
         }
-
-        function renderCanteen() { document.getElementById('canteen-menu-display').innerText = currentClassDB.canteen || "Меню порожнє"; document.getElementById('canteen-input').value = currentClassDB.canteen || ""; }
-        async function saveCanteenMenu() { const text = document.getElementById('canteen-input').value; await window.fb.update(window.fb.ref(window.fb.db, 'classes/' + currentUser.classId), { canteen: text }); alert("Меню збережено!"); currentClassDB.canteen = text; renderCanteen(); }
-
-        async function loadAdminUsers() {
-            const snapshot = await window.fb.get(window.fb.ref(window.fb.db, 'users'));
-            const listDiv = document.getElementById('users-list');
-            listDiv.innerHTML = "";
-            if(snapshot.exists()) {
-                const users = snapshot.val();
-                for (const key in users) {
-                    const u = users[key];
-                    let roleBtn = (u.role === 'student') ? `<button onclick="makeTeacher('${u.name}')" style="font-size:10px; padding:4px; margin-left:10px; border-radius:6px; border:none; background:#60a5fa; color:#fff; cursor:pointer;">Зробити вчителем</button>` : "";
-                    listDiv.innerHTML += `<div style="padding: 8px 0; border-bottom: 1px solid #333; display:flex; justify-content:space-between; align-items:center;"><span>${u.name} (${u.className}) - ${u.role}</span> ${roleBtn}</div>`;
-                }
-            }
-        }
-
-        async function makeTeacher(userName) { await window.fb.update(window.fb.ref(window.fb.db, 'users/' + userName), { role: "teacher" }); alert(`${userName} тепер Вчитель!`); loadAdminUsers(); }
-        function updateProfileName() { const newName = document.getElementById('prof-input-name').value; currentUser.name = newName; localStorage.setItem('currentUser', JSON.stringify(currentUser)); document.getElementById('prof-name').innerText = newName; window.fb.update(window.fb.ref(window.fb.db, 'users/' + currentUser.name), { name: newName }); }
 
         function initSnow() {
             const canvas = document.getElementById('weather-canvas');
