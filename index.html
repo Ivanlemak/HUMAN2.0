@@ -1,0 +1,1801 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Human.ua New • Щоденник 2.0</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getDatabase, ref, set, get, child, update, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCzQbQ9lRGCTOaaaY0X2-TcsOCQLtwsEZQ",
+            authDomain: "human-5d93e.firebaseapp.com",
+            databaseURL: "https://human-5d93e-default-rtdb.firebaseio.com",
+            projectId: "human-5d93e",
+            storageBucket: "human-5d93e.firebasestorage.app",
+            messagingSenderId: "843088388545",
+            appId: "1:843088388545:web:fa9bbd5f6ce1cfda550f40"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        window.fb = { db, ref, set, get, child, update, remove };
+
+        window.dispatchEvent(new Event('firebaseReady'));
+    </script>
+
+    <style>
+        :root {
+            --bg: #07080c;
+            --surface: rgba(26, 28, 36, 0.52);
+            --surface-strong: rgba(34, 37, 48, 0.72);
+            --border: rgba(255, 255, 255, 0.14);
+            --highlight: rgba(255, 255, 255, 0.22);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent: #f43f5e;
+            --accent-bg: rgba(244, 63, 94, 0.22);
+            --radius-lg: 26px;
+            --radius-md: 16px;
+            --blur: 28px;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background-color: var(--bg); color: var(--text-main); min-height: 100vh; padding-bottom: 115px; overflow-x: hidden; position: relative; transition: background-color 0.5s ease; }
+
+        /* Liquid Glass ambient layers */
+        .bg-glow { position: fixed; top: -25%; left: -15%; width: 130%; height: 130%; background: radial-gradient(circle at 25% 10%, var(--accent-bg) 0%, transparent 55%), radial-gradient(circle at 80% 85%, rgba(56, 189, 248, 0.12) 0%, transparent 50%); z-index: -1; pointer-events: none; transition: background 0.5s ease; }
+        #weather-canvas { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 10; }
+
+        header { padding: 26px 20px 10px 20px; display: flex; justify-content: space-between; align-items: center; max-width: 620px; margin: 0 auto; z-index: 20; position: relative; }
+        .date-text { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 4px; letter-spacing: 0.6px; }
+        .page-title { font-size: 30px; font-weight: 800; letter-spacing: -0.8px; }
+        .header-actions { display: flex; gap: 8px; align-items: center; }
+        .header-btn { width: 42px; height: 42px; border-radius: 50%; background: var(--surface); border: 1px solid var(--border); box-shadow: inset 0 1px 0 var(--highlight); backdrop-filter: blur(var(--blur)); display: flex; align-items: center; justify-content: center; font-size: 16px; cursor: pointer; color: var(--text-main); }
+
+        main { padding: 8px 16px; max-width: 620px; margin: 0 auto; position: relative; z-index: 20; }
+        .tab-content { display: none; animation: fadeIn 0.25s ease-out; }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Liquid Glass Card */
+        .card {
+            background: linear-gradient(145deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.02) 100%), var(--surface);
+            border: 1px solid var(--border);
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35), inset 0 1px 0 var(--highlight);
+            border-radius: var(--radius-lg);
+            padding: 18px;
+            margin-bottom: 16px;
+            backdrop-filter: blur(var(--blur));
+            -webkit-backdrop-filter: blur(var(--blur));
+        }
+
+        .list-card { background: var(--surface); border: 1px solid var(--border); box-shadow: inset 0 1px 0 var(--highlight); border-radius: var(--radius-lg); overflow: hidden; margin-bottom: 16px; backdrop-filter: blur(var(--blur)); }
+        .list-item { display: flex; align-items: center; padding: 14px 16px; border-bottom: 1px solid var(--border); }
+        .list-item:last-child { border-bottom: none; }
+        .list-icon { width: 42px; height: 42px; border-radius: 13px; display: flex; align-items: center; justify-content: center; font-size: 17px; margin-right: 13px; flex-shrink: 0; }
+        .list-info { flex: 1; min-width: 0; }
+        .list-title { font-size: 15px; font-weight: 600; }
+        .list-sub { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+
+        .input-group { margin-bottom: 14px; }
+        .input-group label { display: block; font-size: 12px; color: var(--text-muted); margin-bottom: 6px; font-weight: 500; }
+        .input-field { width: 100%; background: rgba(0, 0, 0, 0.32); border: 1px solid var(--border); color: #fff; padding: 12px 14px; border-radius: var(--radius-md); font-size: 14px; outline: none; }
+        .input-field:focus { border-color: var(--accent); }
+
+        .btn { width: 100%; background: var(--accent); color: #fff; border: none; box-shadow: 0 6px 20px var(--accent-bg), inset 0 1px 0 rgba(255,255,255,0.3); padding: 13px 16px; border-radius: var(--radius-md); font-weight: 600; font-size: 14px; cursor: pointer; margin-bottom: 10px; transition: transform 0.12s, opacity 0.2s; }
+        .btn:active { transform: scale(0.98); }
+        .btn-secondary { background: rgba(255, 255, 255, 0.07); border: 1px solid var(--border); box-shadow: inset 0 1px 0 var(--highlight); color: #fff; }
+        .btn-sm { width: auto; padding: 8px 12px; font-size: 12px; margin-bottom: 0; border-radius: 12px; }
+
+        /* Metrics & Timer */
+        .hero-metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 16px; }
+        .metric-pill { background: var(--surface); border: 1px solid var(--border); box-shadow: inset 0 1px 0 var(--highlight); border-radius: 20px; padding: 12px 8px; text-align: center; backdrop-filter: blur(var(--blur)); }
+        .metric-num { font-size: 20px; font-weight: 800; color: var(--accent); }
+        .metric-lbl { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.4px; margin-top: 2px; }
+
+        /* TikTok-style Streak Flame */
+        .streak-pill { position: relative; cursor: pointer; overflow: hidden; transition: transform 0.2s, border-color 0.3s; }
+        .streak-pill:active { transform: scale(0.95); }
+        .streak-pill.lit { border-color: rgba(255, 115, 0, 0.55); background: linear-gradient(160deg, rgba(255, 94, 0, 0.16), rgba(255, 187, 0, 0.06)), var(--surface); }
+        .streak-pill.super-lit { border-color: rgba(168, 85, 247, 0.65); background: linear-gradient(160deg, rgba(168, 85, 247, 0.2), rgba(244, 63, 94, 0.12)), var(--surface); }
+        .tiktok-flame-wrap { display: inline-flex; align-items: center; justify-content: center; gap: 3px; }
+        .tiktok-flame {
+            display: inline-block;
+            font-size: 20px;
+            filter: grayscale(1) opacity(0.45);
+            transform-origin: bottom center;
+            transition: filter 0.3s ease;
+        }
+        .tiktok-flame.active {
+            filter: drop-shadow(0 0 8px rgba(255, 110, 0, 0.85));
+            animation: tiktokFlameDance 1.35s infinite ease-in-out;
+        }
+        .tiktok-flame.purple {
+            filter: hue-rotate(245deg) saturate(1.6) drop-shadow(0 0 10px rgba(168, 85, 247, 0.95));
+            animation: tiktokFlameDance 1.1s infinite ease-in-out;
+        }
+        @keyframes tiktokFlameDance {
+            0%, 100% { transform: scale(1) rotate(-3deg); }
+            25% { transform: scale(1.14, 1.2) rotate(3deg); }
+            50% { transform: scale(1.05, 0.96) rotate(-2deg); }
+            75% { transform: scale(1.16, 1.18) rotate(2deg); }
+        }
+
+        .timer-bar { height: 6px; width: 100%; background: rgba(255,255,255,0.1); border-radius: 99px; overflow: hidden; margin-top: 10px; }
+        .timer-fill { height: 100%; background: var(--accent); width: 0%; transition: width 1s linear; }
+
+        /* Next lessons horizontal strip */
+        .next-lessons-strip { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 4px; margin-top: 10px; }
+        .next-lesson-chip { min-width: 135px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 16px; padding: 10px 12px; flex-shrink: 0; }
+        .next-lesson-chip.current { border-color: var(--accent); background: var(--accent-bg); }
+
+        /* Day carousel */
+        .day-carousel { display: flex; gap: 8px; overflow-x: auto; padding: 8px; margin-bottom: 16px; background: var(--surface); border-radius: var(--radius-lg); border: 1px solid var(--border); backdrop-filter: blur(var(--blur)); }
+        .day-item { flex: 1; min-width: 52px; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 10px 0; border-radius: var(--radius-md); cursor: pointer; }
+        .day-item.active { background: var(--accent); color: #fff; box-shadow: 0 4px 14px var(--accent-bg); }
+        .day-name { font-size: 12px; font-weight: 700; text-transform: uppercase; color: var(--text-muted); }
+        .day-item.active .day-name { color: #fff; }
+
+        /* Transport poll */
+        .transport-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 12px; }
+        .transport-btn { background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 12px 6px; text-align: center; cursor: pointer; color: var(--text-main); transition: all 0.2s; }
+        .transport-btn .code { font-size: 18px; font-weight: 800; display: block; margin-bottom: 3px; }
+        .transport-btn .desc { font-size: 11px; color: var(--text-muted); display: block; }
+        .transport-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; box-shadow: 0 6px 18px var(--accent-bg); }
+        .transport-btn.active .desc { color: rgba(255,255,255,0.92); }
+
+        .badge { display: inline-block; padding: 4px 10px; border-radius: 999px; font-size: 11px; font-weight: 700; }
+        .badge-shk { background: rgba(16, 185, 129, 0.2); color: #34d399; }
+        .badge-r { background: rgba(59, 130, 246, 0.2); color: #60a5fa; }
+        .badge-n { background: rgba(239, 68, 68, 0.2); color: #f87171; }
+        .badge-role { background: var(--accent-bg); color: var(--accent); border: 1px solid var(--border); }
+
+        /* Avatar & Badge */
+        .avatar-wrap { position: relative; width: 70px; height: 70px; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; font-size: 32px; flex-shrink: 0; box-shadow: 0 8px 24px var(--accent-bg); }
+        .avatar-tag { position: absolute; bottom: -6px; left: 50%; transform: translateX(-50%); background: #0f172a; border: 1px solid var(--accent); color: #fff; font-size: 10px; font-weight: 800; padding: 2px 8px; border-radius: 99px; white-space: nowrap; max-width: 84px; overflow: hidden; text-overflow: ellipsis; }
+
+        /* Customization grids */
+        .theme-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 8px; }
+        .theme-chip { padding: 10px 8px; border-radius: 14px; border: 1px solid var(--border); background: rgba(255,255,255,0.05); text-align: center; font-size: 12px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; }
+        .theme-chip.active { border-color: #fff; background: var(--accent-bg); }
+        .theme-dot { width: 12px; height: 12px; border-radius: 50%; display: inline-block; }
+
+        .emoji-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; margin-top: 8px; }
+        .emoji-opt { height: 42px; border-radius: 12px; background: rgba(255,255,255,0.06); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 20px; cursor: pointer; }
+        .emoji-opt.active { border-color: var(--accent); background: var(--accent-bg); transform: scale(1.06); }
+
+        /* Modal / Notice */
+        .modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.65); backdrop-filter: blur(8px); z-index: 9998; display: none; align-items: center; justify-content: center; padding: 20px; }
+        .modal-card { width: 100%; max-width: 420px; background: #14161f; border: 1px solid var(--border); border-radius: 24px; padding: 22px; box-shadow: 0 20px 50px rgba(0,0,0,0.6); }
+
+        /* Bottom Navigation (5 items) */
+        nav { position: fixed; bottom: 16px; left: 12px; right: 12px; background: rgba(18, 20, 28, 0.82); backdrop-filter: blur(26px); -webkit-backdrop-filter: blur(26px); border: 1px solid var(--border); box-shadow: 0 10px 30px rgba(0,0,0,0.5), inset 0 1px 0 var(--highlight); border-radius: 30px; display: flex; justify-content: space-around; padding: 7px 6px; z-index: 100; max-width: 620px; margin: 0 auto; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; gap: 3px; color: var(--text-muted); font-size: 10px; font-weight: 600; cursor: pointer; padding: 7px 10px; border-radius: 20px; transition: all 0.2s; }
+        .nav-item i { font-size: 15px; }
+        .nav-item.active { color: #fff; background: rgba(255,255,255,0.12); }
+        .nav-item.active i { color: var(--accent); }
+
+        #auth-screen { position: fixed; inset: 0; background: var(--bg); z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 20px; }
+        .auth-box { width: 100%; max-width: 410px; background: var(--surface); border: 1px solid var(--border); box-shadow: inset 0 1px 0 var(--highlight); border-radius: var(--radius-lg); padding: 28px; backdrop-filter: blur(var(--blur)); }
+    </style>
+</head>
+<body>
+
+    <!-- ЕКРАН ВХОДУ -->
+    <div id="auth-screen">
+        <div class="auth-box">
+            <div style="font-size: 28px; font-weight: 800; text-align: center; margin-bottom: 4px;">Human.ua <span style="color: var(--accent);">2.0</span></div>
+            <div style="font-size: 13px; color: var(--text-muted); text-align: center; margin-bottom: 22px;">Liquid Glass • Хмарний щоденник класу</div>
+
+            <div class="input-group">
+                <label>Ваше ім'я та прізвище</label>
+                <input type="text" class="input-field" id="auth-name" placeholder="Іван Петренко">
+            </div>
+            <div class="input-group">
+                <label>Код класу або персональний код учня</label>
+                <input type="text" class="input-field" id="auth-code" placeholder="Наприклад: X7Y9Z">
+            </div>
+
+            <button class="btn" onclick="loginUser()">Увійти в клас</button>
+            <button class="btn btn-secondary" onclick="createNewClass()">Створити клас (Класний керівник)</button>
+            <div id="auth-status" style="text-align: center; font-size: 13px; margin-top: 10px; color: var(--accent); font-weight: 600;"></div>
+        </div>
+    </div>
+
+    <!-- МОДАЛЬНЕ ВІКНО ДЛЯ ДІАЛОГІВ -->
+    <div id="custom-modal" class="modal-backdrop">
+        <div class="modal-card">
+            <div id="modal-title" style="font-size: 18px; font-weight: 800; margin-bottom: 8px;"></div>
+            <div id="modal-body" style="font-size: 14px; color: var(--text-muted); margin-bottom: 16px; line-height: 1.5;"></div>
+            <div id="modal-input-wrap" style="display: none; margin-bottom: 14px;">
+                <input type="text" id="modal-input" class="input-field">
+            </div>
+            <div style="display: flex; gap: 8px; justify-content: flex-end;">
+                <button id="modal-cancel-btn" class="btn btn-secondary btn-sm" onclick="closeModal()">Скасувати</button>
+                <button id="modal-ok-btn" class="btn btn-sm">ОК</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ОСНОВНИЙ ДОДАТОК -->
+    <div id="app-container" style="display: none;">
+        <div class="bg-glow"></div>
+        <canvas id="weather-canvas"></canvas>
+
+        <header>
+            <div>
+                <div class="date-text" id="header-date">СЬОГОДНІ</div>
+                <div class="page-title" id="header-title">Сьогодні</div>
+            </div>
+            <div class="header-actions">
+                <div class="header-btn" id="weather-mini-pill" onclick="switchTab('profile', 'Профіль')" title="Погода">🌤️</div>
+                <div class="header-btn" onclick="logout()" title="Вийти"><i class="fa-solid fa-right-from-bracket"></i></div>
+            </div>
+        </header>
+
+        <main>
+            <!-- 1. ВКЛАДКА ГОЛОВНА (СЬОГОДНІ) -->
+            <div id="tab-home" class="tab-content active">
+                <!-- Верхні метрики: Середній бал, Серія днів без пропусків, Погода -->
+                <div class="hero-metrics">
+                    <div class="metric-pill" onclick="switchTab('grades', 'Табель')">
+                        <div class="metric-num" id="home-avg-grade">—</div>
+                        <div class="metric-lbl">Середній бал</div>
+                    </div>
+                    <div class="metric-pill streak-pill" id="streak-pill-box" onclick="showStreakDetails()">
+                        <div class="metric-num tiktok-flame-wrap">
+                            <span id="home-streak-num">0</span>
+                            <span class="tiktok-flame" id="home-streak-flame">🔥</span>
+                        </div>
+                        <div class="metric-lbl" id="home-streak-label">Вогник</div>
+                    </div>
+                    <div class="metric-pill" onclick="refreshWeatherByGPS()">
+                        <div class="metric-num" id="home-temp">--°</div>
+                        <div class="metric-lbl" id="home-city">Погода</div>
+                    </div>
+                </div>
+
+                <!-- Таймер уроків та перерв -->
+                <div class="card">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span style="font-size: 12px; font-weight: 700; color: var(--accent); text-transform: uppercase;" id="timer-phase">Таймер дзвінків</span>
+                        <span style="font-size: 13px; font-weight: 700;" id="timer-clock">00:00:00</span>
+                    </div>
+                    <div style="font-size: 18px; font-weight: 800; margin-top: 6px;" id="timer-main-text">Завантаження розкладу...</div>
+                    <div style="font-size: 12px; color: var(--text-muted); margin-top: 3px;" id="timer-sub-text"></div>
+                    <div class="timer-bar"><div class="timer-fill" id="timer-progress"></div></div>
+
+                    <!-- Стрічка наступних уроків -->
+                    <div style="font-size: 12px; font-weight: 700; color: var(--text-muted); margin-top: 14px;">Стрічка уроків на сьогодні:</div>
+                    <div class="next-lessons-strip" id="next-lessons-strip"></div>
+                </div>
+
+                <!-- Ранкове опитування довозу -->
+                <div class="card">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div style="font-weight: 700; font-size: 16px;"><i class="fa-solid fa-bus" style="color: var(--accent); margin-right: 6px;"></i> Ранкове опитування</div>
+                        <span id="today-date-label" style="font-size: 12px; color: var(--text-muted);"></span>
+                    </div>
+                    <div style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">Відміть свій статус на сьогодні (історія зберігається 6 місяців):</div>
+
+                    <div class="transport-grid">
+                        <div class="transport-btn" id="tr-btn-Шк" onclick="submitTransport('Шк')">
+                            <span class="code">Шк</span>
+                            <span class="desc">Шкільний автобус</span>
+                        </div>
+                        <div class="transport-btn" id="tr-btn-Р" onclick="submitTransport('Р')">
+                            <span class="code">Р</span>
+                            <span class="desc">Рейсовий автобус</span>
+                        </div>
+                        <div class="transport-btn" id="tr-btn-Н" onclick="submitTransport('Н')">
+                            <span class="code">Н</span>
+                            <span class="desc">Відсутній</span>
+                        </div>
+                    </div>
+                    <div id="transport-my-status" style="font-size: 13px; font-weight: 600; color: var(--accent); margin-top: 10px; text-align: center;"></div>
+                </div>
+
+                <!-- Швидкі переходи -->
+                <div class="list-card">
+                    <div class="list-item" style="cursor: pointer;" onclick="switchTab('schedule', 'Розклад')">
+                        <div class="list-icon" style="background: rgba(59, 130, 246, 0.18); color: #60a5fa;"><i class="fa-solid fa-calendar-week"></i></div>
+                        <div class="list-info">
+                            <div class="list-title">Розклад на тиждень</div>
+                            <div class="list-sub">Клас: <span id="home-class-name"></span> • Код: <strong id="home-class-code" style="color: var(--accent);"></strong></div>
+                        </div>
+                    </div>
+                    <div class="list-item" style="cursor: pointer;" onclick="switchTab('canteen', 'Їдальня')">
+                        <div class="list-icon" style="background: rgba(249, 115, 22, 0.18); color: #fb923c;"><i class="fa-solid fa-utensils"></i></div>
+                        <div class="list-info">
+                            <div class="list-title">Меню їдальні</div>
+                            <div class="list-sub">Переглянути страви на сьогодні</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. ВКЛАДКА РОЗКЛАД (БЕЗ ПОЛЯ ДЗ) -->
+            <div id="tab-schedule" class="tab-content">
+                <div class="day-carousel" id="day-carousel-container"></div>
+                <div id="schedule-list" class="list-card"></div>
+
+                <!-- Панель керування ТІЛЬКИ для Класного керівника та Старости -->
+                <div id="staff-schedule-controls" style="display: none;">
+                    <button class="btn" onclick="openScheduleEditor()"><i class="fa-solid fa-pen"></i> Змінити розклад дня вручну</button>
+
+                    <div class="card" style="margin-top: 12px;">
+                        <div style="font-weight: 700; margin-bottom: 6px;"><i class="fa-solid fa-file-import" style="color: var(--accent);"></i> Імпорт розкладу на тиждень (JSON)</div>
+                        <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px;">
+                            Вставте готовий JSON-розклад із бота для швидкого оновлення всього тижня:
+                        </p>
+                        <textarea id="schedule-paste-input" class="input-field" rows="4" placeholder='{"Пн": [{"name": "Математика", "cab": "5", "time": "08:00"}], ...}'></textarea>
+                        <div style="display: flex; gap: 8px; margin-top: 10px;">
+                            <button class="btn" style="margin-bottom: 0;" onclick="importScheduleFromText()">Зберегти тиждень</button>
+                            <button class="btn btn-secondary" style="margin-bottom: 0;" onclick="copyCurrentScheduleJson()">Копіювати JSON</button>
+                        </div>
+                        <div id="ai-status" style="font-size: 12px; color: var(--accent); margin-top: 8px; font-weight: 600; text-align: center;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. ВКЛАДКА ТАБЕЛЬ / ОЦІНКИ -->
+            <div id="tab-grades" class="tab-content">
+                <div class="card">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <div style="font-size: 16px; font-weight: 800;">Мій табель та оцінки</div>
+                            <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">Підтримка балів (1–12) та рівнів (Д / А / ВД)</div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="font-size: 24px; font-weight: 800; color: var(--accent);" id="grades-avg-big">—</div>
+                            <div style="font-size: 10px; color: var(--text-muted);">СЕРЕДНІЙ БАЛ</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div style="font-weight: 700; font-size: 14px; margin-bottom: 10px;">Додати оцінку</div>
+                    <div style="display: grid; grid-template-columns: 1.4fr 1fr; gap: 8px; margin-bottom: 8px;">
+                        <input type="text" id="grade-subject-input" class="input-field" placeholder="Предмет (напр. Фізика)">
+                        <select id="grade-value-input" class="input-field">
+                            <option value="12">12 балів</option>
+                            <option value="11">11 балів</option>
+                            <option value="10">10 балів</option>
+                            <option value="9">9 балів</option>
+                            <option value="8">8 балів</option>
+                            <option value="7">7 балів</option>
+                            <option value="6">6 балів</option>
+                            <option value="5">5 балів</option>
+                            <option value="4">4 бали</option>
+                            <option value="ВД">ВД (Високий)</option>
+                            <option value="Д">Д (Достатній)</option>
+                            <option value="А">А (Атестовано)</option>
+                        </select>
+                    </div>
+                    <div style="display: flex; gap: 8px;">
+                        <input type="date" id="grade-date-input" class="input-field">
+                        <button class="btn" style="margin-bottom: 0; white-space: nowrap;" onclick="addGradeRecord()">+ Додати</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                        <span style="font-weight: 700; font-size: 14px;">Історія оцінок</span>
+                        <input type="date" id="grades-filter-date" class="input-field" style="width: auto; padding: 6px 10px; font-size: 12px;" onchange="renderGradesList()">
+                    </div>
+                    <div id="grades-list-container"></div>
+                </div>
+            </div>
+
+            <!-- 4. ВКЛАДКА ЇДАЛЬНЯ -->
+            <div id="tab-canteen" class="tab-content">
+                <div class="card">
+                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+                        <div class="list-icon" style="background: rgba(249, 115, 22, 0.18); color: #fb923c; margin-right: 0;"><i class="fa-solid fa-bowl-food"></i></div>
+                        <div>
+                            <div style="font-weight: 800; font-size: 16px;">Меню шкільної їдальні</div>
+                            <div style="font-size: 12px; color: var(--text-muted);">Актуальний раціон на сьогодні</div>
+                        </div>
+                    </div>
+                    <div id="canteen-menu-display" style="font-size: 15px; line-height: 1.7; white-space: pre-line; padding: 12px; background: rgba(0,0,0,0.2); border-radius: 14px;">Завантаження...</div>
+                </div>
+
+                <!-- Редагування ТІЛЬКИ для Класного керівника та Старости -->
+                <div id="canteen-edit-block" style="display: none;">
+                    <div class="card">
+                        <div style="font-weight: 700; margin-bottom: 10px;">Оновити меню їдальні</div>
+                        <textarea class="input-field" id="canteen-input" rows="4" placeholder="Перше, друге, напій..."></textarea>
+                        <button class="btn" onclick="saveCanteenMenu()" style="margin-top: 10px;">Зберегти меню</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 5. ВКЛАДКА ПРОФІЛЬ + АВТОБУС + ПОГОДА + КАСТОМІЗАЦІЯ -->
+            <div id="tab-profile" class="tab-content">
+                <!-- Картка профілю -->
+                <div class="card" style="display: flex; align-items: center; gap: 18px;">
+                    <div class="avatar-wrap">
+                        <span id="prof-avatar">🎓</span>
+                        <span class="avatar-tag" id="prof-avatar-tag">11-А</span>
+                    </div>
+                    <div style="flex: 1; min-width: 0;">
+                        <div style="font-size: 20px; font-weight: 800;" id="prof-name"></div>
+                        <div style="font-size: 13px; color: var(--text-muted);" id="prof-class"></div>
+                        <div style="margin-top: 6px; display: flex; flex-wrap: wrap; gap: 6px; align-items: center;">
+                            <span class="badge badge-role" id="prof-role">Учень</span>
+                        </div>
+                        <div id="prof-status-text" style="font-size: 12px; color: var(--text-main); margin-top: 6px; opacity: 0.9;"></div>
+                    </div>
+                </div>
+
+                <!-- ВІКНО «АВТОБУС» ТА КЕРУВАННЯ КЛАСОМ (Для Класного керівника і Старости) -->
+                <div id="bus-management-card" class="card" style="display: none;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                        <div style="font-weight: 800; font-size: 16px;"><i class="fa-solid fa-bus-simple" style="color: var(--accent); margin-right: 6px;"></i> Вікно «Автобус» та облік</div>
+                        <input type="date" id="bus-admin-date" class="input-field" style="width: auto; padding: 6px 10px; font-size: 12px;" onchange="renderBusWindow()">
+                    </div>
+                    <div id="bus-admin-summary" style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px;"></div>
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px;">
+                        <button class="btn btn-secondary btn-sm" style="color: #f87171; border-color: rgba(239,68,68,0.4);" onclick="toggleSelectedStudentsAbsent(true)">
+                            <i class="fa-solid fa-user-xmark"></i> Відмітити обраних як Н
+                        </button>
+                        <button class="btn btn-secondary btn-sm" onclick="toggleSelectedStudentsAbsent(false)">
+                            Зняти відмітку Н
+                        </button>
+                    </div>
+                    <div id="bus-students-list" style="max-height: 280px; overflow-y: auto;"></div>
+
+                    <!-- Тільки для Класного керівника: видача кодів та призначення старости -->
+                    <div id="teacher-only-controls" style="display: none; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border);">
+                        <div style="font-weight: 700; font-size: 14px; margin-bottom: 8px;">Керування учнями (Класний керівник)</div>
+                        <div style="display: flex; gap: 8px; margin-bottom: 8px;">
+                            <input type="text" id="new-student-name" class="input-field" placeholder="Прізвище та ім'я учня">
+                            <button class="btn btn-sm" style="white-space: nowrap;" onclick="generateStudentCode()">+ Код</button>
+                        </div>
+                        <div id="issued-codes-list" style="font-size: 12px; color: var(--text-muted);"></div>
+                    </div>
+                </div>
+
+                <!-- СПИСОК КЛАСУ -->
+                <div class="card" id="class-roster-card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                        <div style="font-weight: 800; font-size: 16px;"><i class="fa-solid fa-users" style="color: var(--accent); margin-right: 6px;"></i> Список класу</div>
+                        <span class="badge badge-role" id="roster-count-badge">0 учнів</span>
+                    </div>
+                    <input type="text" id="roster-search-input" class="input-field" style="margin-bottom: 10px; padding: 9px 12px; font-size: 13px;" placeholder="Пошук учня у списку..." oninput="renderClassRoster()">
+                    <div id="class-roster-list" style="max-height: 290px; overflow-y: auto;"></div>
+
+                    <div id="teacher-roster-add-box" style="display: none; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border);">
+                        <div style="font-weight: 700; font-size: 13px; margin-bottom: 6px;">Додати учнів у список класу (по одному або з нового рядка)</div>
+                        <textarea id="bulk-students-input" class="input-field" rows="3" placeholder="Іван Коваленко&#10;Марія Шевченко&#10;Олег Бондар"></textarea>
+                        <button class="btn btn-sm" style="margin-top: 8px; width: 100%;" onclick="addStudentsToRoster()">+ Додати до списку класу</button>
+                    </div>
+                </div>
+
+                <!-- Статистика поїздок за 6 місяців -->
+                <div class="card">
+                    <div style="font-weight: 700; font-size: 15px;"><i class="fa-solid fa-chart-pie" style="color: var(--accent); margin-right: 6px;"></i> Статистика довозу (6 місяців)</div>
+                    <div class="hero-metrics" style="margin-top: 12px; margin-bottom: 0;">
+                        <div class="metric-pill">
+                            <div class="metric-num" id="stat-shk">0</div>
+                            <div class="metric-lbl">Шкільний (Шк)</div>
+                        </div>
+                        <div class="metric-pill">
+                            <div class="metric-num" id="stat-r">0</div>
+                            <div class="metric-lbl">Рейсовий (Р)</div>
+                        </div>
+                        <div class="metric-pill">
+                            <div class="metric-num" id="stat-n">0</div>
+                            <div class="metric-lbl">Відсутній (Н)</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Погода Open-Meteo + GPS + Авто-тема -->
+                <div class="card">
+                    <div style="font-weight: 700; font-size: 15px; margin-bottom: 10px;"><i class="fa-solid fa-cloud-sun-rain" style="color: var(--accent); margin-right: 6px;"></i> Жива погода (Open-Meteo)</div>
+                    <div id="weather-details-box" style="font-size: 13px; margin-bottom: 12px; padding: 10px 12px; background: rgba(0,0,0,0.22); border-radius: 14px;">
+                        Визначення погоди...
+                    </div>
+                    <div style="display: flex; gap: 8px; margin-bottom: 10px;">
+                        <input type="text" id="weather-city-input" class="input-field" placeholder="Місто (Київ, Львів, Kyiv...)">
+                        <button class="btn btn-sm" onclick="searchWeatherByCity()">Пошук</button>
+                        <button class="btn btn-secondary btn-sm" onclick="refreshWeatherByGPS()" title="GPS локація"><i class="fa-solid fa-location-crosshairs"></i></button>
+                    </div>
+                    <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; cursor: pointer;">
+                        <input type="checkbox" id="auto-weather-theme" onchange="toggleAutoWeatherTheme(this.checked)">
+                        <span>Авто-тема інтерфейсу під реальну погоду</span>
+                    </label>
+                </div>
+
+                <!-- Кастомізація: 6 тем, 12 аватарок, напис, спецефекти -->
+                <div class="card">
+                    <div style="font-weight: 700; font-size: 15px; margin-bottom: 12px;"><i class="fa-solid fa-wand-magic-sparkles" style="color: var(--accent); margin-right: 6px;"></i> Кастомізація профілю</div>
+
+                    <div class="input-group">
+                        <label>Обери аватар (12 варіантів)</label>
+                        <div class="emoji-grid" id="avatar-picker"></div>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Напис на аватарці (бейдж)</label>
+                        <input type="text" class="input-field" id="avatar-tag-input" maxlength="10" placeholder="Напр. 11-А або VIP">
+                    </div>
+
+                    <div class="input-group">
+                        <label>6 тем оформлення</label>
+                        <div class="theme-grid" id="theme-picker"></div>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Статус дня</label>
+                        <input type="text" class="input-field" id="custom-status-input" maxlength="45" placeholder="Наприклад: Готуюсь до НМТ 🚀">
+                    </div>
+
+                    <div class="input-group">
+                        <label>Спецефекти на екрані</label>
+                        <select class="input-field" id="weather-mode-select" onchange="changeWeatherMode(this.value)">
+                            <option value="auto">🌦️ Реалістичні (за погодою)</option>
+                            <option value="snow">❄️ Сніг</option>
+                            <option value="rain">🌧️ Дощ</option>
+                            <option value="stars">✨ Нічні зорі</option>
+                            <option value="none">🚫 Без ефектів</option>
+                        </select>
+                    </div>
+
+                    <button class="btn" onclick="saveProfileCustomization()">Зберегти налаштування</button>
+                </div>
+
+                <button class="btn btn-secondary" onclick="logout()" style="color: #ef4444; border-color: rgba(239,68,68,0.4);">Вийти з акаунту</button>
+            </div>
+        </main>
+
+        <!-- НИЖНЯ НАВІГАЦІЯ (5 ВКЛАДОК) -->
+        <nav>
+            <div class="nav-item active" id="nav-home" onclick="switchTab('home', 'Сьогодні')"><i class="fa-solid fa-house"></i><span>Головна</span></div>
+            <div class="nav-item" id="nav-schedule" onclick="switchTab('schedule', 'Розклад')"><i class="fa-solid fa-calendar-days"></i><span>Розклад</span></div>
+            <div class="nav-item" id="nav-grades" onclick="switchTab('grades', 'Табель')"><i class="fa-solid fa-award"></i><span>Табель</span></div>
+            <div class="nav-item" id="nav-canteen" onclick="switchTab('canteen', 'Їдальня')"><i class="fa-solid fa-utensils"></i><span>Їдальня</span></div>
+            <div class="nav-item" id="nav-profile" onclick="switchTab('profile', 'Профіль')"><i class="fa-solid fa-user"></i><span>Профіль</span></div>
+        </nav>
+    </div>
+
+    <script>
+        let currentUser = null;
+        let currentClassDB = null;
+        let firebaseReady = false;
+        let weatherMode = localStorage.getItem('weatherMode') || 'auto';
+        let autoWeatherTheme = localStorage.getItem('autoWeatherTheme') === 'true';
+        let currentWeatherType = 'clear';
+        let animFrameId = null;
+        let timerInterval = null;
+        let currentStreakCount = 0;
+
+        // 12 аватарок
+        const AVATARS = ['🎓', '🚀', '🦊', '🐱', '⚡', '🎧', '🏀', '📚', '🌟', '🔥', '🦁', '👑'];
+
+        // 6 тем оформлення
+        const THEMES = [
+            { id: 'crimson', name: 'Малина', hex: '#f43f5e', bg: 'rgba(244, 63, 94, 0.22)', pageBg: '#07080c' },
+            { id: 'ocean', name: 'Океан', hex: '#3b82f6', bg: 'rgba(59, 130, 246, 0.22)', pageBg: '#060a12' },
+            { id: 'emerald', name: 'Смарагд', hex: '#10b981', bg: 'rgba(16, 185, 129, 0.22)', pageBg: '#060d0b' },
+            { id: 'violet', name: 'Неон', hex: '#8b5cf6', bg: 'rgba(139, 92, 246, 0.24)', pageBg: '#090712' },
+            { id: 'amber', name: 'Сонце', hex: '#f59e0b', bg: 'rgba(245, 158, 11, 0.22)', pageBg: '#0d0a06' },
+            { id: 'ice', name: 'Крига', hex: '#06b6d4', bg: 'rgba(6, 182, 212, 0.22)', pageBg: '#060c10' }
+        ];
+
+        // --- МОДАЛЬНІ ВІКНА ЗАМІСТЬ ALERT/PROMPT ---
+        function showNotice(title, message) {
+            return new Promise((resolve) => {
+                const modal = document.getElementById('custom-modal');
+                document.getElementById('modal-title').innerText = title;
+                document.getElementById('modal-body').innerText = message;
+                document.getElementById('modal-input-wrap').style.display = 'none';
+                document.getElementById('modal-cancel-btn').style.display = 'none';
+                const okBtn = document.getElementById('modal-ok-btn');
+                okBtn.onclick = () => { closeModal(); resolve(true); };
+                modal.style.display = 'flex';
+            });
+        }
+
+        function showPromptModal(title, message, placeholder = '') {
+            return new Promise((resolve) => {
+                const modal = document.getElementById('custom-modal');
+                const input = document.getElementById('modal-input');
+                document.getElementById('modal-title').innerText = title;
+                document.getElementById('modal-body').innerText = message;
+                document.getElementById('modal-input-wrap').style.display = 'block';
+                document.getElementById('modal-cancel-btn').style.display = 'inline-block';
+                input.value = '';
+                input.placeholder = placeholder;
+                const okBtn = document.getElementById('modal-ok-btn');
+                okBtn.onclick = () => {
+                    const val = input.value.trim();
+                    closeModal();
+                    resolve(val || null);
+                };
+                modal.style.display = 'flex';
+                setTimeout(() => input.focus(), 50);
+            });
+        }
+
+        function closeModal() {
+            document.getElementById('custom-modal').style.display = 'none';
+        }
+
+        function getTodayKey() {
+            const now = new Date();
+            return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+        }
+
+        function getSixMonthsAgoKey() {
+            const d = new Date();
+            d.setMonth(d.getMonth() - 6);
+            return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+        }
+
+        function sanitizeKey(str) {
+            return str.replace(/[.#$\[\]\/]/g, '_');
+        }
+
+        function isStaff() {
+            return currentUser && (currentUser.role === 'teacher' || currentUser.role === 'starosta');
+        }
+
+        window.addEventListener('firebaseReady', () => {
+            firebaseReady = true;
+            applySavedTheme();
+            const savedUser = localStorage.getItem('currentUser');
+            if (savedUser) {
+                const user = JSON.parse(savedUser);
+                loginSuccess(user.name, user.className, user.role, user.classId, true);
+            }
+        });
+
+        // --- АВТОРИЗАЦІЯ (ВЧИТЕЛЬ / СТАРОСТА / УЧЕНЬ) ---
+        async function loginUser() {
+            if (!firebaseReady) { document.getElementById('auth-status').innerText = "База даних ще завантажується..."; return; }
+            const name = document.getElementById('auth-name').value.trim();
+            const code = document.getElementById('auth-code').value.trim().toUpperCase();
+            const status = document.getElementById('auth-status');
+
+            if (!name || !code) { status.innerText = "Заповніть ім'я та код!"; return; }
+            status.innerText = "Перевірка доступу...";
+
+            try {
+                const dbRef = window.fb.ref(window.fb.db);
+                const snapshot = await window.fb.get(window.fb.child(dbRef, 'classes'));
+                if (!snapshot.exists()) {
+                    status.innerText = "Класів ще немає. Створіть перший!";
+                    return;
+                }
+
+                const classes = snapshot.val();
+                let foundClassId = null;
+                let foundClassName = null;
+                let detectedRole = "student";
+                let resolvedName = name;
+
+                for (const key in classes) {
+                    const cls = classes[key];
+                    // Перевірка загального коду класу
+                    if ((cls.code || '').toUpperCase() === code) {
+                        foundClassId = key;
+                        foundClassName = cls.name;
+                        if (cls.teacher && cls.teacher.toLowerCase() === name.toLowerCase()) {
+                            detectedRole = "teacher";
+                        } else if (cls.starosta && cls.starosta.toLowerCase() === name.toLowerCase()) {
+                            detectedRole = "starosta";
+                        }
+                        break;
+                    }
+                    // Перевірка персонального коду, виданого класним керівником
+                    if (cls.studentCodes) {
+                        for (const sKey in cls.studentCodes) {
+                            const sc = cls.studentCodes[sKey];
+                            if ((sc.code || '').toUpperCase() === code) {
+                                foundClassId = key;
+                                foundClassName = cls.name;
+                                resolvedName = sc.name || name;
+                                detectedRole = sc.role || "student";
+                                break;
+                            }
+                        }
+                    }
+                    if (foundClassId) break;
+                }
+
+                if (foundClassId) {
+                    const userKey = sanitizeKey(resolvedName);
+                    await window.fb.update(window.fb.ref(window.fb.db, `classes/${foundClassId}/members/${userKey}`), {
+                        name: resolvedName,
+                        role: detectedRole
+                    });
+                    await window.fb.update(window.fb.ref(window.fb.db, 'users/' + userKey), {
+                        name: resolvedName, className: foundClassName, role: detectedRole, classId: foundClassId
+                    });
+                    loginSuccess(resolvedName, foundClassName, detectedRole, foundClassId);
+                } else {
+                    status.innerText = "Невірний код класу або учня!";
+                }
+            } catch (error) {
+                console.error(error);
+                status.innerText = "Помилка з'єднання з Firebase.";
+            }
+        }
+
+        async function createNewClass() {
+            if (!firebaseReady) { await showNotice("Зачекайте", "База даних ще ініціалізується."); return; }
+            const name = document.getElementById('auth-name').value.trim();
+            if (!name) { await showNotice("Увага", "Спочатку введіть своє ім'я у поле вище!"); return; }
+
+            const className = await showPromptModal("Новий клас", "Введіть назву класу (наприклад: 11-А):", "11-А");
+            if (!className) return;
+
+            const cleanClassId = sanitizeKey(className);
+            const classCode = Math.random().toString(36).substring(2, 7).toUpperCase();
+            const teacherKey = sanitizeKey(name);
+
+            try {
+                await window.fb.set(window.fb.ref(window.fb.db, 'classes/' + cleanClassId), {
+                    name: className,
+                    code: classCode,
+                    schedule: { "Пн": [], "Вт": [], "Ср": [], "Чт": [], "Пт": [] },
+                    canteen: "Меню ще не додано",
+                    teacher: name,
+                    starosta: "",
+                    members: { [teacherKey]: { name, role: "teacher" } },
+                    studentCodes: {},
+                    transportLogs: {}
+                });
+                await window.fb.set(window.fb.ref(window.fb.db, 'users/' + teacherKey), {
+                    name, className, role: "teacher", classId: cleanClassId
+                });
+                await showNotice("Клас створено!", `Клас ${className} готовий.\nЗагальний код класу: ${classCode}`);
+                loginSuccess(name, className, "teacher", cleanClassId);
+            } catch (e) {
+                console.error(e);
+                await showNotice("Помилка", "Не вдалося створити клас у Firebase.");
+            }
+        }
+
+        function loginSuccess(name, className, role, classId, isRestore = false) {
+            currentUser = { name, className, role, classId };
+            if (!isRestore) localStorage.setItem('currentUser', JSON.stringify(currentUser));
+
+            document.getElementById('auth-screen').style.display = 'none';
+            document.getElementById('app-container').style.display = 'block';
+
+            document.getElementById('prof-name').innerText = name;
+            document.getElementById('prof-class').innerText = `Клас: ${className}`;
+            document.getElementById('home-class-name').innerText = className;
+
+            const dateOptions = { weekday: 'long', day: 'numeric', month: 'long' };
+            document.getElementById('header-date').innerText = new Date().toLocaleDateString('uk-UA', dateOptions).toUpperCase();
+
+            updateRoleUI();
+            initCustomizationUI();
+            initGradesUI();
+            loadClassData(classId);
+            initWeatherCanvas();
+            initWeatherSystem();
+        }
+
+        function updateRoleUI() {
+            const roleLabel = document.getElementById('prof-role');
+            if (currentUser.role === 'teacher') {
+                roleLabel.innerText = "👑 Класний керівник";
+            } else if (currentUser.role === 'starosta') {
+                roleLabel.innerText = "⭐ Староста класу";
+            } else {
+                roleLabel.innerText = "🎒 Учень";
+            }
+
+            // Тільки класний керівник та староста можуть змінювати розклад, їдальню і бачити вікно «Автобус»
+            const canEdit = isStaff();
+            document.getElementById('staff-schedule-controls').style.display = canEdit ? 'block' : 'none';
+            document.getElementById('canteen-edit-block').style.display = canEdit ? 'block' : 'none';
+            document.getElementById('bus-management-card').style.display = canEdit ? 'block' : 'none';
+            document.getElementById('teacher-only-controls').style.display = currentUser.role === 'teacher' ? 'block' : 'none';
+            document.getElementById('teacher-roster-add-box').style.display = currentUser.role === 'teacher' ? 'block' : 'none';
+        }
+
+        async function loadClassData(classId) {
+            const snapshot = await window.fb.get(window.fb.ref(window.fb.db, 'classes/' + classId));
+            if (snapshot.exists()) {
+                currentClassDB = snapshot.val();
+                if (!currentClassDB.schedule) currentClassDB.schedule = { "Пн": [], "Вт": [], "Ср": [], "Чт": [], "Пт": [] };
+                if (!currentClassDB.transportLogs) currentClassDB.transportLogs = {};
+                if (!currentClassDB.members) currentClassDB.members = {};
+                if (!currentClassDB.studentCodes) currentClassDB.studentCodes = {};
+                if (!currentClassDB.roster) currentClassDB.roster = {};
+
+                // Синхронізуємо актуальну роль (якщо вчитель призначив старостою)
+                const userKey = sanitizeKey(currentUser.name);
+                if (currentClassDB.starosta && currentClassDB.starosta.toLowerCase() === currentUser.name.toLowerCase() && currentUser.role !== 'teacher') {
+                    currentUser.role = 'starosta';
+                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                    updateRoleUI();
+                } else if (currentUser.role === 'starosta' && (!currentClassDB.starosta || currentClassDB.starosta.toLowerCase() !== currentUser.name.toLowerCase())) {
+                    currentUser.role = 'student';
+                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                    updateRoleUI();
+                }
+
+                document.getElementById('home-class-code').innerText = currentClassDB.code;
+                renderSchedule();
+                renderCanteen();
+                startLessonTimer();
+                await initTransportPoll();
+                renderClassRoster();
+                if (isStaff()) {
+                    renderBusWindow();
+                    renderIssuedCodes();
+                }
+            }
+        }
+
+        // --- ТАЙМЕР УРОКІВ ТА ПЕРЕРВ + СТРІЧКА УРОКІВ ---
+        function parseTimeToMinutes(timeStr) {
+            const parts = (timeStr || '08:00').split(':');
+            return (parseInt(parts[0], 10) || 8) * 60 + (parseInt(parts[1], 10) || 0);
+        }
+
+        function formatSeconds(sec) {
+            const h = Math.floor(sec / 3600);
+            const m = Math.floor((sec % 3600) / 60);
+            const s = sec % 60;
+            return h > 0
+                ? `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`
+                : `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+        }
+
+        function startLessonTimer() {
+            if (timerInterval) clearInterval(timerInterval);
+            updateLessonTimer();
+            timerInterval = setInterval(updateLessonTimer, 1000);
+        }
+
+        function updateLessonTimer() {
+            const now = new Date();
+            document.getElementById('timer-clock').innerText = now.toLocaleTimeString('uk-UA');
+
+            const days = ["Нд", "Пн", "Вт", "Ср", "Чт", "Пт", "Сб"];
+            const todayName = days[now.getDay()];
+            const lessons = (currentClassDB && currentClassDB.schedule && currentClassDB.schedule[todayName]) || [];
+            const stripEl = document.getElementById('next-lessons-strip');
+
+            if (!lessons.length) {
+                document.getElementById('timer-phase').innerText = "Вихідний / Немає уроків";
+                document.getElementById('timer-main-text').innerText = "Сьогодні занять немає 🎉";
+                document.getElementById('timer-sub-text').innerText = "Можна відпочивати або готуватися на завтра";
+                document.getElementById('timer-progress').style.width = "0%";
+                stripEl.innerHTML = '<div style="font-size: 12px; color: var(--text-muted);">Розклад на сьогодні порожній</div>';
+                return;
+            }
+
+            const nowSeconds = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
+            const LESSON_LEN = 45 * 60; // 45 хв урок
+            const BREAK_LEN = 10 * 60;  // 10 хв перерва
+            let activeIndex = -1;
+            let statusPhase = "Поза уроками";
+            let mainText = "";
+            let subText = "";
+            let progressPct = 0;
+
+            for (let i = 0; i < lessons.length; i++) {
+                const startSec = parseTimeToMinutes(lessons[i].time) * 60;
+                const endSec = startSec + LESSON_LEN;
+
+                if (nowSeconds < startSec) {
+                    const diff = startSec - nowSeconds;
+                    const isBreak = i > 0 && diff <= BREAK_LEN;
+                    statusPhase = isBreak ? "Перерва (10 хв)" : (i === 0 ? "До початку навчання" : "Між уроками");
+                    mainText = `Наступний: ${lessons[i].name}`;
+                    subText = `Початок о ${lessons[i].time} (каб. ${lessons[i].cab || '-'}) • залишилось ${formatSeconds(diff)}`;
+                    progressPct = isBreak ? Math.max(0, Math.min(100, ((BREAK_LEN - diff) / BREAK_LEN) * 100)) : 0;
+                    activeIndex = i;
+                    break;
+                } else if (nowSeconds >= startSec && nowSeconds <= endSec) {
+                    const left = endSec - nowSeconds;
+                    statusPhase = `Триває ${i + 1}-й урок (45 хв)`;
+                    mainText = `${lessons[i].name} (каб. ${lessons[i].cab || '-'})`;
+                    subText = `До дзвінка на перерву: ${formatSeconds(left)}`;
+                    progressPct = ((LESSON_LEN - left) / LESSON_LEN) * 100;
+                    activeIndex = i;
+                    break;
+                }
+            }
+
+            if (activeIndex === -1) {
+                statusPhase = "Уроки завершено";
+                mainText = "Навчальний день закінчився ✅";
+                subText = `Проведено уроків: ${lessons.length}`;
+                progressPct = 100;
+            }
+
+            document.getElementById('timer-phase').innerText = statusPhase;
+            document.getElementById('timer-main-text').innerText = mainText;
+            document.getElementById('timer-sub-text').innerText = subText;
+            document.getElementById('timer-progress').style.width = `${progressPct}%`;
+
+            stripEl.innerHTML = lessons.map((l, idx) => `
+                <div class="next-lesson-chip ${idx === activeIndex ? 'current' : ''}">
+                    <div style="font-size: 11px; font-weight: 700; color: var(--accent);">${idx + 1}. ${l.time}</div>
+                    <div style="font-size: 13px; font-weight: 700; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${l.name}</div>
+                    <div style="font-size: 11px; color: var(--text-muted);">Каб. ${l.cab || '-'}</div>
+                </div>
+            `).join('');
+        }
+
+        // --- РАНКОВЕ ОПИТУВАННЯ ДОВОЗУ + СЕРІЯ ДНІВ БЕЗ ПРОПУСКІВ ---
+        async function initTransportPoll() {
+            const today = getTodayKey();
+            const minDate = getSixMonthsAgoKey();
+            document.getElementById('today-date-label').innerText = today;
+
+            // Автоочищення записів, старших за 6 місяців
+            if (currentClassDB.transportLogs) {
+                const updates = {};
+                let hasExpired = false;
+                for (const dateKey of Object.keys(currentClassDB.transportLogs)) {
+                    if (dateKey < minDate) {
+                        updates[dateKey] = null;
+                        delete currentClassDB.transportLogs[dateKey];
+                        hasExpired = true;
+                    }
+                }
+                if (hasExpired) {
+                    try {
+                        await window.fb.update(window.fb.ref(window.fb.db, `classes/${currentUser.classId}/transportLogs`), updates);
+                    } catch (e) { console.warn(e); }
+                }
+            }
+
+            updateTodayTransportButtons();
+            updateUserTransportStats();
+        }
+
+        function updateTodayTransportButtons() {
+            const today = getTodayKey();
+            const userKey = sanitizeKey(currentUser.name);
+            const todayLogs = (currentClassDB.transportLogs && currentClassDB.transportLogs[today]) || {};
+            const myRecord = todayLogs[userKey];
+
+            ['Шк', 'Р', 'Н'].forEach(code => {
+                const btn = document.getElementById('tr-btn-' + code);
+                if (btn) btn.classList.toggle('active', myRecord && myRecord.choice === code);
+            });
+
+            const statusEl = document.getElementById('transport-my-status');
+            if (myRecord) {
+                const labels = { 'Шк': 'Шкільний автобус', 'Р': 'Рейсовий автобус', 'Н': 'Відсутній' };
+                statusEl.innerText = `Ваш статус сьогодні: ${myRecord.choice} (${labels[myRecord.choice] || ''}) • ${myRecord.time}`;
+            } else {
+                statusEl.innerText = "Ви ще не відмітились сьогодні";
+            }
+        }
+
+        async function submitTransport(choice) {
+            const prevStreak = currentStreakCount;
+            await setStudentTransportRecord(currentUser.name, choice);
+            if (choice !== 'Н') {
+                if (typeof confetti === 'function') {
+                    confetti({
+                        particleCount: 35,
+                        spread: 60,
+                        colors: ['#ff5e00', '#ffbe0b', '#f43f5e'],
+                        origin: { y: 0.7 }
+                    });
+                }
+                if (currentStreakCount > prevStreak) {
+                    await showNotice(
+                        `🔥 Вогник горить: ${currentStreakCount} дн.!`,
+                        `Твоя серія без пропусків зросла до ${currentStreakCount} дн. Продовжуй відмічатися щоранку, щоб вогник не згас!`
+                    );
+                }
+            }
+        }
+
+        async function setStudentTransportRecord(studentName, choice, dateKey = getTodayKey()) {
+            const userKey = sanitizeKey(studentName);
+            const nowTime = new Date().toLocaleTimeString('uk-UA', { hour: '2-digit', minute: '2-digit' });
+            const entry = { name: studentName, choice, time: nowTime, timestamp: Date.now() };
+
+            if (!currentClassDB.transportLogs) currentClassDB.transportLogs = {};
+            if (!currentClassDB.transportLogs[dateKey]) currentClassDB.transportLogs[dateKey] = {};
+            currentClassDB.transportLogs[dateKey][userKey] = entry;
+
+            updateTodayTransportButtons();
+            updateUserTransportStats();
+            if (isStaff()) renderBusWindow();
+
+            await window.fb.set(
+                window.fb.ref(window.fb.db, `classes/${currentUser.classId}/transportLogs/${dateKey}/${userKey}`),
+                entry
+            );
+        }
+
+        function updateUserTransportStats() {
+            const userKey = sanitizeKey(currentUser.name);
+            const logs = currentClassDB.transportLogs || {};
+            let shk = 0, r = 0, n = 0;
+
+            const sortedDates = Object.keys(logs).sort();
+            let streak = 0;
+
+            sortedDates.forEach(d => {
+                const rec = logs[d] && logs[d][userKey];
+                if (rec) {
+                    if (rec.choice === 'Шк') { shk++; streak++; }
+                    else if (rec.choice === 'Р') { r++; streak++; }
+                    else if (rec.choice === 'Н') { n++; streak = 0; }
+                }
+            });
+
+            currentStreakCount = streak;
+            document.getElementById('stat-shk').innerText = shk;
+            document.getElementById('stat-r').innerText = r;
+            document.getElementById('stat-n').innerText = n;
+
+            // Оновлення анімованого вогника у стилі TikTok
+            const numEl = document.getElementById('home-streak-num');
+            const flameEl = document.getElementById('home-streak-flame');
+            const pillEl = document.getElementById('streak-pill-box');
+            const lblEl = document.getElementById('home-streak-label');
+
+            numEl.innerText = streak;
+            flameEl.classList.remove('active', 'purple');
+            pillEl.classList.remove('lit', 'super-lit');
+
+            if (streak >= 10) {
+                flameEl.classList.add('active', 'purple');
+                pillEl.classList.add('super-lit');
+                lblEl.innerText = 'Мега-вогник';
+            } else if (streak > 0) {
+                flameEl.classList.add('active');
+                pillEl.classList.add('lit');
+                lblEl.innerText = 'Вогник горить';
+            } else {
+                lblEl.innerText = 'Вогник згас';
+            }
+        }
+
+        async function showStreakDetails() {
+            const milestones = [3, 7, 14, 30, 60, 100];
+            const nextGoal = milestones.find(m => m > currentStreakCount) || (currentStreakCount + 10);
+            const left = nextGoal - currentStreakCount;
+            const statusMsg = currentStreakCount === 0
+                ? "Вогник поки не горить. Відміть «Шк» або «Р» у ранковому опитуванні, щоб запалити перший день!"
+                : `Твій вогник горить уже ${currentStreakCount} дн. поспіль!\nДо наступного рівня (${nextGoal} дн.) залишилось: ${left} дн.\nВід 10 днів вогник стає фіолетовим! 💜🔥`;
+            await showNotice(`🔥 Серія TikTok: ${currentStreakCount} дн.`, statusMsg);
+        }
+
+        // --- ВІКНО «АВТОБУС» ТА КЕРУВАННЯ УЧНЯМИ (ВЧИТЕЛЬ / СТАРОСТА) ---
+        let selectedAbsentKeys = new Set();
+
+        function renderBusWindow() {
+            const dateInput = document.getElementById('bus-admin-date');
+            if (!dateInput.value) dateInput.value = getTodayKey();
+            const selectedDate = dateInput.value;
+            const logsForDate = (currentClassDB.transportLogs && currentClassDB.transportLogs[selectedDate]) || {};
+
+            // Збираємо всіх учнів зі списку класу, учасників, виданих кодів та відміток
+            const allNamesMap = getAllClassStudentsMap();
+            Object.entries(logsForDate).forEach(([k, v]) => {
+                if (v && v.name) allNamesMap.set(k, v.name);
+            });
+
+            let cShk = 0, cR = 0, cN = 0;
+            const absentNames = [];
+            Object.values(logsForDate).forEach(v => {
+                if (!v) return;
+                if (v.choice === 'Шк') cShk++;
+                else if (v.choice === 'Р') cR++;
+                else if (v.choice === 'Н') {
+                    cN++;
+                    if (v.name) absentNames.push(v.name);
+                }
+            });
+
+            document.getElementById('bus-admin-summary').innerHTML =
+                `Шкільний (Шк): <strong>${cShk}</strong> • Рейсовий (Р): <strong>${cR}</strong> • Відсутні (Н): <strong style="color:#f87171;">${cN}</strong>` +
+                (absentNames.length ? `<div style="margin-top: 4px; color: #fca5a5;">Відсутні (${selectedDate}): ${absentNames.join(', ')}</div>` : '');
+
+            const listEl = document.getElementById('bus-students-list');
+            if (allNamesMap.size === 0) {
+                listEl.innerHTML = '<div style="font-size: 12px; color: var(--text-muted); padding: 10px 0;">Учнів у списку ще немає. Додайте учнів або дочекайтесь їхнього входу.</div>';
+                return;
+            }
+
+            const sortedEntries = Array.from(allNamesMap.entries())
+                .map(([key, name]) => ({ key, name }))
+                .sort((a, b) => a.name.localeCompare(b.name, 'uk'));
+
+            let html = '';
+            sortedEntries.forEach(({ key: sKey, name: studentName }) => {
+                const rec = logsForDate[sKey];
+                const curChoice = rec ? rec.choice : '—';
+                const isStarosta = currentClassDB.starosta && currentClassDB.starosta.toLowerCase() === studentName.toLowerCase();
+                const isChecked = selectedAbsentKeys.has(sKey);
+
+                html += `
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 9px 4px; border-bottom: 1px solid var(--border); gap: 6px;">
+                        <label style="display:flex; align-items:center; gap:8px; min-width: 0; flex: 1; cursor:pointer;">
+                            <input type="checkbox" ${isChecked ? 'checked' : ''} onchange="toggleAbsentSelection('${sKey}', this.checked)">
+                            <div style="min-width: 0;">
+                                <div style="font-size: 13px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: ${curChoice === 'Н' ? '#f87171' : 'inherit'};">
+                                    ${studentName} ${isStarosta ? '⭐' : ''}
+                                </div>
+                                <div style="font-size: 11px; color: var(--text-muted);">Статус: <strong>${curChoice}</strong> ${rec ? '(' + rec.time + ')' : ''}</div>
+                            </div>
+                        </label>
+                        <div style="display: flex; gap: 4px; align-items: center;">
+                            <button class="btn btn-secondary btn-sm" style="padding: 5px 8px; ${curChoice==='Шк'?'background:#10b981;border-color:#10b981;':''}" onclick="setStudentTransportRecord('${studentName.replace(/'/g, "\\'")}', 'Шк', '${selectedDate}')">Шк</button>
+                            <button class="btn btn-secondary btn-sm" style="padding: 5px 8px; ${curChoice==='Р'?'background:#3b82f6;border-color:#3b82f6;':''}" onclick="setStudentTransportRecord('${studentName.replace(/'/g, "\\'")}', 'Р', '${selectedDate}')">Р</button>
+                            <button class="btn btn-secondary btn-sm" style="padding: 5px 8px; ${curChoice==='Н'?'background:#ef4444;border-color:#ef4444;':''}" onclick="setStudentTransportRecord('${studentName.replace(/'/g, "\\'")}', 'Н', '${selectedDate}')">Н</button>
+                            ${currentUser.role === 'teacher' ? `<button class="btn btn-secondary btn-sm" style="padding: 5px 8px;" title="Зробити старостою" onclick="assignStarosta('${studentName.replace(/'/g, "\\'")}')">⭐</button>` : ''}
+                        </div>
+                    </div>
+                `;
+            });
+            listEl.innerHTML = html;
+        }
+
+        function toggleAbsentSelection(studentKey, checked) {
+            if (checked) selectedAbsentKeys.add(studentKey);
+            else selectedAbsentKeys.delete(studentKey);
+        }
+
+        async function toggleSelectedStudentsAbsent(markAsAbsent) {
+            if (!isStaff()) return;
+            const dateInput = document.getElementById('bus-admin-date');
+            const selectedDate = (dateInput && dateInput.value) || getTodayKey();
+            if (!selectedAbsentKeys.size) {
+                await showNotice("Оберіть учнів", "Поставте галочки навпроти потрібних учнів у списку нижче.");
+                return;
+            }
+
+            const allMap = getAllClassStudentsMap();
+            const nowTime = new Date().toLocaleTimeString('uk-UA', { hour: '2-digit', minute: '2-digit' });
+
+            if (!currentClassDB.transportLogs) currentClassDB.transportLogs = {};
+            if (!currentClassDB.transportLogs[selectedDate]) currentClassDB.transportLogs[selectedDate] = {};
+
+            const updates = {};
+            for (const sKey of selectedAbsentKeys) {
+                const studentName = allMap.get(sKey) || (currentClassDB.transportLogs[selectedDate][sKey]?.name) || sKey;
+                if (markAsAbsent) {
+                    const entry = { name: studentName, choice: 'Н', time: nowTime, timestamp: Date.now() };
+                    currentClassDB.transportLogs[selectedDate][sKey] = entry;
+                    updates[sKey] = entry;
+                } else {
+                    delete currentClassDB.transportLogs[selectedDate][sKey];
+                    updates[sKey] = null;
+                }
+            }
+
+            await window.fb.update(
+                window.fb.ref(window.fb.db, `classes/${currentUser.classId}/transportLogs/${selectedDate}`),
+                updates
+            );
+
+            selectedAbsentKeys.clear();
+            updateTodayTransportButtons();
+            updateUserTransportStats();
+            renderBusWindow();
+            renderClassRoster();
+            await showNotice("Готово", markAsAbsent ? `Обраних учнів позначено як відсутніх (Н) за ${selectedDate}.` : `Відмітку Н за ${selectedDate} знято.`);
+        }
+
+        async function assignStarosta(studentName) {
+            const isAlready = currentClassDB.starosta && currentClassDB.starosta.toLowerCase() === studentName.toLowerCase();
+            const newStarosta = isAlready ? "" : studentName;
+            currentClassDB.starosta = newStarosta;
+            await window.fb.update(window.fb.ref(window.fb.db, 'classes/' + currentUser.classId), { starosta: newStarosta });
+            renderBusWindow();
+            await showNotice("Роль оновлено", newStarosta ? `${studentName} призначено старостою класу!` : `Повноваження старости знято.`);
+        }
+
+        async function generateStudentCode() {
+            const nameInput = document.getElementById('new-student-name');
+            const stName = nameInput.value.trim();
+            if (!stName) return;
+
+            const sKey = sanitizeKey(stName);
+            const personalCode = Math.random().toString(36).substring(2, 7).toUpperCase();
+            if (!currentClassDB.studentCodes) currentClassDB.studentCodes = {};
+            currentClassDB.studentCodes[sKey] = { name: stName, code: personalCode, role: 'student' };
+            if (!currentClassDB.roster) currentClassDB.roster = {};
+            currentClassDB.roster[sKey] = { name: stName };
+
+            await window.fb.update(window.fb.ref(window.fb.db, `classes/${currentUser.classId}/studentCodes`), {
+                [sKey]: currentClassDB.studentCodes[sKey]
+            });
+            await window.fb.update(window.fb.ref(window.fb.db, `classes/${currentUser.classId}/roster`), {
+                [sKey]: currentClassDB.roster[sKey]
+            });
+
+            nameInput.value = '';
+            renderIssuedCodes();
+            renderBusWindow();
+            renderClassRoster();
+        }
+
+        // --- ПОВНОЦІННИЙ СПИСОК КЛАСУ ---
+        function getAllClassStudentsMap() {
+            const map = new Map();
+            Object.entries(currentClassDB.roster || {}).forEach(([k, v]) => {
+                if (v && v.name) map.set(k, v.name);
+            });
+            Object.entries(currentClassDB.members || {}).forEach(([k, v]) => {
+                if (v && v.name && v.role !== 'teacher') map.set(k, v.name);
+            });
+            Object.entries(currentClassDB.studentCodes || {}).forEach(([k, v]) => {
+                if (v && v.name) map.set(k, v.name);
+            });
+            return map;
+        }
+
+        function renderClassRoster() {
+            if (!currentClassDB) return;
+            const listEl = document.getElementById('class-roster-list');
+            const badgeEl = document.getElementById('roster-count-badge');
+            const query = (document.getElementById('roster-search-input')?.value || '').trim().toLowerCase();
+
+            const allMap = getAllClassStudentsMap();
+            const entries = Array.from(allMap.entries())
+                .map(([key, name]) => ({ key, name }))
+                .sort((a, b) => a.name.localeCompare(b.name, 'uk'));
+
+            badgeEl.innerText = `${entries.length} учн.`;
+
+            const filtered = query
+                ? entries.filter(item => item.name.toLowerCase().includes(query))
+                : entries;
+
+            const todayLogs = (currentClassDB.transportLogs && currentClassDB.transportLogs[getTodayKey()]) || {};
+            let html = '';
+
+            if (currentClassDB.teacher) {
+                html += `
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 9px 4px; border-bottom: 1px solid var(--border);">
+                        <div>
+                            <div style="font-size: 13px; font-weight: 800;">👑 ${currentClassDB.teacher}</div>
+                            <div style="font-size: 11px; color: var(--text-muted);">Класний керівник</div>
+                        </div>
+                        <span class="badge badge-role">Керівник</span>
+                    </div>
+                `;
+            }
+
+            if (filtered.length === 0) {
+                html += '<div style="font-size: 12px; color: var(--text-muted); padding: 12px 0; text-align: center;">Список учнів порожній</div>';
+            } else {
+                filtered.forEach((st, idx) => {
+                    const isStarosta = currentClassDB.starosta && currentClassDB.starosta.toLowerCase() === st.name.toLowerCase();
+                    const isOnlineMember = Boolean(currentClassDB.members && currentClassDB.members[st.key]);
+                    const todayRec = todayLogs[st.key];
+                    const trBadge = todayRec
+                        ? `<span class="badge ${todayRec.choice === 'Шк' ? 'badge-shk' : (todayRec.choice === 'Р' ? 'badge-r' : 'badge-n')}">${todayRec.choice}</span>`
+                        : `<span style="font-size: 11px; color: var(--text-muted);">—</span>`;
+
+                    html += `
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 9px 4px; border-bottom: 1px solid var(--border); gap: 8px;">
+                            <div style="min-width: 0; flex: 1;">
+                                <div style="font-size: 13px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                    ${idx + 1}. ${st.name} ${isStarosta ? '⭐' : ''}
+                                </div>
+                                <div style="font-size: 11px; color: var(--text-muted);">
+                                    ${isStarosta ? 'Староста • ' : ''}${isOnlineMember ? 'У додатку' : 'У списку'}
+                                </div>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 6px;">
+                                ${trBadge}
+                                ${currentUser.role === 'teacher' ? `
+                                    <button class="btn btn-secondary btn-sm" style="padding: 4px 7px;" title="Призначити старостою" onclick="assignStarosta('${st.name.replace(/'/g, "\\'")}')">⭐</button>
+                                    <button class="btn btn-secondary btn-sm" style="padding: 4px 7px; color: #f87171;" title="Видалити зі списку" onclick="removeStudentFromRoster('${st.key}')"><i class="fa-solid fa-xmark"></i></button>
+                                ` : ''}
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+
+            listEl.innerHTML = html;
+        }
+
+        async function addStudentsToRoster() {
+            const textarea = document.getElementById('bulk-students-input');
+            const lines = textarea.value
+                .split(/\n|,/)
+                .map(s => s.trim())
+                .filter(Boolean);
+
+            if (!lines.length) return;
+            if (!currentClassDB.roster) currentClassDB.roster = {};
+
+            const updates = {};
+            lines.forEach(name => {
+                const key = sanitizeKey(name);
+                const entry = { name };
+                currentClassDB.roster[key] = entry;
+                updates[key] = entry;
+            });
+
+            await window.fb.update(window.fb.ref(window.fb.db, `classes/${currentUser.classId}/roster`), updates);
+            textarea.value = '';
+            renderClassRoster();
+            if (isStaff()) renderBusWindow();
+            await showNotice("Список оновлено", `Додано записів: ${lines.length}`);
+        }
+
+        async function removeStudentFromRoster(studentKey) {
+            if (currentClassDB.roster && currentClassDB.roster[studentKey]) {
+                const removedName = currentClassDB.roster[studentKey].name;
+                delete currentClassDB.roster[studentKey];
+                if (currentClassDB.starosta && currentClassDB.starosta.toLowerCase() === removedName.toLowerCase()) {
+                    currentClassDB.starosta = "";
+                    await window.fb.update(window.fb.ref(window.fb.db, 'classes/' + currentUser.classId), { starosta: "" });
+                }
+            }
+            await window.fb.remove(window.fb.ref(window.fb.db, `classes/${currentUser.classId}/roster/${studentKey}`));
+            renderClassRoster();
+            if (isStaff()) renderBusWindow();
+        }
+
+        function renderIssuedCodes() {
+            const box = document.getElementById('issued-codes-list');
+            const codes = Object.values(currentClassDB.studentCodes || {});
+            if (!codes.length) {
+                box.innerText = "Персональних кодів ще не видано.";
+                return;
+            }
+            box.innerHTML = codes.map(c => `<div style="padding: 3px 0;">• <strong>${c.name}</strong> — код: <span style="color: var(--accent); font-weight: 700;">${c.code}</span></div>`).join('');
+        }
+
+        // --- РОЗКЛАД (БЕЗ ПОЛЯ ДЗ) ---
+        function renderSchedule() {
+            const carousel = document.getElementById('day-carousel-container');
+            const list = document.getElementById('schedule-list');
+            const days = ["Пн", "Вт", "Ср", "Чт", "Пт"];
+            const currentDay = days[new Date().getDay() - 1] || "Пн";
+
+            carousel.innerHTML = '';
+            days.forEach(d => {
+                const div = document.createElement('div');
+                div.className = `day-item ${d === currentDay ? 'active' : ''}`;
+                div.innerHTML = `<div class="day-name">${d}</div>`;
+                div.onclick = () => renderDay(d);
+                carousel.appendChild(div);
+            });
+
+            function renderDay(day) {
+                document.querySelectorAll('#day-carousel-container .day-item').forEach(el => {
+                    el.classList.toggle('active', el.querySelector('.day-name').innerText === day);
+                });
+                list.innerHTML = '';
+                const lessons = (currentClassDB.schedule && currentClassDB.schedule[day]) || [];
+                if (lessons.length === 0) {
+                    list.innerHTML = '<div style="padding: 20px; text-align: center; color: var(--text-muted);">Уроків немає</div>';
+                    return;
+                }
+                lessons.forEach((l, idx) => {
+                    list.innerHTML += `
+                        <div class="list-item">
+                            <div style="font-size: 13px; font-weight: 800; color: var(--accent); width: 54px;">${l.time || (idx + 1) + ' ур.'}</div>
+                            <div class="list-info">
+                                <div class="list-title">${l.name}</div>
+                                <div class="list-sub">Кабінет: ${l.cab || '-'}</div>
+                            </div>
+                        </div>`;
+                });
+            }
+            renderDay(currentDay);
+        }
+
+        async function openScheduleEditor() {
+            const day = await showPromptModal("Редактор розкладу", "Введіть день тижня (Пн, Вт, Ср, Чт, Пт):", "Пн");
+            if (!day || !["Пн", "Вт", "Ср", "Чт", "Пт"].includes(day)) {
+                if (day) await showNotice("Помилка", "Введіть коректний день: Пн, Вт, Ср, Чт або Пт.");
+                return;
+            }
+            const newStr = await showPromptModal(
+                `Уроки на ${day}`,
+                "Формат: Назва:Кабінет:Час через кому.\nПриклад: Математика:5:08:00, Фізика:9:08:55",
+                "Математика:5:08:00, Фізика:9:08:55"
+            );
+            if (!newStr) return;
+
+            const newLessons = newStr.split(',').map(s => {
+                const p = s.split(':');
+                return {
+                    name: (p[0] || 'Урок').trim(),
+                    cab: p[1] ? p[1].trim() : '-',
+                    time: p[2] ? `${p[2].trim()}:${(p[3] || '00').trim()}` : '08:00'
+                };
+            });
+            currentClassDB.schedule[day] = newLessons;
+            await window.fb.update(window.fb.ref(window.fb.db, 'classes/' + currentUser.classId), { schedule: currentClassDB.schedule });
+            renderSchedule();
+            updateLessonTimer();
+            await showNotice("Готово", `Розклад на ${day} оновлено!`);
+        }
+
+        async function importScheduleFromText() {
+            const raw = document.getElementById('schedule-paste-input').value.trim();
+            const statusEl = document.getElementById('ai-status');
+            if (!raw) {
+                statusEl.style.color = "#ef4444";
+                statusEl.innerText = "Вставте JSON-код розкладу у поле вище!";
+                return;
+            }
+            try {
+                const clean = raw.replace(/```json/gi, '').replace(/```/g, '').trim();
+                const parsed = JSON.parse(clean);
+                const days = ["Пн", "Вт", "Ср", "Чт", "Пт"];
+                const normalized = {};
+
+                days.forEach(d => {
+                    const arr = Array.isArray(parsed[d]) ? parsed[d] : [];
+                    normalized[d] = arr.map(item => ({
+                        name: String(item.name || "Урок").trim(),
+                        cab: String(item.cab || "-").trim(),
+                        time: String(item.time || "08:00").trim()
+                    }));
+                });
+
+                currentClassDB.schedule = normalized;
+                await window.fb.update(window.fb.ref(window.fb.db, 'classes/' + currentUser.classId), { schedule: normalized });
+                statusEl.style.color = "#10b981";
+                statusEl.innerText = "✅ Розклад на весь тиждень збережено!";
+                renderSchedule();
+                updateLessonTimer();
+            } catch (e) {
+                statusEl.style.color = "#ef4444";
+                statusEl.innerText = "❌ Помилка формату JSON.";
+            }
+        }
+
+        function copyCurrentScheduleJson() {
+            const jsonStr = JSON.stringify(currentClassDB.schedule || {}, null, 2);
+            const ta = document.createElement('textarea');
+            ta.value = jsonStr;
+            document.body.appendChild(ta);
+            ta.select();
+            document.execCommand('copy');
+            document.body.removeChild(ta);
+            const statusEl = document.getElementById('ai-status');
+            statusEl.style.color = "#10b981";
+            statusEl.innerText = "📋 JSON розкладу скопійовано!";
+        }
+
+        // --- ТАБЕЛЬ ТА ОЦІНКИ (Д / А / ВД + БАЛИ) ---
+        function getGradesStorageKey() {
+            return `grades_${currentUser.classId}_${sanitizeKey(currentUser.name)}`;
+        }
+
+        function initGradesUI() {
+            const today = getTodayKey();
+            document.getElementById('grade-date-input').value = today;
+            renderGradesList();
+        }
+
+        function addGradeRecord() {
+            const subj = document.getElementById('grade-subject-input').value.trim();
+            const val = document.getElementById('grade-value-input').value;
+            const date = document.getElementById('grade-date-input').value || getTodayKey();
+            if (!subj) return;
+
+            const list = JSON.parse(localStorage.getItem(getGradesStorageKey()) || '[]');
+            list.unshift({ id: Date.now(), subject: subj, value: val, date });
+            localStorage.setItem(getGradesStorageKey(), JSON.stringify(list));
+
+            document.getElementById('grade-subject-input').value = '';
+            renderGradesList();
+        }
+
+        function deleteGradeRecord(id) {
+            const list = JSON.parse(localStorage.getItem(getGradesStorageKey()) || '[]').filter(g => g.id !== id);
+            localStorage.setItem(getGradesStorageKey(), JSON.stringify(list));
+            renderGradesList();
+        }
+
+        function renderGradesList() {
+            const list = JSON.parse(localStorage.getItem(getGradesStorageKey()) || '[]');
+            const filterDate = document.getElementById('grades-filter-date').value;
+            const filtered = filterDate ? list.filter(g => g.date === filterDate) : list;
+
+            // Підрахунок середнього балу (враховуємо числові бали + еквіваленти Д/А/ВД)
+            const mapLetter = { 'ВД': 11, 'Д': 8, 'А': 6 };
+            let sum = 0, count = 0;
+            list.forEach(g => {
+                const num = !isNaN(Number(g.value)) ? Number(g.value) : mapLetter[g.value];
+                if (num) { sum += num; count++; }
+            });
+            const avgText = count > 0 ? (sum / count).toFixed(1) : '—';
+            document.getElementById('home-avg-grade').innerText = avgText;
+            document.getElementById('grades-avg-big').innerText = avgText;
+
+            const container = document.getElementById('grades-list-container');
+            if (!filtered.length) {
+                container.innerHTML = '<div style="font-size: 12px; color: var(--text-muted); text-align: center; padding: 12px 0;">Оцінок поки немає</div>';
+                return;
+            }
+
+            container.innerHTML = filtered.map(g => `
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 4px; border-bottom: 1px solid var(--border);">
+                    <div>
+                        <div style="font-size: 14px; font-weight: 700;">${g.subject}</div>
+                        <div style="font-size: 11px; color: var(--text-muted);">${g.date}</div>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span class="badge badge-role" style="font-size: 13px;">${g.value}</span>
+                        <i class="fa-solid fa-trash" style="color: var(--text-muted); cursor: pointer; font-size: 12px;" onclick="deleteGradeRecord(${g.id})"></i>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // --- ЇДАЛЬНЯ ---
+        function renderCanteen() {
+            document.getElementById('canteen-menu-display').innerText = currentClassDB.canteen || "Меню ще не додано";
+            document.getElementById('canteen-input').value = currentClassDB.canteen || "";
+        }
+
+        async function saveCanteenMenu() {
+            const text = document.getElementById('canteen-input').value;
+            await window.fb.update(window.fb.ref(window.fb.db, 'classes/' + currentUser.classId), { canteen: text });
+            currentClassDB.canteen = text;
+            renderCanteen();
+            await showNotice("Збережено", "Меню їдальні оновлено!");
+        }
+
+        // --- ЖИВА ПОГОДА OPEN-METEO + GPS + АВТО-ТЕМА ---
+        function initWeatherSystem() {
+            document.getElementById('auto-weather-theme').checked = autoWeatherTheme;
+            const savedCoords = JSON.parse(localStorage.getItem('weatherCoords') || 'null');
+            if (savedCoords) {
+                fetchOpenMeteo(savedCoords.lat, savedCoords.lon, savedCoords.city);
+            } else {
+                refreshWeatherByGPS();
+            }
+        }
+
+        function refreshWeatherByGPS() {
+            if (!navigator.geolocation) {
+                fetchOpenMeteo(50.4501, 30.5234, "Київ");
+                return;
+            }
+            navigator.geolocation.getCurrentPosition(
+                (pos) => fetchOpenMeteo(pos.coords.latitude, pos.coords.longitude, "GPS Локація"),
+                () => fetchOpenMeteo(50.4501, 30.5234, "Київ"),
+                { timeout: 6000 }
+            );
+        }
+
+        async function searchWeatherByCity() {
+            const query = document.getElementById('weather-city-input').value.trim();
+            if (!query) return;
+            try {
+                const geoRes = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(query)}&count=1&language=uk`);
+                const geoData = await geoRes.json();
+                if (geoData.results && geoData.results.length > 0) {
+                    const place = geoData.results[0];
+                    fetchOpenMeteo(place.latitude, place.longitude, place.name);
+                } else {
+                    await showNotice("Не знайдено", "Місто не знайдено. Спробуйте іншу назву (укр. або англ.).");
+                }
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        async function fetchOpenMeteo(lat, lon, cityName) {
+            try {
+                localStorage.setItem('weatherCoords', JSON.stringify({ lat, lon, city: cityName }));
+                const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`;
+                const res = await fetch(url);
+                const data = await res.json();
+                const cw = data.current_weather;
+                if (!cw) return;
+
+                const temp = Math.round(cw.temperature);
+                const code = cw.weathercode;
+                const info = decodeWeatherCode(code, cw.is_day === 1);
+                currentWeatherType = info.type;
+
+                document.getElementById('home-temp').innerText = `${temp}°`;
+                document.getElementById('home-city').innerText = cityName;
+                document.getElementById('weather-mini-pill').innerText = info.icon;
+                document.getElementById('weather-details-box').innerHTML =
+                    `<strong>${cityName}</strong>: ${info.icon} ${info.label}, <strong>${temp}°C</strong> (вітер ${cw.windspeed} км/год)`;
+
+                if (autoWeatherTheme) {
+                    applyThemeObject(info.theme);
+                }
+                if (weatherMode === 'auto') {
+                    initWeatherCanvas();
+                }
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        function decodeWeatherCode(code, isDay) {
+            if ([71, 73, 75, 77, 85, 86].includes(code)) {
+                return { type: 'snow', icon: '❄️', label: 'Сніг', theme: THEMES[5] };
+            }
+            if ([51, 53, 55, 61, 63, 65, 80, 81, 82, 95, 96, 99].includes(code)) {
+                return { type: 'rain', icon: '🌧️', label: 'Дощ', theme: THEMES[1] };
+            }
+            if (!isDay) {
+                return { type: 'stars', icon: '🌙', label: 'Ясна ніч', theme: THEMES[3] };
+            }
+            if ([1, 2, 3, 45, 48].includes(code)) {
+                return { type: 'clear', icon: '⛅', label: 'Хмарно', theme: THEMES[2] };
+            }
+            return { type: 'clear', icon: '☀️', label: 'Сонячно', theme: THEMES[4] };
+        }
+
+        function toggleAutoWeatherTheme(enabled) {
+            autoWeatherTheme = enabled;
+            localStorage.setItem('autoWeatherTheme', String(enabled));
+            if (enabled) {
+                initWeatherSystem();
+            } else {
+                applySavedTheme();
+            }
+        }
+
+        // --- КАСТОМІЗАЦІЯ (12 АВАТАРОК, НАПИС, 6 ТЕМ) ---
+        function initCustomizationUI() {
+            const savedAvatar = localStorage.getItem('userAvatar') || '🎓';
+            const savedTag = localStorage.getItem('userAvatarTag') || currentUser.className;
+            const savedStatus = localStorage.getItem('userStatus') || 'На навчанні ✨';
+            const savedThemeId = localStorage.getItem('themeId') || THEMES[0].id;
+
+            document.getElementById('prof-avatar').innerText = savedAvatar;
+            document.getElementById('prof-avatar-tag').innerText = savedTag;
+            document.getElementById('avatar-tag-input').value = savedTag;
+            document.getElementById('prof-status-text').innerText = savedStatus;
+            document.getElementById('custom-status-input').value = savedStatus;
+            document.getElementById('weather-mode-select').value = weatherMode;
+
+            document.getElementById('avatar-picker').innerHTML = AVATARS.map(em => `
+                <div class="emoji-opt ${em === savedAvatar ? 'active' : ''}" onclick="selectAvatar('${em}', this)">${em}</div>
+            `).join('');
+
+            document.getElementById('theme-picker').innerHTML = THEMES.map(t => `
+                <div class="theme-chip ${t.id === savedThemeId ? 'active' : ''}" onclick="selectThemeById('${t.id}', this)">
+                    <span class="theme-dot" style="background: ${t.hex};"></span>
+                    <span>${t.name}</span>
+                </div>
+            `).join('');
+        }
+
+        function selectAvatar(emoji, el) {
+            document.querySelectorAll('.emoji-opt').forEach(x => x.classList.remove('active'));
+            el.classList.add('active');
+            document.getElementById('prof-avatar').innerText = emoji;
+            localStorage.setItem('userAvatar', emoji);
+        }
+
+        function applyThemeObject(t) {
+            if (!t) return;
+            document.documentElement.style.setProperty('--accent', t.hex);
+            document.documentElement.style.setProperty('--accent-bg', t.bg);
+            document.documentElement.style.setProperty('--bg', t.pageBg);
+        }
+
+        function selectThemeById(id, el) {
+            const t = THEMES.find(x => x.id === id);
+            if (!t) return;
+            document.querySelectorAll('.theme-chip').forEach(x => x.classList.remove('active'));
+            if (el) el.classList.add('active');
+            applyThemeObject(t);
+            localStorage.setItem('themeId', t.id);
+        }
+
+        function applySavedTheme() {
+            const id = localStorage.getItem('themeId') || THEMES[0].id;
+            const t = THEMES.find(x => x.id === id) || THEMES[0];
+            applyThemeObject(t);
+        }
+
+        async function saveProfileCustomization() {
+            const st = document.getElementById('custom-status-input').value.trim();
+            const tag = document.getElementById('avatar-tag-input').value.trim() || currentUser.className;
+            localStorage.setItem('userStatus', st);
+            localStorage.setItem('userAvatarTag', tag);
+            document.getElementById('prof-status-text').innerText = st;
+            document.getElementById('prof-avatar-tag').innerText = tag;
+            await showNotice("Збережено", "Налаштування профілю оновлено!");
+        }
+
+        function changeWeatherMode(mode) {
+            weatherMode = mode;
+            localStorage.setItem('weatherMode', mode);
+            initWeatherCanvas();
+        }
+
+        // --- НАВІГАЦІЯ ТА РЕАЛІСТИЧНІ СПЕЦЕФЕКТИ ---
+        function logout() { localStorage.removeItem('currentUser'); location.reload(); }
+
+        function switchTab(tabId, title) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            document.getElementById(`tab-${tabId}`).classList.add('active');
+            document.getElementById(`nav-${tabId}`).classList.add('active');
+            document.getElementById('header-title').innerText = title;
+            window.scrollTo(0, 0);
+        }
+
+        function initWeatherCanvas() {
+            if (animFrameId) cancelAnimationFrame(animFrameId);
+            const canvas = document.getElementById('weather-canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            const effectiveMode = weatherMode === 'auto' ? currentWeatherType : weatherMode;
+            if (effectiveMode === 'none' || effectiveMode === 'clear') {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                return;
+            }
+
+            const count = effectiveMode === 'rain' ? 75 : (effectiveMode === 'stars' ? 70 : 50);
+            const particles = Array.from({ length: count }, () => ({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                r: effectiveMode === 'stars' ? Math.random() * 1.8 + 0.5 : Math.random() * 2.2 + 0.8,
+                d: effectiveMode === 'rain' ? Math.random() * 5 + 6 : (effectiveMode === 'stars' ? Math.random() * 0.2 + 0.05 : Math.random() * 1.1 + 0.4),
+                alpha: Math.random()
+            }));
+
+            function drawWeather() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                particles.forEach(p => {
+                    if (effectiveMode === 'rain') {
+                        ctx.beginPath();
+                        ctx.strokeStyle = 'rgba(147, 197, 253, 0.35)';
+                        ctx.lineWidth = 1.2;
+                        ctx.moveTo(p.x, p.y);
+                        ctx.lineTo(p.x - 2, p.y + 12);
+                        ctx.stroke();
+                        p.y += p.d;
+                        p.x -= 1.2;
+                        if (p.y > canvas.height) { p.y = -15; p.x = Math.random() * canvas.width; }
+                    } else if (effectiveMode === 'stars') {
+                        ctx.beginPath();
+                        ctx.fillStyle = `rgba(255, 255, 255, ${0.25 + Math.abs(Math.sin(p.alpha)) * 0.75})`;
+                        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                        ctx.fill();
+                        p.alpha += 0.025;
+                        p.y -= p.d;
+                        if (p.y < 0) p.y = canvas.height;
+                    } else {
+                        ctx.beginPath();
+                        ctx.fillStyle = 'rgba(255, 255, 255, 0.55)';
+                        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                        ctx.fill();
+                        p.y += p.d;
+                        p.x += Math.sin(p.y / 35) * 0.5;
+                        if (p.y > canvas.height) p.y = 0;
+                    }
+                });
+                animFrameId = requestAnimationFrame(drawWeather);
+            }
+            drawWeather();
+        }
+
+        window.addEventListener('resize', () => {
+            if (currentUser) initWeatherCanvas();
+        });
+    </script>
+</body>
+</html>
